@@ -1,0 +1,169 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    display: flex; /* Используем flexbox для размещения боковой панели и основного контента */
+}
+
+.sidebar {
+    width: 250px; /* Ширина боковой панели */
+    background: #e9ecef;
+    padding: 20px;
+    border-radius: 10px;
+    margin-right: 20px; /* Отступ между боковой панелью и основным контентом */
+}
+
+.main-content {
+    flex-grow: 1; /* Основной контент занимает оставшееся пространство */
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.logo {
+    margin-bottom: 20px;
+}
+
+.logo img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.logo p {
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+input {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background: #e9ecef;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    transition: transform 0.3s;
+    position: relative; /* Для позиционирования кнопок */
+}
+
+li:hover {
+    transform: scale(0.95); /* Уменьшаем при наведении */
+}
+
+.button-container {
+    display: none; /* Скрываем кнопки по умолчанию */
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+}
+
+li:hover .button-container {
+    display: block; /* Показываем кнопки при наведении */
+}
+
+.chat {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    background: url('https://i.imgur.com/HuvwuzS.png') no-repeat center center; /* Убедитесь, что это правильный URL */
+    background-size: cover; /* Масштабируем фон */
+    border: 1px solid #2376f3;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(246, 245, 245, 0.1);
+}
+
+.chat-header {
+    display: flex;
+    justify-content: flex-end; /* Выравнивание кнопок вправо */
+    align-items: center; /* Выравнивание по вертикали */
+    margin-bottom: 10px; /* Отступ снизу для заголовка */
+}
+
+#closeChat {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: red;
+}
+
+.options-menu {
+    cursor: pointer;
+    margin-left: 10px; /* Отступ между кнопкой троеточия и крестиком */
+    color: rgb(4, 7, 5);
+    font-size: 18px;
+}
+
+.dropdown-content {
+    display: none; /* Скрываем меню по умолчанию */
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 5px;
+    top: 20px;
+    right: 20px;
+}
+
+.dropdown-content button {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+}
+
+.dropdown-content button:hover {
+    background-color: #4e83f6; /* Цвет при наведении */
+}
+
+#chatMessages {
+    color: #99f6ad;
+}
