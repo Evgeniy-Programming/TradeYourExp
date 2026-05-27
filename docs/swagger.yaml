@@ -13,7 +13,7 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
-  /api/v1/login:
+  /login:
     post:
       consumes:
       - application/json
@@ -42,7 +42,7 @@ paths:
       summary: Авторизация пользовтеля
       tags:
       - users
-  /api/v1/register:
+  /register:
     post:
       consumes:
       - application/json
@@ -71,7 +71,82 @@ paths:
       summary: Создание пользователя
       tags:
       - users
-  /api/v1/users/{id}:
+  /skills:
+    get:
+      consumes:
+      - application/json
+      description: Вывод полного списка навыков.
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Вывод пользовательских скиллов
+        "400":
+          description: Неверный формат
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Пользователь не найден
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Вывести все скиллы
+      tags:
+      - skills
+  /skills/desc:
+    get:
+      consumes:
+      - application/json
+      description: Вывод полного дополнительных описаний
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Вывод списка доп. описаний
+        "400":
+          description: Неверный формат
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Пользователь не найден
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Вывести все доп.описания
+      tags:
+      - skills
+  /skills/desc/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Выводит описание по персональному ID
+      parameters:
+      - description: Вывод описания по id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Вывод пользователя
+        "400":
+          description: Неверный формат ID
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Пользователь не найден
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Вывод описания по ID
+      tags:
+      - users
+  /users/{id}:
     delete:
       consumes:
       - application/json
@@ -113,7 +188,7 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
+        "201":
           description: Пользователь успешно обновлен
         "400":
           description: Неверный формат ID

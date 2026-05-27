@@ -24,7 +24,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/login": {
+        "/login": {
             "post": {
                 "description": "Авторизирует пользователя по введенным данным.",
                 "consumes": [
@@ -67,7 +67,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/register": {
+        "/register": {
             "post": {
                 "description": "Создание пользователя с заполнение требуемых полей.",
                 "consumes": [
@@ -110,7 +110,118 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/users/{id}": {
+        "/skills": {
+            "get": {
+                "description": "Вывод полного списка навыков.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "skills"
+                ],
+                "summary": "Вывести все скиллы",
+                "responses": {
+                    "204": {
+                        "description": "Вывод пользовательских скиллов"
+                    },
+                    "400": {
+                        "description": "Неверный формат",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь не найден",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/skills/desc": {
+            "get": {
+                "description": "Вывод полного дополнительных описаний",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "skills"
+                ],
+                "summary": "Вывести все доп.описания",
+                "responses": {
+                    "200": {
+                        "description": "Вывод списка доп. описаний"
+                    },
+                    "400": {
+                        "description": "Неверный формат",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь не найден",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/skills/desc/{id}": {
+            "get": {
+                "description": "Выводит описание по персональному ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Вывод описания по ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Вывод описания по id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Вывод пользователя"
+                    },
+                    "400": {
+                        "description": "Неверный формат ID",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь не найден",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
             "put": {
                 "description": "Обновляет данные в базе данных по его UUID.",
                 "consumes": [
@@ -133,7 +244,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
+                    "201": {
                         "description": "Пользователь успешно обновлен"
                     },
                     "400": {

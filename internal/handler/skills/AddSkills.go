@@ -13,7 +13,10 @@ func (h *Handler) AddSkill(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
 		return
 	}
-	if err := h.repo.SaveSkill(&s); err != nil {
+
+	// Исправлено: передаём контекст и игнорируем возвращаемый ID (он не нужен для простого добавления)
+	_, err := h.repo.SaveSkill(c.Request.Context(), &s)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 		return
 	}

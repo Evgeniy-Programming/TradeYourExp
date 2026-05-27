@@ -16,7 +16,7 @@ import (
 // @Success      204  {object}  nil     "Пользователь успешно удален"
 // @Failure      400  {object}  map[string]interface{} "Неверный формат ID"
 // @Failure      404  {object}  map[string]interface{} "Пользователь не найден"
-// @Router       /api/v1/users/{id} [delete]
+// @Router       /users/{id} [delete]
 func (h *Handler) DeleteUser(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {

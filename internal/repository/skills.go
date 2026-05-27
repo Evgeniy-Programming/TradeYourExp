@@ -2,13 +2,17 @@ package repository
 
 import (
 	"Trade-y-exp/internal/models"
+	"context"
 	"database/sql"
 )
 
-func (r *PgRepo) SaveSkill(s *models.Skill) error {
-	q := `INSERT INTO skills (username, skill, exchange) VALUES ($1, $2, $3)`
-	_, err := r.db.Exec(q, s.Username, s.Skill, s.Exchange)
-	return err
+// SaveSkill — создаёт навык и возвращает его ID
+func (r *PgRepo) SaveSkill(ctx context.Context, s *models.Skill) (int, error) {
+	var id int
+	err := r.db.QueryRowContext(ctx,
+		`INSERT INTO skills (username, skill, exchange) VALUES ($1, $2, $3) RETURNING id`,
+		s.Username, s.Skill, s.Exchange).Scan(&id)
+	return id, err
 }
 
 func (r *PgRepo) DeleteSkill(id string) error {
@@ -39,4 +43,59 @@ func (r *PgRepo) FetchSkills() ([]models.Skill, error) {
 		}
 	}
 	return res, nil
+}
+
+func (r *PgRepo) GetDescriptionBySkillID(ctx context.Context, skillID int) (*models.SkillDescription, error) {
+	var desc models.SkillDescription
+	err := r.db.QueryRowContext(ctx, `
+        SELECT 
+            sd.id, sd.skill_id, sd.description, sd.media, sd.created_at,
+            s.skill, s.exchange, s.username
+        FROM skill_descriptions sd
+        JOIN skills s ON s.id = sd.skill_id
+        WHERE sd.skill_id = $1
+    `, skillID).Scan(
+		&desc.ID, &desc.SkillID, &desc.Description, &desc.Media, &desc.CreatedAt,
+		&desc.Skill, &desc.Exchange, &desc.Username,
+	)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	return &desc, err
+}
+
+func (r *PgRepo) GetAllDescriptions(ctx context.Context) ([]models.SkillDescription, error) {
+	rows, err := r.db.QueryContext(ctx, `
+        SELECT sd.id, sd.skill_id, sd.description, sd.media, sd.created_at,
+               s.skill, s.exchange, s.username
+        FROM skill_descriptions sd
+        JOIN skills s ON s.id = sd.skill_id
+        ORDER BY sd.created_at DESC
+    `)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var descs []models.SkillDescription
+	for rows.Next() {
+		var d models.SkillDescription
+		if err := rows.Scan(&d.ID, &d.SkillID, &d.Description, &d.Media, &d.CreatedAt,
+			&d.Skill, &d.Exchange, &d.Username); err != nil {
+			return nil, err
+		}
+		descs = append(descs, d)
+	}
+	return descs, rows.Err()
+}
+
+func (r *PgRepo) UpsertDescription(ctx context.Context, skillID int, description, media string) error {
+	_, err := r.db.ExecContext(ctx,
+		`INSERT INTO skill_descriptions (skill_id, description, media) 
+         VALUES ($1, $2, $3) 
+         ON CONFLICT (skill_id) 
+         DO UPDATE SET description = $2, media = $3, created_at = NOW()`,
+		skillID, description, media)
+	return err
 }

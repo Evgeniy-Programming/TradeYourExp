@@ -17,7 +17,7 @@ import (
 // @Success      204  {object}  nil     "Пользователь успешно создан"
 // @Failure      400  {object}  map[string]interface{} "Неверный формат данных"
 // @Failure      404  {object}  map[string]interface{} "Пользователь не найден"
-// @Router       /api/v1/register [post]
+// @Router       /register [post]
 func (h *Handler) Register(c *gin.Context) {
 	var u models.User
 	if err := c.ShouldBindJSON(&u); err != nil {
