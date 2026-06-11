@@ -15,4 +15,5 @@ curl -X PUT http://localhost:8080/api/v1/users/5770a2c0-8c09-4563-b1db-75ecc5e53
 
 ## Delete Skills
 
-curl -X DELETE http://localhost:8080/api/v1/skills/7 -v   
+curl -X DELETE http://localhost:8080/api/v1/skills/7 -v 
+

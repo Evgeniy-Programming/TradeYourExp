@@ -12,7 +12,7 @@ import (
 // GetDescriptionByID вывод доп. описания по ID.
 // @Summary      Вывод описания по ID
 // @Description  Выводит описание по персональному ID
-// @Tags         users
+// @Tags         skills
 // @Accept       json
 // @Produce      json
 // @Param        id   path      string  true  "Вывод описания по id"

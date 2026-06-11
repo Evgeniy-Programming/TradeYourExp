@@ -1,11 +1,30 @@
 basePath: /api/v1
+definitions:
+  models.User:
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: string
+      lastName:
+        type: string
+      password:
+        description: omitempty чтобы не светить в API
+        type: string
+      socialLink:
+        type: string
+      username:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
     email: support@swagger.io
     name: API Support
     url: http://www.swagger.io/support
-  description: Это сервер для управления пользователями.
+  description: Trade Your Exp.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -94,6 +113,35 @@ paths:
       summary: Вывести все скиллы
       tags:
       - skills
+  /skills/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет запрос навыка по его ID
+      parameters:
+      - description: ID запроса
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Запрос навыка успешно удален
+        "404":
+          description: Неверный формат ID
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Запрос не найден
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Удалить запрос
+      tags:
+      - skills
   /skills/desc:
     get:
       consumes:
@@ -145,7 +193,7 @@ paths:
             type: object
       summary: Вывод описания по ID
       tags:
-      - users
+      - skills
   /users/{id}:
     delete:
       consumes:
@@ -160,14 +208,14 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
+        "200":
           description: Пользователь успешно удален
-        "400":
+        "404":
           description: Неверный формат ID
           schema:
             additionalProperties: true
             type: object
-        "404":
+        "500":
           description: Пользователь не найден
           schema:
             additionalProperties: true
@@ -180,11 +228,17 @@ paths:
       - application/json
       description: Обновляет данные в базе данных по его UUID.
       parameters:
-      - description: пользовтель обновлен
+      - description: ID пользователя
         in: path
         name: id
         required: true
         type: string
+      - description: Новые данные
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
       produces:
       - application/json
       responses:

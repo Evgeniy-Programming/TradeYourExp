@@ -5,7 +5,7 @@
     ],
     "swagger": "2.0",
     "info": {
-        "description": "Это сервер для управления пользователями.",
+        "description": "Trade Your Exp.",
         "title": "Swagger Example API",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
@@ -186,7 +186,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "skills"
                 ],
                 "summary": "Вывод описания по ID",
                 "parameters": [
@@ -219,6 +219,49 @@
                 }
             }
         },
+        "/skills/{id}": {
+            "delete": {
+                "description": "Удаляет запрос навыка по его ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "skills"
+                ],
+                "summary": "Удалить запрос",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID запроса",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Запрос навыка успешно удален"
+                    },
+                    "404": {
+                        "description": "Неверный формат ID",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Запрос не найден",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/users/{id}": {
             "put": {
                 "description": "Обновляет данные в базе данных по его UUID.",
@@ -235,10 +278,19 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "пользовтель обновлен",
+                        "description": "ID пользователя",
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Новые данные",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
                     }
                 ],
                 "responses": {
@@ -283,23 +335,52 @@
                     }
                 ],
                 "responses": {
-                    "204": {
+                    "200": {
                         "description": "Пользователь успешно удален"
                     },
-                    "400": {
+                    "404": {
                         "description": "Неверный формат ID",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
-                    "404": {
+                    "500": {
                         "description": "Пользователь не найден",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "password": {
+                    "description": "omitempty чтобы не светить в API",
+                    "type": "string"
+                },
+                "socialLink": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         }

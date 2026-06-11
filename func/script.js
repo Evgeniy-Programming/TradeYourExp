@@ -2,7 +2,6 @@ let currentUser = sessionStorage.getItem('user_name') || null;
 let isDark = false;
 let pendingSkill = null;
 
-// ===== ИНИЦИАЛИЗАЦИЯ =====
 window.onload = () => {
     initTheme();
     updateUI();
@@ -12,7 +11,6 @@ window.onload = () => {
     }
 };
 
-// ===== ТЕМА =====
 function initTheme() {
     const savedTheme = localStorage.getItem('theme');
     const body = document.body;
@@ -46,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ===== UI =====
+// Подгрузка UI
 function updateUI() {
     const isAuth = sessionStorage.getItem('is_auth') === 'true';
     const guestZone = document.getElementById('guest-zone');
@@ -73,7 +71,6 @@ function logout() {
     location.reload();
 }
 
-// ===== ЗАГРУЗКА НАВЫКОВ =====
 async function loadSkills() {
     try {
         const res = await fetch('/api/v1/skills');
@@ -220,7 +217,6 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
     }
 });
 
-// ===== ДОБАВЛЕНИЕ НАВЫКА (ДВУХЭТАПНАЯ ФОРМА) =====
 document.getElementById('skillForm')?.addEventListener('submit', (e) => {
     e.preventDefault();
     if (!sessionStorage.getItem('is_auth')) return alert("Войдите в систему");
@@ -260,8 +256,8 @@ function showPreview() {
     
     const preview = `
         <strong>${pendingSkill.username}</strong>: ${pendingSkill.skill} ↔ ${pendingSkill.exchange}
-        ${desc ? `<br><small>${desc}</small>` : ''}
-        ${contactText}
+        ${contactText ? `<br><small>${contactText}</small>` : ''}
+        ${desc}
         <br><small style="color:#666;">[Предварительный просмотр]</small>
     `;
     
