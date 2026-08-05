@@ -9,15 +9,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetDescriptionByID вывод доп. описания по ID.
-// @Summary      Вывод описания по ID
-// @Description  Выводит описание по персональному ID
+// GetDescriptionByID вывод доп. описания по Skill ID.
+// @Summary      Вывод описания по skill_id
+// @Description  Выводит описание по персональному skill_id
 // @Tags         skills
 // @Accept       json
 // @Produce      json
-// @Param        id   path      string  true  "Вывод описания по id"
+// @Param        id   path      string  true  "Вывод описания по skill_id"
 // @Success      200  {object}  nil     "Вывод пользователя"
-// @Failure      400  {object}  map[string]interface{} "Неверный формат ID"
+// @Failure      400  {object}  map[string]interface{} "Неверный формат Skill ID"
 // @Failure      404  {object}  map[string]interface{} "Пользователь не найден"
 // @Router       /skills/desc/{id} [get]
 func (h *Handler) GetDescriptionByID(c *gin.Context) {
