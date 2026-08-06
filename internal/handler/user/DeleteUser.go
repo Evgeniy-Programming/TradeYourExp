@@ -13,10 +13,10 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param        id   path      string  true  "UUID пользователя"
-// @Success      204  {object}  nil     "Пользователь успешно удален"
-// @Failure      400  {object}  map[string]interface{} "Неверный формат ID"
-// @Failure      404  {object}  map[string]interface{} "Пользователь не найден"
-// @Router       /api/v1/users/{id} [delete]
+// @Success      200  {object}  nil     "Пользователь успешно удален"
+// @Failure      404  {object}  map[string]interface{} "Неверный формат ID"
+// @Failure      500  {object}  map[string]interface{} "Пользователь не найден"
+// @Router       /users/{id} [delete]
 func (h *Handler) DeleteUser(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {

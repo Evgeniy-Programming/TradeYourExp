@@ -17,7 +17,7 @@ import (
 
 // @title           Swagger Example API
 // @version         1.0
-// @description      Это сервер для управления пользователями.
+// @description     Trade Your Exp.
 // @termsOfService  http://swagger.io/terms/
 
 // @contact.name   API Support
@@ -72,6 +72,10 @@ func main() {
 		v1.GET("/skills", h.Skills.GetSkills)
 		v1.POST("/skills", h.Skills.AddSkill)
 		v1.DELETE("/skills/:id", h.Skills.DeleteSkill)
+		v1.GET("/skills/desc/:id", h.Skills.GetDescriptionByID)
+		v1.GET("skills/desc", h.Skills.GetAllDescriptions)
+		v1.POST("skills/desc", h.Skills.CreateDescription)
+		v1.POST("skills/with-desc", h.Skills.CreateSkillWithDesc)
 	}
 
 	log.Printf("Starting server on :8080")

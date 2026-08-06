@@ -16,7 +16,7 @@ import (
 // @Success      204  {object}  nil     "Пользователь успешно вошел"
 // @Failure      400  {object}  map[string]interface{} "Неверный формат данных"
 // @Failure      404  {object}  map[string]interface{} "Пользователь не найден"
-// @Router       /api/v1/login [post]
+// @Router       /login [post]
 func (h *Handler) Login(c *gin.Context) {
 	var inp struct {
 		Email    string `json:"email"`

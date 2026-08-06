@@ -1,81 +1,15 @@
-<!-- <!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trade your exp</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <div class="sidebar">
-            <h2>Авторизация</h2>
-            <form id="loginForm">
-                <input type="email" id="loginEmail" placeholder="Email" required>
-                <input type="password" id="loginPassword" placeholder="Пароль" required>
-                <button type="submit">Войти</button>
-            </form>
-            <h2>Создать аккаунт</h2>
-            <form id="registerForm">
-                <input type="text" id="username" placeholder="Имя пользователя" required>
-                <input type="email" id="registerEmail" placeholder="Email" required>
-                <input type="password" id="registerPassword" placeholder="Пароль" required>
-                <input type="text" id="firstName" placeholder="Имя (по желанию)">
-                <input type="text" id="lastName" placeholder="Фамилия (по желанию)">
-                <input type="text" id="socialLink" placeholder="Ссылка на соц. сеть (по желанию)">
-                <button type="submit">Создать аккаунт</button>
-            </form>
-            <div id="profileSection" style="display: none;">
-                <form id="profileForm">
-                    <h2>Профиль</h2>
-                    <input type="file" id="avatar" placeholder="Загрузить аватар" accept="image/*">
-                    <input type="text" id="newUsername" placeholder="Новое имя пользователя" required>
-                    <input type="email" id="newEmail" placeholder="Новая почта" required>
-                    <input type="password" id="newPassword" placeholder="Новый пароль">
-                    <button type="submit">Сохранить изменения</button>
-                    <button type="button" id="toggleThemeButton">Сменить тему</button> 
-                </form>
-            </div>
-            <h2>Чаты</h2>
-            <ul id="chatList"></ul>
-        </div>
-        <div class="main-content">
-            <div class="logo">
-                <img src="https://imgur.com/DXdOPij.png" alt="Логотип" />
-                <p>Trade your exp!</p>
-            </div>
-            <h1>Обмен навыками</h1>
-            <form id="skillForm">
-                <input type="text" id="skill" placeholder="Ваш навык, чем вы готовы поделиться (например, уроки игры на гитаре)" required>
-                <input type="text" id="exchange" placeholder="Что вы хотите получить (например, занятия по программированию)" required>
-                <button type="submit">Добавить предложение</button>
-            </form>
-            <h2>Предложения:</h2>
-            <ul id="skillList"></ul>
-        </div>
-    </div>
-    <div id="chat" class="chat" style="display: none;">
-        <button id="closeChat">✖</button>
-        <h3>Чат с пользователем</h3>
-        <div id="chatMessages"></div>
-        <input type="text" id="chatInput" placeholder="Ваше сообщение...">
-        <button id="sendMessage">Отправить</button>
-    </div>
-    <script src="script.js"></script>
-</body>
-</html> -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trade your exp / {{ .Title }} </title>
+    <title>Trade your exp</title>
     <link rel="stylesheet" href="func/styles.css">
 </head>
 <body>
     <div class="container">
         <div class="sidebar">
-        <div id="guest-zone">
+            <div id="guest-zone">
                 <h2>Авторизация</h2>
                 <form id="loginForm">
                     <input type="email" id="loginEmail" placeholder="Email" required>
@@ -113,19 +47,59 @@
         </div>
         <div class="main-content">
             <div class="logo">
-                <img src="https://imgur.com/DXdOPij.png" alt="Логотип" />
-                <p>Trade your exp!</p>
+                <img src="https://s6.iimage.su/s/05/gSYcLkIxHOGvEFgEt80VzGSzKsEjrPsK9sKepth9I.jpg" alt="Логотип" />
             </div>
             <h1>Обмен навыками</h1>
             <form id="skillForm">
-                <input type="text" id="skill" placeholder="Ваш навык, чем вы готовы поделиться (например, уроки игры на гитаре)" required>
-                <input type="text" id="exchange" placeholder="Что вы хотите получить (например, занятия по программированию)" required>
+                <input type="text" id="skill" placeholder="Ваш навык, чем вы готовы поделиться" required>
+                <input type="text" id="exchange" placeholder="Что вы хотите получить взамен" required>
                 <button type="submit">Добавить предложение</button>
             </form>
             <h2>Предложения:</h2>
             <ul id="skillList"></ul>
         </div>
     </div>
+
+    <!-- 🔹 Модальное окно: детальная форма -->
+    <div id="detailModal" class="modal" style="display:none;">
+        <div class="modal-content modal-large">
+            <span class="modal-close" onclick="closeDetailModal()">&times;</span>
+            <h3>Дополнительная информация</h3>
+            
+            <label>Полная информация</label>
+            <textarea id="detailDescription" class="resizable-textarea" 
+                      placeholder="Расскажите подробнее о вашем предложении..."></textarea>
+            
+            <label>Способ связи</label>
+            <select id="contactType" onchange="toggleContactField()">
+                <option value="site">На сайте</option>
+                <option value="telegram">Телеграм</option>
+                <option value="vk">Вконтакте</option>
+                <option value="wechat">WeChat</option>
+            </select>
+            
+            <div id="contactValueContainer" style="display:none; margin-top:10px;">
+                <input type="text" id="contactValue" placeholder="Введите ваш контакт">
+            </div>
+            
+            <div style="margin-top:20px; text-align:right;">
+                <button type="button" onclick="showPreview()" style="background:#17a2b8;">Preview</button>
+                <button type="button" onclick="publishSkill()" style="background:#28a745; margin-left:10px;">Опубликовать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔹 Модальное окно: превью -->
+    <div id="previewModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closePreviewModal()">&times;</span>
+            <h4>Как будет выглядеть ваш запрос</h4>
+            <div id="previewContent" class="preview-card"></div>
+            <button onclick="closePreviewModal()" style="margin-top:15px;">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- 🔹 Чат (существующий) -->
     <div id="chat" class="chat" style="display: none;">
         <div class="chat-header">
             <span id="optionsMenu" class="options-menu">≡</span>
@@ -141,6 +115,7 @@
         <input type="text" id="chatInput" placeholder="Ваше сообщение...">
         <button id="sendMessage">Отправить ➤</button>
     </div>
+
     <script src="func/script.js"></script>
 </body>
 </html>
