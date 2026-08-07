@@ -10,8 +10,8 @@ import (
 func (r *PgRepo) SaveSkill(ctx context.Context, s *models.Skill) (int, error) {
 	var id int
 	err := r.db.QueryRowContext(ctx,
-		`INSERT INTO skills (username, skill, exchange) VALUES ($1, $2, $3) RETURNING id`,
-		s.Username, s.Skill, s.Exchange).Scan(&id)
+		`INSERT INTO skills (username, skill, exchange, category) VALUES ($1, $2, $3, $4) RETURNING id`,
+		s.Username, s.Skill, s.Exchange, s.Category).Scan(&id)
 	return id, err
 }
 
@@ -29,7 +29,7 @@ func (r *PgRepo) DeleteSkill(id string) error {
 }
 
 func (r *PgRepo) FetchSkills() ([]models.Skill, error) {
-	rows, err := r.db.Query("SELECT id, username, skill, exchange FROM skills ORDER BY id DESC")
+	rows, err := r.db.Query("SELECT id, username, skill, exchange, category FROM skills ORDER BY id DESC")
 	if err != nil {
 		return nil, err
 	}
@@ -38,11 +38,30 @@ func (r *PgRepo) FetchSkills() ([]models.Skill, error) {
 	var res []models.Skill
 	for rows.Next() {
 		var s models.Skill
-		if err := rows.Scan(&s.ID, &s.Username, &s.Skill, &s.Exchange); err == nil {
+		if err := rows.Scan(&s.ID, &s.Username, &s.Skill, &s.Exchange, &s.Category); err == nil {
 			res = append(res, s)
 		}
 	}
 	return res, nil
+}
+
+func (r *PgRepo) GetSkillByCategory(ctx context.Context, category string) (*models.Skill, error) {
+	var skill models.Skill
+	err := r.db.QueryRowContext(ctx, `
+        SELECT 
+            id, username, skill, exchange, category
+        FROM skills
+        WHERE category = $1
+		ORDER BY id DESC
+    `, category).Scan(
+		&skill.ID, &skill.Username, &skill.Skill, &skill.Category,
+		&skill.Category,
+	)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	return &skill, err
 }
 
 func (r *PgRepo) GetDescriptionBySkillID(ctx context.Context, skillID int) (*models.SkillDescription, error) {

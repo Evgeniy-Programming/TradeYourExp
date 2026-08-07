@@ -47,7 +47,7 @@ func main() {
 	db.RunMigrations(repo.GetDB(), "trade_db")
 
 	// Обработчики
-	h := handler.NewHMainHandler(repo)
+	h := handler.NewHMainHandler(*repo)
 
 	app := gin.Default()
 
@@ -70,8 +70,9 @@ func main() {
 		v1.PUT("/users/:id", h.User.UpdateUser)
 		v1.DELETE("/users/:id", h.User.DeleteUser)
 		v1.GET("/skills", h.Skills.GetSkills)
-		v1.POST("/skills", h.Skills.AddSkill)
+		v1.POST("/skills", h.Skills.CreateSkill)
 		v1.DELETE("/skills/:id", h.Skills.DeleteSkill)
+		v1.GET("/skills/:category", h.Skills.GetSkillByCategory)
 		v1.GET("/skills/desc/:id", h.Skills.GetDescriptionByID)
 		v1.GET("skills/desc", h.Skills.GetAllDescriptions)
 		v1.POST("skills/desc", h.Skills.CreateDescription)

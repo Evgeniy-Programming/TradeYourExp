@@ -21,6 +21,7 @@ type Skill struct {
 	Username string `json:"username"`
 	Skill    string `json:"skill"`
 	Exchange string `json:"exchange"`
+	Category string `json:"category"`
 }
 
 type SkillDescription struct {
