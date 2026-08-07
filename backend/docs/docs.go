@@ -149,7 +149,11 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
+<<<<<<< HEAD
                 "description": "Создание нового запроса с описанием",
+=======
+                "description": "Создание нового проекта строительства",
+>>>>>>> 061332e (create new request GetSkillByCategory and update swagger docs)
                 "consumes": [
                     "application/json"
                 ],
@@ -159,7 +163,11 @@ const docTemplate = `{
                 "tags": [
                     "skills"
                 ],
+<<<<<<< HEAD
                 "summary": "Добавление запроса с дополнительным описанием",
+=======
+                "summary": "Добавление проекта строительства",
+>>>>>>> 061332e (create new request GetSkillByCategory and update swagger docs)
                 "parameters": [
                     {
                         "description": "Данные запроса навыка",
@@ -299,7 +307,11 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
+<<<<<<< HEAD
                     "200": {
+=======
+                    "204": {
+>>>>>>> 061332e (create new request GetSkillByCategory and update swagger docs)
                         "description": "Вывод пользовательских скиллов"
                     },
                     "400": {

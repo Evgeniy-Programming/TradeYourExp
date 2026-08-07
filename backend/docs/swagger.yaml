@@ -129,7 +129,11 @@ paths:
     post:
       consumes:
       - application/json
+<<<<<<< HEAD
       description: Создание нового запроса с описанием
+=======
+      description: Создание нового проекта строительства
+>>>>>>> 061332e (create new request GetSkillByCategory and update swagger docs)
       parameters:
       - description: Данные запроса навыка
         in: body
@@ -159,7 +163,11 @@ paths:
             type: object
       security:
       - ApiKeyAuth: []
+<<<<<<< HEAD
       summary: Добавление запроса с дополнительным описанием
+=======
+      summary: Добавление проекта строительства
+>>>>>>> 061332e (create new request GetSkillByCategory and update swagger docs)
       tags:
       - skills
   /skills/{category}:
@@ -176,7 +184,11 @@ paths:
       produces:
       - application/json
       responses:
+<<<<<<< HEAD
         "200":
+=======
+        "204":
+>>>>>>> 061332e (create new request GetSkillByCategory and update swagger docs)
           description: Вывод пользовательских скиллов
         "400":
           description: Неверный формат
