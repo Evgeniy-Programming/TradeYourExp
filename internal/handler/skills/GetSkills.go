@@ -1,7 +1,9 @@
 package skills
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,7 +14,7 @@ import (
 // @Tags         skills
 // @Accept       json
 // @Produce      json
-// @Success      204  {object}  nil     "Вывод пользовательских скиллов"
+// @Success      200  {object}  nil     "Вывод пользовательских скиллов"
 // @Failure      400  {object}  map[string]interface{} "Неверный формат"
 // @Failure      404  {object}  map[string]interface{} "Пользователь не найден"
 // @Router       /skills [get]
@@ -32,13 +34,13 @@ func (h *Handler) GetSkills(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        category   path      string  true  "Категория скилла"
-// @Success      204  {object}  nil     "Вывод пользовательских скиллов"
+// @Success      200  {object}  nil     "Вывод пользовательских скиллов"
 // @Failure      400  {object}  map[string]interface{} "Неверный формат"
 // @Failure      404  {object}  map[string]interface{} "Категория не найдена"
 // @Router       /skills/{category} [get]
 func (h *Handler) GetSkillByCategory(c *gin.Context) {
 	category := c.Param("category")
-	if category == "" {
+	if strings.TrimSpace(category) == "" {
 		skills, err := h.repo.FetchSkills()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
@@ -48,16 +50,17 @@ func (h *Handler) GetSkillByCategory(c *gin.Context) {
 		return
 	}
 
-	skill, err := h.repo.GetSkillByCategory(c.Request.Context(), category)
+	skills, err := h.repo.GetSkillByCategory(c.Request.Context(), strings.TrimSpace(category))
 	if err != nil {
+		fmt.Println("Ошибка - ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 		return
 	}
 
-	if skill == nil {
+	if skills == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "category not found"})
 		return
 	}
 
-	c.JSON(http.StatusOK, skill)
+	c.JSON(http.StatusOK, skills)
 }

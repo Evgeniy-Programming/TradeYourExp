@@ -124,7 +124,7 @@ const docTemplate = `{
                 ],
                 "summary": "Вывести все скиллы",
                 "responses": {
-                    "204": {
+                    "200": {
                         "description": "Вывод пользовательских скиллов"
                     },
                     "400": {
@@ -149,7 +149,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Создание нового проекта строительства",
+                "description": "Создание нового запроса с описанием",
                 "consumes": [
                     "application/json"
                 ],
@@ -159,7 +159,7 @@ const docTemplate = `{
                 "tags": [
                     "skills"
                 ],
-                "summary": "Добавление проекта строительства",
+                "summary": "Добавление запроса с дополнительным описанием",
                 "parameters": [
                     {
                         "description": "Данные запроса навыка",
@@ -299,7 +299,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
+                    "200": {
                         "description": "Вывод пользовательских скиллов"
                     },
                     "400": {

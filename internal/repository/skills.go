@@ -45,23 +45,34 @@ func (r *PgRepo) FetchSkills() ([]models.Skill, error) {
 	return res, nil
 }
 
-func (r *PgRepo) GetSkillByCategory(ctx context.Context, category string) (*models.Skill, error) {
-	var skill models.Skill
-	err := r.db.QueryRowContext(ctx, `
+func (r *PgRepo) GetSkillByCategory(ctx context.Context, category string) (*[]models.Skill, error) {
+	var skills []models.Skill
+	rows, err := r.db.QueryContext(ctx, `
         SELECT 
             id, username, skill, exchange, category
         FROM skills
         WHERE category = $1
 		ORDER BY id DESC
-    `, category).Scan(
-		&skill.ID, &skill.Username, &skill.Skill, &skill.Category,
-		&skill.Category,
-	)
+	`, category)
 
-	if err == sql.ErrNoRows {
-		return nil, nil
+	if err != nil {
+		return nil, err
 	}
-	return &skill, err
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var skill models.Skill
+		if err := rows.Scan(&skill.ID, &skill.Username, &skill.Skill, &skill.Exchange, &skill.Category); err != nil {
+			return nil, err
+		}
+		skills = append(skills, skill)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return &skills, rows.Err()
 }
 
 func (r *PgRepo) GetDescriptionBySkillID(ctx context.Context, skillID int) (*models.SkillDescription, error) {
