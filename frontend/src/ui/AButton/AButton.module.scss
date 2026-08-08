@@ -1,0 +1,23 @@
+.aButton {
+  padding: 5px 10px;
+  background-color: var(--color-element);
+  text-decoration: none;
+  color: #fff;
+  border-radius: 5px;
+  display: inline-flex;
+  justify-content: center;
+
+  &:hover {
+    background-color: var(--color-element-hover);
+  }
+
+  &_danger {
+    background-color: var(--color-danger);
+    color: #fff;
+
+    &:hover {
+      background-color: var(--color-danger-hover);
+      color: #fff;
+    }
+  }
+}

@@ -1,0 +1,37 @@
+.button {
+  padding: 5px 10px;
+  background-color: var(--color-element);
+  text-decoration: none;
+  color: #fff;
+  outline: none;
+  border-radius: 5px;
+  border: none;
+  display: inline-flex;
+  justify-content: center;
+
+  &:hover {
+    background-color: var(--color-element-hover);
+  }
+
+  &_danger {
+    background-color: var(--color-danger);
+    color: #fff;
+
+    &:hover {
+      background-color: var(--color-danger-hover);
+      color: #fff;
+    }
+  }
+
+  &_circle {
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+  }
+
+  &_disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}

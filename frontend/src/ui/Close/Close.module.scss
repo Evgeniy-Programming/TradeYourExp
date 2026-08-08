@@ -1,0 +1,17 @@
+.close {
+  outline: none;
+  border: none;
+  border-radius: 50%;
+  padding: 2px;
+  background-color: transparent;
+  height: 25px;
+  width: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--color-line);
+  }
+}

@@ -1,0 +1,13 @@
+.textButton {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-text-link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: all var(--transition-duration);
+}
+
+.textButton:hover {
+  color: var(--color-text-link-hover);
+}
