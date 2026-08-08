@@ -1,12 +1,13 @@
 import { createRoot } from 'react-dom/client';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { MainPage } from './pages/MainPage/MainPage';
 import './assets/styles/normalize.css';
 import './assets/styles/initialize.css';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <h1>Home</h1>,
+    element: <MainPage />,
   },
 ]);
 
