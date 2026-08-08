@@ -61,8 +61,8 @@ input[type='search']::-webkit-search-results-decoration {
 }
 
 html {
-  height: 100%;
   scrollbar-gutter: stable;
+  height: 100%;
 }
 
 html,
@@ -97,9 +97,9 @@ svg * {
   *,
   ::before,
   ::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 }
