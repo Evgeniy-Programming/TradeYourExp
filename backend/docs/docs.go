@@ -149,15 +149,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "description": "Создание нового запроса с описанием",
-=======
-                "description": "Создание нового проекта строительства",
->>>>>>> 061332e (create new request GetSkillByCategory and update swagger docs)
-=======
-                "description": "Создание нового запроса с описанием",
->>>>>>> 72eee04 (refact request GetSkillByCategpry() and update Swagger docs)
                 "consumes": [
                     "application/json"
                 ],
@@ -167,15 +159,7 @@ const docTemplate = `{
                 "tags": [
                     "skills"
                 ],
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "summary": "Добавление запроса с дополнительным описанием",
-=======
-                "summary": "Добавление проекта строительства",
->>>>>>> 061332e (create new request GetSkillByCategory and update swagger docs)
-=======
-                "summary": "Добавление запроса с дополнительным описанием",
->>>>>>> 72eee04 (refact request GetSkillByCategpry() and update Swagger docs)
                 "parameters": [
                     {
                         "description": "Данные запроса навыка",
@@ -315,15 +299,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-<<<<<<< HEAD
-<<<<<<< HEAD
                     "200": {
-=======
-                    "204": {
->>>>>>> 061332e (create new request GetSkillByCategory and update swagger docs)
-=======
-                    "200": {
->>>>>>> 72eee04 (refact request GetSkillByCategpry() and update Swagger docs)
                         "description": "Вывод пользовательских скиллов"
                     },
                     "400": {
