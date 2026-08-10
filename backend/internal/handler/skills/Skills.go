@@ -5,9 +5,9 @@ import (
 )
 
 type Handler struct {
-	repo repository.Storage
+	repo repository.PgRepo
 }
 
-func NewSkillHandler(repo repository.Storage) *Handler {
+func NewSkillHandler(repo repository.PgRepo) *Handler {
 	return &Handler{repo: repo}
 }

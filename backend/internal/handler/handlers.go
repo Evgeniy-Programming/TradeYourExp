@@ -10,7 +10,12 @@ import (
 
 type SkillsHandler interface {
 	GetSkills(c *gin.Context)
-	AddSkill(c *gin.Context)
+	CreateSkill(c *gin.Context)
+	CreateDescription(c *gin.Context)
+	CreateSkillWithDesc(c *gin.Context)
+	GetDescriptionByID(c *gin.Context)
+	GetAllDescriptions(c *gin.Context)
+	GetSkillByCategory(c *gin.Context)
 	DeleteSkill(c *gin.Context)
 }
 
@@ -26,7 +31,7 @@ type Handler struct {
 	Skills *skills.Handler
 }
 
-func NewHMainHandler(s repository.Storage) *Handler {
+func NewHMainHandler(s repository.PgRepo) *Handler {
 	return &Handler{
 		User:   user.NewUserHandler(s),
 		Skills: skills.NewSkillHandler(s),

@@ -124,7 +124,7 @@ const docTemplate = `{
                 ],
                 "summary": "Вывести все скиллы",
                 "responses": {
-                    "204": {
+                    "200": {
                         "description": "Вывод пользовательских скиллов"
                     },
                     "400": {
@@ -136,6 +136,61 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Пользователь не найден",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Создание нового запроса с описанием",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "skills"
+                ],
+                "summary": "Добавление запроса с дополнительным описанием",
+                "parameters": [
+                    {
+                        "description": "Данные запроса навыка",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Skill"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Запрос навыка успешно создан"
+                    },
+                    "400": {
+                        "description": "Неверный формат запроса",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "409": {
+                        "description": "Конфликт при создании запроса",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -180,7 +235,7 @@ const docTemplate = `{
         },
         "/skills/desc/{id}": {
             "get": {
-                "description": "Выводит описание по персональному ID",
+                "description": "Выводит описание по персональному skill_id",
                 "consumes": [
                     "application/json"
                 ],
@@ -190,11 +245,11 @@ const docTemplate = `{
                 "tags": [
                     "skills"
                 ],
-                "summary": "Вывод описания по ID",
+                "summary": "Вывод описания по skill_id",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Вывод описания по id",
+                        "description": "Вывод описания по skill_id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -205,7 +260,7 @@ const docTemplate = `{
                         "description": "Вывод пользователя"
                     },
                     "400": {
-                        "description": "Неверный формат ID",
+                        "description": "Неверный формат Skill ID",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -213,6 +268,49 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Пользователь не найден",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/skills/{category}": {
+            "get": {
+                "description": "Вывод полного списка скиллов по категории.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "skills"
+                ],
+                "summary": "Вывести все скиллы по категории.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Категория скилла",
+                        "name": "category",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Вывод пользовательских скиллов"
+                    },
+                    "400": {
+                        "description": "Неверный формат",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Категория не найдена",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -359,6 +457,26 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.Skill": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "exchange": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "skill": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "models.User": {
             "type": "object",
             "properties": {

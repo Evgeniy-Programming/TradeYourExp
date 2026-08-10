@@ -1,5 +1,18 @@
 basePath: /api/v1
 definitions:
+  models.Skill:
+    properties:
+      category:
+        type: string
+      exchange:
+        type: string
+      id:
+        type: integer
+      skill:
+        type: string
+      username:
+        type: string
+    type: object
   models.User:
     properties:
       email:
@@ -98,7 +111,7 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
+        "200":
           description: Вывод пользовательских скиллов
         "400":
           description: Неверный формат
@@ -111,6 +124,71 @@ paths:
             additionalProperties: true
             type: object
       summary: Вывести все скиллы
+      tags:
+      - skills
+    post:
+      consumes:
+      - application/json
+      description: Создание нового запроса с описанием
+      parameters:
+      - description: Данные запроса навыка
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Skill'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Запрос навыка успешно создан
+        "400":
+          description: Неверный формат запроса
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Конфликт при создании запроса
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Добавление запроса с дополнительным описанием
+      tags:
+      - skills
+  /skills/{category}:
+    get:
+      consumes:
+      - application/json
+      description: Вывод полного списка скиллов по категории.
+      parameters:
+      - description: Категория скилла
+        in: path
+        name: category
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Вывод пользовательских скиллов
+        "400":
+          description: Неверный формат
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Категория не найдена
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Вывести все скиллы по категории.
       tags:
       - skills
   /skills/{id}:
@@ -169,9 +247,9 @@ paths:
     get:
       consumes:
       - application/json
-      description: Выводит описание по персональному ID
+      description: Выводит описание по персональному skill_id
       parameters:
-      - description: Вывод описания по id
+      - description: Вывод описания по skill_id
         in: path
         name: id
         required: true
@@ -182,7 +260,7 @@ paths:
         "200":
           description: Вывод пользователя
         "400":
-          description: Неверный формат ID
+          description: Неверный формат Skill ID
           schema:
             additionalProperties: true
             type: object
@@ -191,7 +269,7 @@ paths:
           schema:
             additionalProperties: true
             type: object
-      summary: Вывод описания по ID
+      summary: Вывод описания по skill_id
       tags:
       - skills
   /users/{id}:
