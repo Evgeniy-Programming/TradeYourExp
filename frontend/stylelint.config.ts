@@ -16,5 +16,6 @@ export default {
     'color-hex-length': 'long',
     'value-keyword-case': 'lower',
     'selector-max-id': 1,
+    'selector-class-pattern': null,
   },
 };

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 
-import style from './Input.module.scss';
+import style from './Input.module.css';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   isMaxWidth?: boolean;

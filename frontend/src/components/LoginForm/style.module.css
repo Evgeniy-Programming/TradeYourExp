@@ -1,0 +1,17 @@
+.title {
+  margin: 10px 0;
+  font-size: var(--font-size-accent);
+  text-align: center;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

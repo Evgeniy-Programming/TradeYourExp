@@ -139,14 +139,6 @@ a {
   transform: translateX(-50%);
 }
 
-.svg-hover:hover {
-  &,
-  & g,
-  & path {
-    stroke-width: 2;
-  }
-}
-
 .disabled {
   pointer-events: none;
   user-select: none;
