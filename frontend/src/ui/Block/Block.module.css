@@ -1,0 +1,5 @@
+.block {
+  padding: 20px;
+  border-radius: var(--border-radius-large);
+  background-color: var(--color-block);
+}
