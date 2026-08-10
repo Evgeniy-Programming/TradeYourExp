@@ -1,7 +1,7 @@
 ## Delete User
 
 curl -X DELETE http://localhost:8080/api/v1/users/d4d22419-04dd-4662-ad21-e88180cc451d \
-  -H "Content-Type: application/json"
+  -H "Content-Type: application/json" 
 
 ## Update User
 
