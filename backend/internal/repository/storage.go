@@ -18,6 +18,7 @@ type Storage interface {
 	DeleteSkill(id string) error
 	FetchSkills() ([]models.Skill, error)
 	GetSkilllByCategory(ctx context.Context, category string) (*[]models.Skill, error)
+	GetSkillByFilters(ctx context.Context, search string) (*[]models.SkillFull, error)
 	GetAllDescriptions(ctx context.Context) ([]models.SkillDescription, error)
 	GetDescriptionBySkillID(ctx context.Context, skillID int) (*models.SkillDescription, error)
 	UpsertDescription(ctx context.Context, skillID int, description, media string) error

@@ -276,6 +276,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/skills/filter/{search}": {
+            "get": {
+                "description": "Вывод полного списка скиллов по переданной строке.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "skills"
+                ],
+                "summary": "Вывести все скиллы по вхождению в ключевую строку.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ключевая строка поиска",
+                        "name": "search",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Вывод пользовательских скиллов"
+                    },
+                    "400": {
+                        "description": "Неверный формат",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Категория не найдена",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/skills/{category}": {
             "get": {
                 "description": "Вывод полного списка скиллов по категории.",

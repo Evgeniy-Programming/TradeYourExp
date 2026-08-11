@@ -1,7 +1,6 @@
 package skills
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -52,13 +51,51 @@ func (h *Handler) GetSkillByCategory(c *gin.Context) {
 
 	skills, err := h.repo.GetSkillByCategory(c.Request.Context(), strings.TrimSpace(category))
 	if err != nil {
-		fmt.Println("Ошибка - ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 		return
 	}
 
 	if skills == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "category not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, skills)
+}
+
+// GetSkillByFilters вывод списка скиллов по ключевой строке.
+// @Summary      Вывести все скиллы по вхождению в ключевую строку.
+// @Description  Вывод полного списка скиллов по переданной строке.
+// @Tags         skills
+// @Accept       json
+// @Produce      json
+// @Param        search   path      string  true  "Ключевая строка поиска"
+// @Success      200  {object}  nil     "Вывод пользовательских скиллов"
+// @Failure      400  {object}  map[string]interface{} "Неверный формат"
+// @Failure      404  {object}  map[string]interface{} "Категория не найдена"
+// @Router       /skills/filter/{search} [get]
+func (h *Handler) GetSkillByFilters(c *gin.Context) {
+	search := c.Param("search")
+
+	if strings.TrimSpace(search) == "" {
+		// Если строка пустая — возвращаем все записи
+		skills, err := h.repo.FetchSkills()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
+			return
+		}
+		c.JSON(http.StatusOK, skills)
+		return
+	}
+
+	skills, err := h.repo.GetSkillByFilters(c.Request.Context(), strings.TrimSpace(search))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
+		return
+	}
+
+	if skills == nil || len(*skills) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "parametres for search is not found"})
 		return
 	}
 

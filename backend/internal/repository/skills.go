@@ -4,6 +4,7 @@ import (
 	"Trade-y-exp/internal/models"
 	"context"
 	"database/sql"
+	"strings"
 )
 
 // SaveSkill — создаёт навык и возвращает его ID
@@ -73,6 +74,57 @@ func (r *PgRepo) GetSkillByCategory(ctx context.Context, category string) (*[]mo
 		return nil, err
 	}
 	return &skills, rows.Err()
+}
+
+func (r *PgRepo) GetSkillByFilters(ctx context.Context, search string) (*[]models.SkillFull, error) {
+	var records []models.SkillFull
+
+	search = "%" + strings.ReplaceAll(strings.ReplaceAll(search, "%", "\\%"), "_", "\\_") + "%"
+
+	rows, err := r.db.QueryContext(ctx, `
+        SELECT 
+            sd.id, sd.description, sd.media, sd.created_at,
+            s.skill, s.exchange, s.username, s.category
+        FROM skill_descriptions sd
+        JOIN skills s ON s.id = sd.skill_id
+        WHERE 
+            LOWER(
+                COALESCE(sd.description, '') || ' ' ||
+                COALESCE(s.skill, '') || ' ' ||
+                COALESCE(s.exchange, '') || ' ' ||
+                COALESCE(s.username, '') || ' ' ||
+				COALESCE(s.category, '')
+            ) LIKE LOWER($1)
+        ORDER BY sd.created_at DESC
+    `, search)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var record models.SkillFull
+		if err := rows.Scan(
+			&record.ID,
+			&record.Description,
+			&record.Media,
+			&record.CreatedAt,
+			&record.Skill,
+			&record.Exchange,
+			&record.Username,
+			&record.Category,
+		); err != nil {
+			return nil, err
+		}
+		records = append(records, record)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &records, nil
 }
 
 func (r *PgRepo) GetDescriptionBySkillID(ctx context.Context, skillID int) (*models.SkillDescription, error) {
