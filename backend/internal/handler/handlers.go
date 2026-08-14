@@ -16,6 +16,7 @@ type SkillsHandler interface {
 	GetDescriptionByID(c *gin.Context)
 	GetAllDescriptions(c *gin.Context)
 	GetSkillByCategory(c *gin.Context)
+	GetSkillByFilters(c *gin.Context)
 	DeleteSkill(c *gin.Context)
 }
 

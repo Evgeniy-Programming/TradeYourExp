@@ -73,6 +73,7 @@ func main() {
 		v1.POST("/skills", h.Skills.CreateSkill)
 		v1.DELETE("/skills/:id", h.Skills.DeleteSkill)
 		v1.GET("/skills/:category", h.Skills.GetSkillByCategory)
+		v1.GET("/skills/filter/:search", h.Skills.GetSkillByFilters)
 		v1.GET("/skills/desc/:id", h.Skills.GetDescriptionByID)
 		v1.GET("skills/desc", h.Skills.GetAllDescriptions)
 		v1.POST("skills/desc", h.Skills.CreateDescription)

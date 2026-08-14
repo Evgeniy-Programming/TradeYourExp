@@ -272,6 +272,35 @@ paths:
       summary: Вывод описания по skill_id
       tags:
       - skills
+  /skills/filter/{search}:
+    get:
+      consumes:
+      - application/json
+      description: Вывод полного списка скиллов по переданной строке.
+      parameters:
+      - description: Ключевая строка поиска
+        in: path
+        name: search
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Вывод пользовательских скиллов
+        "400":
+          description: Неверный формат
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Категория не найдена
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Вывести все скиллы по вхождению в ключевую строку.
+      tags:
+      - skills
   /users/{id}:
     delete:
       consumes:
