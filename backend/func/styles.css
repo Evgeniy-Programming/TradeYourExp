@@ -340,6 +340,12 @@ li:hover .button-container {
     font-size: 12px;
 }
 
+.skill-search-categories button.active {
+    background-color: #28a745;
+    color: white;
+    border: none;
+}
+
 .skill-search-categories-deny {
     background-color: transparent;
     border: 1px solid #28a745;
