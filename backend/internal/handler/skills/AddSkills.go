@@ -16,7 +16,7 @@ func (h *Handler) CreateSkill(c *gin.Context) {
 	}
 
 	// Исправлено: передаём контекст и игнорируем возвращаемый ID (он не нужен для простого добавления)
-	_, err := h.repo.SaveSkill(c.Request.Context(), &s)
+	_, err := h.repo.Skills.SaveSkill(c.Request.Context(), &s)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 		return
@@ -61,7 +61,7 @@ func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
 		Skill:    req.Skill,
 		Exchange: req.Exchange,
 	}
-	skillID, err := h.repo.SaveSkill(c.Request.Context(), skill)
+	skillID, err := h.repo.Skills.SaveSkill(c.Request.Context(), skill)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 		return
@@ -75,7 +75,7 @@ func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
 			media = fmt.Sprintf("Тип связи: %s, Имя: %s", req.ContactType, req.ContactValue)
 		}
 		if fullDesc != "" || media != "" {
-			if err := h.repo.UpsertDescription(c.Request.Context(), skillID, fullDesc, media); err != nil {
+			if err := h.repo.Skills.UpsertDescription(c.Request.Context(), skillID, fullDesc, media); err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 				return
 			}

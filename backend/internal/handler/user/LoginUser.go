@@ -27,7 +27,7 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
-	u, err := h.repo.GetByEmail(inp.Email)
+	u, err := h.repo.User.GetByEmail(inp.Email)
 	if err != nil || u.Password != inp.Password {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "wrong creds"})
 		return

@@ -23,7 +23,7 @@ func (h *Handler) CreateDescription(c *gin.Context) {
 		return
 	}
 
-	if err := h.repo.UpsertDescription(c.Request.Context(), req.SkillID, req.Description, req.Media); err != nil {
+	if err := h.repo.Skills.UpsertDescription(c.Request.Context(), req.SkillID, req.Description, req.Media); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 		return
 	}

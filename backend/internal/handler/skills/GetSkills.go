@@ -18,7 +18,7 @@ import (
 // @Failure      404  {object}  map[string]interface{} "Пользователь не найден"
 // @Router       /skills [get]
 func (h *Handler) GetSkills(c *gin.Context) {
-	list, err := h.repo.FetchSkills()
+	list, err := h.repo.Skills.GetAllSkills()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch"})
 		return
@@ -40,7 +40,7 @@ func (h *Handler) GetSkills(c *gin.Context) {
 func (h *Handler) GetSkillByCategory(c *gin.Context) {
 	category := c.Param("category")
 	if strings.TrimSpace(category) == "" {
-		skills, err := h.repo.FetchSkills()
+		skills, err := h.repo.Skills.GetAllSkills()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 			return
@@ -49,7 +49,7 @@ func (h *Handler) GetSkillByCategory(c *gin.Context) {
 		return
 	}
 
-	skills, err := h.repo.GetSkillByCategory(c.Request.Context(), strings.TrimSpace(category))
+	skills, err := h.repo.Skills.GetSkillByCategory(c.Request.Context(), strings.TrimSpace(category))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 		return
@@ -79,7 +79,7 @@ func (h *Handler) GetSkillByFilters(c *gin.Context) {
 
 	if strings.TrimSpace(search) == "" {
 		// Если строка пустая — возвращаем все записи
-		skills, err := h.repo.FetchSkills()
+		skills, err := h.repo.Skills.GetAllSkills()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 			return
@@ -88,7 +88,7 @@ func (h *Handler) GetSkillByFilters(c *gin.Context) {
 		return
 	}
 
-	skills, err := h.repo.GetSkillByFilters(c.Request.Context(), strings.TrimSpace(search))
+	skills, err := h.repo.Skills.GetSkillByFilters(c.Request.Context(), strings.TrimSpace(search))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 		return

@@ -1,4 +1,4 @@
-package repository
+package skills
 
 import (
 	"Trade-y-exp/internal/models"
@@ -7,29 +7,7 @@ import (
 	"strings"
 )
 
-// SaveSkill — создаёт навык и возвращает его ID
-func (r *PgRepo) SaveSkill(ctx context.Context, s *models.Skill) (int, error) {
-	var id int
-	err := r.db.QueryRowContext(ctx,
-		`INSERT INTO skills (username, skill, exchange, category) VALUES ($1, $2, $3, $4) RETURNING id`,
-		s.Username, s.Skill, s.Exchange, s.Category).Scan(&id)
-	return id, err
-}
-
-func (r *PgRepo) DeleteSkill(id string) error {
-	q := `DELETE FROM skills WHERE id=$1`
-	result, err := r.db.Exec(q, id)
-	if err != nil {
-		return err
-	}
-	rows, _ := result.RowsAffected()
-	if rows == 0 {
-		return sql.ErrNoRows
-	}
-	return nil
-}
-
-func (r *PgRepo) FetchSkills() ([]models.Skill, error) {
+func (r *Repository) GetAllSkills() ([]models.Skill, error) {
 	rows, err := r.db.Query("SELECT id, username, skill, exchange, category FROM skills ORDER BY id DESC")
 	if err != nil {
 		return nil, err
@@ -45,8 +23,7 @@ func (r *PgRepo) FetchSkills() ([]models.Skill, error) {
 	}
 	return res, nil
 }
-
-func (r *PgRepo) GetSkillByCategory(ctx context.Context, category string) (*[]models.Skill, error) {
+func (r *Repository) GetSkillByCategory(ctx context.Context, category string) (*[]models.Skill, error) {
 	var skills []models.Skill
 	rows, err := r.db.QueryContext(ctx, `
         SELECT 
@@ -76,7 +53,7 @@ func (r *PgRepo) GetSkillByCategory(ctx context.Context, category string) (*[]mo
 	return &skills, rows.Err()
 }
 
-func (r *PgRepo) GetSkillByFilters(ctx context.Context, search string) (*[]models.SkillFull, error) {
+func (r *Repository) GetSkillByFilters(ctx context.Context, search string) (*[]models.SkillFull, error) {
 	var records []models.SkillFull
 
 	search = "%" + strings.ReplaceAll(strings.ReplaceAll(search, "%", "\\%"), "_", "\\_") + "%"
@@ -127,7 +104,7 @@ func (r *PgRepo) GetSkillByFilters(ctx context.Context, search string) (*[]model
 	return &records, nil
 }
 
-func (r *PgRepo) GetDescriptionBySkillID(ctx context.Context, skillID int) (*models.SkillDescription, error) {
+func (r *Repository) GetDescriptionBySkillID(ctx context.Context, skillID int) (*models.SkillDescription, error) {
 	var desc models.SkillDescription
 	err := r.db.QueryRowContext(ctx, `
         SELECT 
@@ -147,7 +124,7 @@ func (r *PgRepo) GetDescriptionBySkillID(ctx context.Context, skillID int) (*mod
 	return &desc, err
 }
 
-func (r *PgRepo) GetAllDescriptions(ctx context.Context) ([]models.SkillDescription, error) {
+func (r *Repository) GetAllDescriptions(ctx context.Context) ([]models.SkillDescription, error) {
 	rows, err := r.db.QueryContext(ctx, `
         SELECT sd.id, sd.skill_id, sd.description, sd.media, sd.created_at,
                s.skill, s.exchange, s.username
@@ -170,14 +147,4 @@ func (r *PgRepo) GetAllDescriptions(ctx context.Context) ([]models.SkillDescript
 		descs = append(descs, d)
 	}
 	return descs, rows.Err()
-}
-
-func (r *PgRepo) UpsertDescription(ctx context.Context, skillID int, description, media string) error {
-	_, err := r.db.ExecContext(ctx,
-		`INSERT INTO skill_descriptions (skill_id, description, media) 
-         VALUES ($1, $2, $3) 
-         ON CONFLICT (skill_id) 
-         DO UPDATE SET description = $2, media = $3, created_at = NOW()`,
-		skillID, description, media)
-	return err
 }
