@@ -45,7 +45,7 @@ func (h *Handler) GetSkillByCategory(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 			return
 		}
-		c.JSON(http.StatusOK, skills)
+		c.JSON(http.StatusNotFound, skills)
 		return
 	}
 
@@ -55,7 +55,7 @@ func (h *Handler) GetSkillByCategory(c *gin.Context) {
 		return
 	}
 
-	if skills == nil {
+	if skills == nil || len(*skills) == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "category not found"})
 		return
 	}
