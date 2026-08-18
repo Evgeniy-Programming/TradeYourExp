@@ -26,7 +26,7 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
 		return
 	}
-	if err := h.repo.UpdateUser(&u, id); err != nil {
+	if err := h.repo.User.UpdateUser(&u, id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error" + err.Error()})
 		return
 	}

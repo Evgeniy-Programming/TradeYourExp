@@ -32,7 +32,7 @@ type Handler struct {
 	Skills *skills.Handler
 }
 
-func NewHMainHandler(s repository.PgRepo) *Handler {
+func NewHMainHandler(s repository.Repository) *Handler {
 	return &Handler{
 		User:   user.NewUserHandler(s),
 		Skills: skills.NewSkillHandler(s),

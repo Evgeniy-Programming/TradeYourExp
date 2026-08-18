@@ -4,6 +4,7 @@ import (
 	"Trade-y-exp/internal/handler"
 	"Trade-y-exp/internal/repository"
 	"Trade-y-exp/pkg/db"
+	"database/sql"
 	"log"
 	"net/http"
 	"os"
@@ -37,14 +38,16 @@ func main() {
 		dsn = "postgres://user:pass@localhost:5432/trade_db?sslmode=disable"
 	}
 
-	// Инициализация хранилища (Postgres)
-	repo, err := repository.NewPg(dsn)
+	dB, err := sql.Open("postgres", dsn)
 	if err != nil {
-		log.Fatalf("Failed to connect to DB: %v", err)
+		log.Fatal(err)
 	}
+	defer dB.Close()
+	// Инициализация хранилища (Postgres)
+	repo := repository.NewHMainRepository(dB)
 
 	// Миграции
-	db.RunMigrations(repo.GetDB(), "trade_db")
+	db.RunMigrations(dB, "trade_db")
 
 	// Обработчики
 	h := handler.NewHMainHandler(*repo)

@@ -27,7 +27,7 @@ func (h *Handler) GetDescriptionByID(c *gin.Context) {
 		return
 	}
 
-	desc, err := h.repo.GetDescriptionBySkillID(c.Request.Context(), id)
+	desc, err := h.repo.Skills.GetDescriptionBySkillID(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 		return
@@ -52,7 +52,7 @@ func (h *Handler) GetDescriptionByID(c *gin.Context) {
 // @Failure      404  {object}  map[string]interface{} "Пользователь не найден"
 // @Router       /skills/desc [get]
 func (h *Handler) GetAllDescriptions(c *gin.Context) {
-	descs, err := h.repo.GetAllDescriptions(c.Request.Context())
+	descs, err := h.repo.Skills.GetAllDescriptions(c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 		return

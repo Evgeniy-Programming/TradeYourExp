@@ -23,7 +23,7 @@ func (h *Handler) DeleteUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
 		return
 	}
-	if err := h.repo.DeleteUser(id); err != nil {
+	if err := h.repo.User.DeleteUser(id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 		return
 	}
