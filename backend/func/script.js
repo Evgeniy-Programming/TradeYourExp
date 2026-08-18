@@ -71,29 +71,49 @@ function logout() {
     location.reload();
 }
 
-async function loadSkills() {
+let currentCategory = 'all';
+let currentSearch = '';
+
+async function loadSkills(category = 'all', search = '') {
     try {
-        const res = await fetch('/api/v1/skills');
+        let url = '/api/v1/skills';
+        
+        if (search && search.trim() !== '') {
+            url = `/api/v1/skills/filter/${encodeURIComponent(search.trim())}`;
+        } 
+        else if (category && category !== 'all') {
+            url = `/api/v1/skills/${encodeURIComponent(category)}`;
+        }
+        
+        const res = await fetch(url);
+        
+        if (!res.ok) {
+            if (res.status === 404) {
+                showEmptyResult();
+                return;
+            }
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
         const data = await res.json();
         const list = document.getElementById('skillList');
         if (!list) return;
         list.innerHTML = '';
 
-        if (data && Array.isArray(data)) {
+        if (data && Array.isArray(data) && data.length > 0) {
             for (const item of data) {
                 const li = document.createElement('li');
                 
-                // Пытаемся загрузить описание
                 let descMedia = '';
                 try {
                     const descRes = await fetch(`/api/v1/skills/desc/${item.id}`);
                     if (descRes.ok) {
                         const desc = await descRes.json();
                         if (desc && desc.description) {
-                            descMedia = `<br><small>${desc.media}</small>`;
+                            descMedia = `<br><small>${desc.media || ''}</small>`;
                         }
                     }
-                } catch(e) { /* игнорируем */ }
+                } catch(e) { }
                 
                 li.innerHTML = `
                     <strong>${item.username}</strong>: ${item.skill} ↔ ${item.exchange}
@@ -105,11 +125,74 @@ async function loadSkills() {
                 `;
                 list.appendChild(li);
             }
+        } else {
+            showEmptyResult();
         }
     } catch (e) { 
-        console.error("Ошибка загрузки навыков:", e); 
+        console.error("Ошибка загрузки навыков:", e);
+        showEmptyResult();
     }
 }
+
+function showEmptyResult() {
+    const list = document.getElementById('skillList');
+    if (list) {
+        list.innerHTML = '<li style="text-align: center; padding: 20px;">Ничего не найдено</li>';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryButtons = document.querySelectorAll('.skill-search-categories button');
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            const category = this.dataset.category || 'all';
+            currentCategory = category;
+            
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = '';
+                currentSearch = '';
+            }
+            
+            loadSkills(category, '');
+        });
+    });
+
+    // Обработчик кнопки "Найти"
+    const searchButton = document.getElementById('searchButton');
+    const searchInput = document.getElementById('searchInput');
+    
+    if (searchButton && searchInput) {
+        searchButton.addEventListener('click', function() {
+            const searchText = searchInput.value.trim();
+            currentSearch = searchText;
+            
+            // Сбрасываем активную категорию
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            const allCategoryBtn = document.querySelector('.skill-search-categories button[data-category="all"]');
+            if (allCategoryBtn) {
+                allCategoryBtn.classList.add('active');
+                currentCategory = 'all';
+            }
+            
+            // Загружаем навыки по поиску
+            loadSkills('all', searchText);
+        });
+
+        // Поиск по Enter
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchButton.click();
+            }
+        });
+    }
+
+    // Загружаем все навыки при старте
+    loadSkills('all', '');
+});
 
 // ===== ДЕТАЛИ НАВЫКА =====
 async function openDetails(skillId) {
