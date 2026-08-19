@@ -1,21 +1,22 @@
 import Background from '../Background/Background';
-import style from './Modal.module.css';
-import Close from '../Close/Close';
+import style from './ModalElement.module.css';
 import Block from '../Block/Block';
 import classNames from 'classnames';
+import IconButton from '../IconButton/IconButton';
+import MinimizeSVG from '../svg/MinimizeSVG';
 
-interface ModalProps {
+interface ModalElementProps {
   onClick: () => void;
   className?: string;
   children: React.ReactNode;
 }
 
-const Modal: React.FC<ModalProps> = ({ onClick, className, children }) => {
+const ModalElement: React.FC<ModalProps> = ({ onClick, className, children }) => {
   return (
     <Background onClick={onClick}>
       <Block className={classNames(style.modal, className)} onClick={(e) => e.stopPropagation()}>
         <div className={style.modal__close}>
-          <Close onClick={onClick} />
+          <IconButton icon={<MinimizeSVG />} onClick={onClick} />
         </div>
         {children}
       </Block>
@@ -23,4 +24,4 @@ const Modal: React.FC<ModalProps> = ({ onClick, className, children }) => {
   );
 };
 
-export default Modal;
+export default ModalElement;

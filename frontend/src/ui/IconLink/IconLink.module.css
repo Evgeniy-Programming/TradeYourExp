@@ -1,0 +1,18 @@
+.iconLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+.iconLink svg,
+.iconLink g {
+  fill: var(--color-element);
+}
+.iconLink__text {
+  text-align: center;
+  font-size: var(--font-size-small);
+}
+.iconLink:hover svg,
+.iconLink:hover g {
+  fill: var(--color-element-hover);
+}

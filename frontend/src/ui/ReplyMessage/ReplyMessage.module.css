@@ -5,8 +5,7 @@
   padding: 2px 5px;
   font-size: var(--font-size-small);
   border-left: 3px solid var(--color-element);
-
-  &__author {
-    font-weight: var(--font-weight-bold);
-  }
+}
+.reply__author {
+  font-weight: var(--font-weight-bold);
 }

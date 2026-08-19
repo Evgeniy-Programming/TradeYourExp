@@ -15,6 +15,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - project
 
   app:
     build: ./backend
@@ -26,6 +28,21 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - project
+  
+  frontend:
+    build: ./frontend
+    container_name: trade_frontend_container
+    ports: ["5173:5173"]
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - project
+
+networks:
+  project:
 
 volumes:
   pgdata:

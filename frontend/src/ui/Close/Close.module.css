@@ -10,8 +10,7 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
-
-  &:hover {
-    background-color: var(--color-line);
-  }
+}
+.close:hover {
+  background-color: var(--color-line);
 }

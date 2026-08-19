@@ -1,4 +1,4 @@
-import style from './Avatar.module.scss';
+import style from './Avatar.module.css';
 import userIMG from './../../../public/img/user.png';
 
 interface AvatarProps {

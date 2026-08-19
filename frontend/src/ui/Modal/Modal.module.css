@@ -3,10 +3,9 @@
   min-width: 300px;
   max-width: 600px;
   z-index: 300;
-
-  &__close {
-    position: absolute;
-    right: 5px;
-    top: 5px;
-  }
+}
+.modal__close {
+  position: absolute;
+  right: 5px;
+  top: 5px;
 }

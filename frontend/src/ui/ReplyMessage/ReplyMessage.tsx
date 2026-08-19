@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 
-import style from './ReplyMessage.module.scss';
+import style from './ReplyMessage.module.css';
 import { RelatedType } from '../../types/entities/commentType';
 
 interface ReplyMessageProps {

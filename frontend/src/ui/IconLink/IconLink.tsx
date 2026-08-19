@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 
-import style from './IconLink.module.scss';
+import style from './IconLink.module.css';
 
 interface IconLinkProps {
   to: string;

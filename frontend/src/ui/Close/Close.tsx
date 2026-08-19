@@ -1,4 +1,4 @@
-import style from './Close.module.scss';
+import style from './Close.module.css';
 import CloseSVG from './../svg/CloseSVG';
 
 interface CloseProps {

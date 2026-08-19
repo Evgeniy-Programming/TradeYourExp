@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 
-import style from './AvatarLink.module.scss';
+import style from './AvatarLink.module.css';
 import userIMG from './../../../public/img/user.png';
 
 interface AvatarLinkProps {

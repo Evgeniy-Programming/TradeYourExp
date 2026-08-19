@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import classNames from 'classnames';
 
-import style from './InputPassword.module.scss';
+import style from './InputPassword.module.css';
 import IconButton from '../IconButton/IconButton';
 import EyeOpenSVG from '../svg/EyeOpenSVG';
 import EyeClosedSVG from '../svg/EyeCloseSVG';
