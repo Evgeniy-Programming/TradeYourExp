@@ -17,7 +17,7 @@ import (
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Param        input  body      RegisterRequest  true  "Данные пользователя"
+// @Param        input  body      nil  true  "Данные пользователя"
 // @Success      201    {object}  map[string]interface{} "Пользователь успешно создан"
 // @Failure      400    {object}  map[string]interface{} "Неверный формат данных"
 // @Failure      409    {object}  map[string]interface{} "Пользователь уже существует"
