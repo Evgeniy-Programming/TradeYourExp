@@ -1,4 +1,5 @@
 services:
+  # PostgreSQL Container
   db:
     image: postgres:15-alpine
     container_name: trade_db_container
@@ -18,6 +19,27 @@ services:
     networks:
       - project
 
+  # Auth Service (gRPC)
+  auth:
+    build: 
+      context: ./auth_service
+      dockerfile: Dockerfile
+    container_name: trade_auth_container
+    ports:
+      - "50051:50051"  # gRPC port
+    environment:
+      - DATABASE_URL=postgres://user:pass@db:5432/trade_db?sslmode=disable
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - GRPC_PORT=50051
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - project
+    restart: unless-stopped
+
+  # Main Backend (HTTP + gRPC client)
   app:
     build: ./backend
     container_name: trade_app_container
@@ -25,24 +47,34 @@ services:
       - "8080:8080"
     environment:
       - DATABASE_URL=postgres://user:pass@db:5432/trade_db?sslmode=disable
+      - AUTH_SERVICE_ADDR=auth:50051  # auth сервиса из docker-compose
+      - JWT_SECRET=${JWT_ACCESS_SECRET}
     depends_on:
       db:
         condition: service_healthy
+      auth:
+        condition: service_started
     networks:
       - project
+    restart: unless-stopped
   
+  # Frontend (React)
   frontend:
     build: ./frontend
     container_name: trade_frontend_container
-    ports: ["5173:5173"]
+    ports: 
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8080
     depends_on:
-      db:
-        condition: service_healthy
+      - app
     networks:
       - project
+    restart: unless-stopped
 
 networks:
   project:
+    driver: bridge
 
 volumes:
   pgdata:
