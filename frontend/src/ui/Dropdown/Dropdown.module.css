@@ -2,11 +2,10 @@
   position: absolute;
   top: 100%;
   z-index: 200;
-
-  &__image {
-    width: 20px;
-    height: 20px;
-  }
+}
+.dropdown__image {
+  width: 20px;
+  height: 20px;
 }
 
 @media (max-width: 700px) {

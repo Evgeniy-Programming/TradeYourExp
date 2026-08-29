@@ -1,0 +1,6 @@
+.skill {
+  padding: 20px;
+  border-left: 2px solid var(--color-element);
+  border-radius: var(--border-radius-large);
+  background-color: var(--color-element-transparent);
+}

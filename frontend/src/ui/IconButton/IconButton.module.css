@@ -1,0 +1,13 @@
+.iconButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: none;
+  background-color: transparent;
+}
+.iconButton__text {
+  text-align: center;
+  color: var(--color-element-secondary);
+  font-size: var(--font-size-small);
+  user-select: none;
+}

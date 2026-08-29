@@ -1,4 +1,4 @@
-import style from './Chip.module.scss';
+import style from './Chip.module.css';
 import Close from '../Close/Close';
 
 interface CloseProps {

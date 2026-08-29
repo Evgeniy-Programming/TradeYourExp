@@ -1,0 +1,43 @@
+.buttonAction {
+  padding: 5px 10px;
+  background-color: rgba(var(--color-element-rgb), 0.2);
+  text-decoration: none;
+  color: var(--color-element);
+  border-radius: 5px;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  min-width: 150px;
+}
+.buttonAction__icon {
+  width: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.buttonAction:hover {
+  border-color: var(--color-element-hover);
+  background-color: rgba(var(--color-element-rgb), 0.3);
+}
+.buttonAction_danger {
+  background-color: rgba(var(--color-danger-rgb), 0.2);
+  color: var(--color-danger);
+}
+.buttonAction_danger:hover {
+  background-color: rgba(var(--color-danger-rgb), 0.3);
+  color: var(--color-danger);
+}
+.buttonAction_disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.buttonAction_gray {
+  background-color: rgba(var(--color-element-secondary-rgb), 0.2);
+  color: var(--color-text-transparent);
+}
+.buttonAction_gray:hover {
+  border-color: var(--color-element-hover);
+  background-color: rgba(var(--color-element-secondary-rgb), 0.4);
+}

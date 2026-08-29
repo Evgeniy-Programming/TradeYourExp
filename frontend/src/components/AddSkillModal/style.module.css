@@ -1,0 +1,64 @@
+.modal {
+  width: 100%;
+  max-width: 500px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0;
+  width: 100%;
+}
+
+.form h2 {
+  font-size: var(--font-size-accent);
+}
+
+.form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form__field__textarea {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-element);
+  border-radius: var(--border-radius-small);
+}
+
+.form__field__textarea > textarea {
+  resize: vertical;
+  max-height: 300px;
+  height: 100px;
+  border: none;
+  border-top: 1px solid var(--color-element);
+  border-radius: 0;
+}
+
+.form__field__textarea_max {
+  border: none;
+  resize: none;
+  height: 100%;
+}
+
+.form__field__textarea button {
+  align-self: flex-end;
+}
+
+.form__controls {
+  display: flex;
+  gap: 5px;
+  justify-content: flex-end;
+}
+
+.previewModal {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.previewModal h2 {
+  font-size: var(--font-size-accent);
+}

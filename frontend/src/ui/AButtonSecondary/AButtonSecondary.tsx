@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { Link } from 'react-router';
 
-import style from './AButtonSecondary.module.scss';
+import style from './AButtonSecondary.module.css';
 
 interface AButtonSecondaryProps {
   to: string;

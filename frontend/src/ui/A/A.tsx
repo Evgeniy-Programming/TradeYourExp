@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 
-import style from './A.module.scss';
+import style from './A.module.css';
 
 interface AProps {
   to: string;

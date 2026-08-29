@@ -1,0 +1,13 @@
+.avatar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.avatar__image {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+.avatar__username {
+  font-size: var(--font-size-small);
+}
