@@ -17,7 +17,7 @@ import (
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Param        input  body      nil  true  "Данные для входа"
+// @Param input body models.LoginRequest true "Данные для входа"
 // @Success      200    {object}  map[string]interface{} "Пользователь успешно вошел"
 // @Failure      400    {object}  map[string]interface{} "Неверный формат данных"
 // @Failure      401    {object}  map[string]interface{} "Неверные учетные данные"

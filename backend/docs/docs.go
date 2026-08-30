@@ -33,7 +33,10 @@ const docTemplate = `{
                         "description": "Данные для входа",
                         "name": "input",
                         "in": "body",
-                        "required": true
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.LoginRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -79,7 +82,10 @@ const docTemplate = `{
                         "description": "Данные пользователя",
                         "name": "input",
                         "in": "body",
-                        "required": true
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RegisterRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -497,6 +503,46 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password",
+                "role",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                },
+                "role": {
+                    "type": "string",
+                    "enum": [
+                        "manager",
+                        "admin",
+                        "viewer"
+                    ]
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Skill": {
             "type": "object",
             "properties": {

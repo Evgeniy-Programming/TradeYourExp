@@ -103,15 +103,15 @@ func main() {
 	{
 		v1.POST("/register", h.User.Register)
 		v1.POST("/login", h.User.Login)
+		v1.GET("/skills", h.Skills.GetSkills)
+		v1.GET("/skills/:category", h.Skills.GetSkillByCategory)
+		v1.GET("/skills/filter/:search", h.Skills.GetSkillByFilters)
 
 		protected := v1.Group("")
 		protected.Use(middleware.AuthMiddleware(authCfg))
 		{
-			protected.GET("/skills", h.Skills.GetSkills)
 			protected.POST("/skills", h.Skills.CreateSkill)
 			protected.DELETE("/skills/:id", h.Skills.DeleteSkill)
-			protected.GET("/skills/:category", h.Skills.GetSkillByCategory)
-			protected.GET("/skills/filter/:search", h.Skills.GetSkillByFilters)
 			protected.GET("/skills/desc/:id", h.Skills.GetDescriptionByID)
 			protected.GET("/skills/desc", h.Skills.GetAllDescriptions)
 			protected.POST("/skills/desc", h.Skills.CreateDescription)

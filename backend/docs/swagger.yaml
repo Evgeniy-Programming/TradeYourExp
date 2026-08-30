@@ -1,5 +1,33 @@
 basePath: /api/v1
 definitions:
+  models.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  models.RegisterRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      role:
+        enum:
+        - manager
+        - admin
+        - viewer
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - password
+    - role
+    - username
+    type: object
   models.Skill:
     properties:
       category:
@@ -48,6 +76,8 @@ paths:
         in: body
         name: input
         required: true
+        schema:
+          $ref: '#/definitions/models.LoginRequest'
       produces:
       - application/json
       responses:
@@ -79,6 +109,8 @@ paths:
         in: body
         name: input
         required: true
+        schema:
+          $ref: '#/definitions/models.RegisterRequest'
       produces:
       - application/json
       responses:
