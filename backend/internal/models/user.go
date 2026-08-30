@@ -13,3 +13,14 @@ type User struct {
 	LastName   string    `json:"lastName"`
 	SocialLink string    `json:"socialLink"`
 }
+
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+type RegisterRequest struct {
+	Username string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=6"`
+	Role     string `json:"role" binding:"required,oneof=manager admin viewer"`
+}

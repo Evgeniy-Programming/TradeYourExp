@@ -9,16 +9,7 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
-        },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
+        "contact": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -36,19 +27,25 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Авторизация пользовтеля",
+                "summary": "Авторизация пользователя",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Пользователь авторизирован",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "Данные для входа",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.LoginRequest"
+                        }
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "Пользователь успешно вошел"
+                    "200": {
+                        "description": "Пользователь успешно вошел",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
                     },
                     "400": {
                         "description": "Неверный формат данных",
@@ -57,8 +54,8 @@ const docTemplate = `{
                             "additionalProperties": true
                         }
                     },
-                    "404": {
-                        "description": "Пользователь не найден",
+                    "401": {
+                        "description": "Неверные учетные данные",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -69,7 +66,7 @@ const docTemplate = `{
         },
         "/register": {
             "post": {
-                "description": "Создание пользователя с заполнение требуемых полей.",
+                "description": "Создание пользователя с заполнением требуемых полей.",
                 "consumes": [
                     "application/json"
                 ],
@@ -82,16 +79,22 @@ const docTemplate = `{
                 "summary": "Создание пользователя",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Пользователь корректен",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "Данные пользователя",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RegisterRequest"
+                        }
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "Пользователь успешно создан"
+                    "201": {
+                        "description": "Пользователь успешно создан",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
                     },
                     "400": {
                         "description": "Неверный формат данных",
@@ -100,8 +103,8 @@ const docTemplate = `{
                             "additionalProperties": true
                         }
                     },
-                    "404": {
-                        "description": "Пользователь не найден",
+                    "409": {
+                        "description": "Пользователь уже существует",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -500,6 +503,46 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password",
+                "role",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                },
+                "role": {
+                    "type": "string",
+                    "enum": [
+                        "manager",
+                        "admin",
+                        "viewer"
+                    ]
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Skill": {
             "type": "object",
             "properties": {

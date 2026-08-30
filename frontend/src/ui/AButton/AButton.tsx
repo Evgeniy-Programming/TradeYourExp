@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { Link } from 'react-router';
 
-import style from './AButton.module.scss';
+import style from './AButton.module.css';
 
 interface AButtonProps {
   to: string;

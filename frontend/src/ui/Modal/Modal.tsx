@@ -1,5 +1,5 @@
 import Background from '../Background/Background';
-import style from './Modal.module.scss';
+import style from './Modal.module.css';
 import Close from '../Close/Close';
 import Block from '../Block/Block';
 import classNames from 'classnames';

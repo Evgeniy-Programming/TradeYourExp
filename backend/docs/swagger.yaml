@@ -1,5 +1,33 @@
 basePath: /api/v1
 definitions:
+  models.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  models.RegisterRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      role:
+        enum:
+        - manager
+        - admin
+        - viewer
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - password
+    - role
+    - username
+    type: object
   models.Skill:
     properties:
       category:
@@ -33,15 +61,8 @@ definitions:
     type: object
 host: localhost:8080
 info:
-  contact:
-    email: support@swagger.io
-    name: API Support
-    url: http://www.swagger.io/support
+  contact: {}
   description: Trade Your Exp.
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/
   title: Swagger Example API
   version: "1.0"
 paths:
@@ -51,52 +72,60 @@ paths:
       - application/json
       description: Авторизирует пользователя по введенным данным.
       parameters:
-      - description: Пользователь авторизирован
-        in: path
-        name: id
+      - description: Данные для входа
+        in: body
+        name: input
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/models.LoginRequest'
       produces:
       - application/json
       responses:
-        "204":
+        "200":
           description: Пользователь успешно вошел
+          schema:
+            additionalProperties: true
+            type: object
         "400":
           description: Неверный формат данных
           schema:
             additionalProperties: true
             type: object
-        "404":
-          description: Пользователь не найден
+        "401":
+          description: Неверные учетные данные
           schema:
             additionalProperties: true
             type: object
-      summary: Авторизация пользовтеля
+      summary: Авторизация пользователя
       tags:
       - users
   /register:
     post:
       consumes:
       - application/json
-      description: Создание пользователя с заполнение требуемых полей.
+      description: Создание пользователя с заполнением требуемых полей.
       parameters:
-      - description: Пользователь корректен
-        in: path
-        name: id
+      - description: Данные пользователя
+        in: body
+        name: input
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/models.RegisterRequest'
       produces:
       - application/json
       responses:
-        "204":
+        "201":
           description: Пользователь успешно создан
+          schema:
+            additionalProperties: true
+            type: object
         "400":
           description: Неверный формат данных
           schema:
             additionalProperties: true
             type: object
-        "404":
-          description: Пользователь не найден
+        "409":
+          description: Пользователь уже существует
           schema:
             additionalProperties: true
             type: object

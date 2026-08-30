@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import style from './Background.module.scss';
+import style from './Background.module.css';
 
 interface BackgroundProps {
   onClick?: () => void;

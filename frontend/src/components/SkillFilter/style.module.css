@@ -1,0 +1,21 @@
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filter__category {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.filter__category button {
+  padding: 5px;
+  font-size: var(--font-size-small);
+}
+
+.filter__search {
+  display: flex;
+  gap: 5px;
+}
