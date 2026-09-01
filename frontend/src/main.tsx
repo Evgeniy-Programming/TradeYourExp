@@ -3,6 +3,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { MainPage } from './pages/MainPage/MainPage';
 import './assets/styles/normalize.css';
 import './assets/styles/initialize.css';
+import { Provider } from 'react-redux';
+import { store } from './store';
 
 const router = createBrowserRouter([
   {
@@ -11,4 +13,6 @@ const router = createBrowserRouter([
   },
 ]);
 
-createRoot(document.getElementById('root')!).render(<RouterProvider router={router} />);
+createRoot(document.getElementById('root')!).render(<Provider store={store}>
+  <RouterProvider router={router} />
+</Provider>);
