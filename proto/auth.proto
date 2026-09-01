@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "Trade-y-exp/proto/auth;authpb";
+
+import "google/protobuf/timestamp.proto";
+
+service AuthService {
+  // Регистрация нового пользователя
+  rpc Register (RegisterRequest) returns (AuthResponse);
+  
+  // Логин + выдача JWT
+  rpc Login (LoginRequest) returns (AuthResponse);
+  
+  // Валидация токена (для middleware)
+  rpc ValidateToken (ValidateRequest) returns (ValidateResponse);
+  
+  // Refresh токена
+  rpc RefreshToken (RefreshRequest) returns (AuthResponse);
+  
+  // Logout (добавление в blacklist)
+  rpc Logout (LogoutRequest) returns (LogoutResponse);
+}
+
+// Запросы
+message RegisterRequest {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+  string role = 4; // "manager", "admin", "viewer"
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message ValidateRequest {
+  string token = 1;
+}
+
+message RefreshRequest {
+  string refresh_token = 1;
+}
+
+message LogoutRequest {
+  string user_id = 1;
+  string token = 2;
+}
+
+// Ответы
+message AuthResponse {
+  string user_id = 1;
+  string username = 2;
+  string email = 3;
+  string role = 4;
+  string access_token = 5;
+  string refresh_token = 6;
+  int64 expires_in = 7; // seconds
+}
+
+message ValidateResponse {
+  bool is_valid = 1;
+  string user_id = 2;
+  string username = 3;
+  string role = 4;
+  int64 expires_at = 5;
+}
+
+message LogoutResponse {
+  bool success = 1;
+}

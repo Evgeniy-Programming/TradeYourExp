@@ -2,12 +2,14 @@ package user
 
 import (
 	"Trade-y-exp/internal/repository"
+	authpb "Trade-y-exp/proto/auth"
 )
 
 type Handler struct {
-	repo repository.Repository
+	repo       repository.Repository
+	authClient authpb.AuthServiceClient
 }
 
-func NewUserHandler(repo repository.Repository) *Handler {
-	return &Handler{repo: repo}
+func NewUserHandler(repo repository.Repository, authClient authpb.AuthServiceClient) *Handler {
+	return &Handler{repo: repo, authClient: authClient}
 }
