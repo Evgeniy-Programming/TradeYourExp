@@ -31,7 +31,7 @@ func (h *Handler) Register(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid data"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid data", "type": err})
 		return
 	}
 
@@ -47,9 +47,10 @@ func (h *Handler) Register(c *gin.Context) {
 			c.JSON(http.StatusConflict, gin.H{"error": "user exists"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "registration failed"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "registration failed", "type": err})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"status": "ok", "user_id": resp.UserId})
+	c.JSON(http.StatusCreated, gin.H{"status": "ok", "user_id": resp.UserId, "Username": resp.Username,
+		"Email": resp.Email})
 }

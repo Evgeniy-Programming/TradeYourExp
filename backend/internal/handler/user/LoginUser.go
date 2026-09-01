@@ -29,7 +29,7 @@ func (h *Handler) Login(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid data"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid data", "type": err})
 		return
 	}
 
@@ -43,7 +43,7 @@ func (h *Handler) Login(c *gin.Context) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "wrong creds"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "auth service error"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "auth service error", "type": err})
 		return
 	}
 
@@ -58,5 +58,6 @@ func (h *Handler) Login(c *gin.Context) {
 		MaxAge:   int(resp.ExpiresIn),
 	})
 
-	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	c.JSON(http.StatusOK, gin.H{"status": "ok", "Username": resp.Username,
+		"Email": resp.Email})
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"Trade-y-exp/internal/handler"
-	"Trade-y-exp/internal/middleware"
 	"Trade-y-exp/internal/repository"
 	"Trade-y-exp/pkg/db"
 	authpb "Trade-y-exp/proto/auth"
@@ -58,7 +57,7 @@ func main() {
 	authClient := authpb.NewAuthServiceClient(conn)
 
 	// === Auth Middleware Config ===
-	authCfg := middleware.Config{
+	authCfg := handler.Config{
 		AuthServiceAddr: authAddr,
 		JWTSecret:       os.Getenv("JWT_SECRET"),
 		PublicPaths: []string{
@@ -108,7 +107,7 @@ func main() {
 		v1.GET("/skills/filter/:search", h.Skills.GetSkillByFilters)
 
 		protected := v1.Group("")
-		protected.Use(middleware.AuthMiddleware(authCfg))
+		protected.Use(handler.AuthMiddleware(authCfg))
 		{
 			protected.POST("/skills", h.Skills.CreateSkill)
 			protected.DELETE("/skills/:id", h.Skills.DeleteSkill)
@@ -120,8 +119,8 @@ func main() {
 
 		admin := v1.Group("")
 		admin.Use(
-			middleware.AuthMiddleware(authCfg),
-			middleware.RequireRole("admin"),
+			handler.AuthMiddleware(authCfg),
+			handler.RequireRole("admin"),
 		)
 		{
 			admin.PUT("/users/:id", h.User.UpdateUser)
