@@ -7,7 +7,15 @@ interface ProfileState {
 }
 
 const initialState: ProfileState = {
-  profile: null,
+  profile: {
+    username: 'Test',
+    firstName: 'Test',
+    createdAt: Date.now(),
+    lastName: 'Test',
+    email: 'test@mail.ru',
+    id: '42343',
+    link: 'https://gergwejogj',
+  },
   isLoading: false,
 };
 

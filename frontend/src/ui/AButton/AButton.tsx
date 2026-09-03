@@ -7,6 +7,7 @@ interface AButtonProps {
   to: string;
   isMaxWidth?: boolean;
   isDanger?: boolean;
+  className?: string;
   children: React.ReactNode;
 }
 
@@ -14,6 +15,7 @@ const AButton: React.FC<AButtonProps> = ({
   to,
   isMaxWidth = false,
   isDanger = false,
+  className,
   children,
 }) => {
   return (
@@ -21,7 +23,8 @@ const AButton: React.FC<AButtonProps> = ({
       className={classNames(
         style.aButton,
         isMaxWidth && 'max-width',
-        isDanger && style.aButton_danger
+        isDanger && style.aButton_danger,
+        className
       )}
       to={to}
     >

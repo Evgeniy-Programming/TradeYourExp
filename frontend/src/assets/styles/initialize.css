@@ -44,6 +44,7 @@
   --color-danger-hover: #c82333;
   --color-background: #e7e6e6;
   --color-block: #ffffff;
+  --color-block-transparent: rgb(0 0 0 / 10%);
   --color-element: #28a745;
   --color-element-hover: #218838;
   --color-element-transparent: rgb(106 164 162 / 20%);

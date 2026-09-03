@@ -3,6 +3,7 @@ import { MainPage } from '../pages/MainPage/MainPage';
 import { requireAuth, requireGuest } from './loaders/authLoader';
 import { LoginPage } from '../pages/LoginPage/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage/RegisterPage';
+import { ProfilePage } from '../pages/ProfilePage/ProfilePage';
 
 export const router = createBrowserRouter([
   {
@@ -24,7 +25,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: '/profile',
-        element: <div>Profile page</div>,
+        element: <ProfilePage />,
       },
       {
         path: '/profile/stats',
