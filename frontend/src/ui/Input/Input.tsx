@@ -7,7 +7,16 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input: React.FC<InputProps> = ({ isMaxWidth = false, ...rest }) => {
-  return <input className={classNames(style.input, isMaxWidth ? 'max-width' : '')} {...rest} />;
+  return (
+    <input
+      className={classNames(
+        style.input,
+        isMaxWidth ? 'max-width' : '',
+        rest.disabled && style.disabled
+      )}
+      {...rest}
+    />
+  );
 };
 
 export default Input;

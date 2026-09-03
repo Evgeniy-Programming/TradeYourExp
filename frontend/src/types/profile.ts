@@ -4,5 +4,6 @@ export interface IProfile {
   email: string;
   firstName: string | null;
   lastName: string | null;
-  createdAt: string;
+  link: string;
+  createdAt: string | number;
 }

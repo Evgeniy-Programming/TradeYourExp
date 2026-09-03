@@ -4,6 +4,7 @@ import { formatTimestamp } from '../../utils/formatTimestamp';
 import Block from '../../ui/Block/Block';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import A from '../../ui/A/A';
+import AButton from '../../ui/AButton/AButton';
 
 export const ProfileInfo = () => {
   const profile = useAppSelector((state) => state.profile.profile);
@@ -17,7 +18,7 @@ export const ProfileInfo = () => {
         </div>
       )}
       {profile && (
-        <>
+        <div className={style.profile__fields}>
           <img src={logoIMG} alt="Изображение профиля" />
           <div className={style.profile__field}>
             <p>Никнейм</p>
@@ -43,7 +44,10 @@ export const ProfileInfo = () => {
             <p>Зарегистрирован</p>
             <b>{formatTimestamp(profile.createdAt)}</b>
           </div>
-        </>
+          <AButton className={style.profile__button} to="/profile">
+            В профиль
+          </AButton>
+        </div>
       )}
     </Block>
   );
