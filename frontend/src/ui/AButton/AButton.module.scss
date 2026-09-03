@@ -1,0 +1,26 @@
+.aButton {
+  display: inline-flex;
+  justify-content: center;
+
+  padding: 5px 10px;
+  border-radius: 5px;
+
+  color: #ffffff;
+  text-decoration: none;
+
+  background-color: var(--color-element);
+
+  &:hover {
+    background-color: var(--color-element-hover);
+  }
+
+  &_danger {
+    color: #ffffff;
+    background-color: var(--color-danger);
+
+    &:hover {
+      color: #ffffff;
+      background-color: var(--color-danger-hover);
+    }
+  }
+}

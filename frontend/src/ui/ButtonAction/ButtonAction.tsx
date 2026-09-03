@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import style from './ButtonAction.module.css';
+import style from './ButtonAction.module.scss';
 
 interface ButtonActionProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   onClick?: () => void;

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Button from '../../ui/Button/Button';
 import Input from '../../ui/Input/Input';
-import style from './style.module.css';
+import style from './style.module.scss';
 import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
 
 const categories = [

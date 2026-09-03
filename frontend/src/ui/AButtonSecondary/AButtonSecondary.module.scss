@@ -1,0 +1,28 @@
+.aButtonSecondary {
+  display: inline-flex;
+  justify-content: center;
+
+  padding: 5px 10px;
+  border: 1px solid var(--color-element);
+  border-radius: 5px;
+
+  color: var(--color-text-link);
+  text-decoration: none;
+
+  background-color: transparent;
+
+  &:hover {
+    border-color: var(--color-element-hover);
+    color: var(--color-text-link-hover);
+  }
+
+  &_danger {
+    color: #ffffff;
+    background-color: var(--color-danger);
+
+    &:hover {
+      color: #ffffff;
+      background-color: var(--color-danger-hover);
+    }
+  }
+}

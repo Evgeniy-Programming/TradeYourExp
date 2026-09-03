@@ -1,0 +1,12 @@
+.modal {
+  position: relative;
+  z-index: 300;
+  min-width: 300px;
+  max-width: 600px;
+
+  &__close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+}
