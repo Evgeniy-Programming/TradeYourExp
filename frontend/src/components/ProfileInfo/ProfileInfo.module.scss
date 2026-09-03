@@ -3,13 +3,14 @@
   flex-direction: column;
   gap: 20px;
   align-items: center;
-  min-height: 500px;
+
   width: 100%;
   max-width: 300px;
+  min-height: 500px;
 
   &__auth {
     text-align: center;
-    
+
     p {
       color: var(--color-text-transparent);
     }

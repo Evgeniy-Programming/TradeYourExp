@@ -1,0 +1,16 @@
+.layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.box {
+  position: relative;
+}
+
+.arrow {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
