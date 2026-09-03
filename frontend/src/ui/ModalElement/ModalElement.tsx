@@ -1,5 +1,5 @@
 import Background from '../Background/Background';
-import style from './ModalElement.module.css';
+import style from './ModalElement.module.scss';
 import Block from '../Block/Block';
 import classNames from 'classnames';
 import IconButton from '../IconButton/IconButton';
@@ -11,7 +11,7 @@ interface ModalElementProps {
   children: React.ReactNode;
 }
 
-const ModalElement: React.FC<ModalProps> = ({ onClick, className, children }) => {
+const ModalElement: React.FC<ModalElementProps> = ({ onClick, className, children }) => {
   return (
     <Background onClick={onClick}>
       <Block className={classNames(style.modal, className)} onClick={(e) => e.stopPropagation()}>

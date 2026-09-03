@@ -1,0 +1,23 @@
+.iconLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+
+  svg,
+  g {
+    fill: var(--color-element);
+  }
+
+  &__text {
+    font-size: var(--font-size-small);
+    text-align: center;
+  }
+
+  &:hover {
+    svg,
+    g {
+      fill: var(--color-element-hover);
+    }
+  }
+}

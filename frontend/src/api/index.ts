@@ -4,7 +4,9 @@ import { baseURL } from '../constants/api';
 const instance = axios.create({
   withCredentials: true,
   baseURL: baseURL,
-  headers: {},
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 instance.interceptors.request.use((config) => {

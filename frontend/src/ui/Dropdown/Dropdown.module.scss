@@ -1,0 +1,18 @@
+.dropdown {
+  position: absolute;
+  z-index: 200;
+  top: 100%;
+
+  &__image {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (width <= 700px) {
+  .dropdown {
+    top: 0;
+    left: 0;
+    width: 100vw;
+  }
+}
