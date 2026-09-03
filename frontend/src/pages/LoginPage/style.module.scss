@@ -1,0 +1,20 @@
+.form {
+  width: 100%;
+  min-width: 300px;
+  max-width: 500px;
+
+  h2 {
+    font-size: var(--font-size-accent);
+    text-align: center;
+  }
+
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  p {
+    text-align: center;
+  }
+}
