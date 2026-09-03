@@ -1,10 +1,10 @@
-import { Header } from '../../components/Header/Header';
+import { GeneralLayout } from '../../layouts/GeneralLayout/GeneralLayout';
 import style from './style.module.scss';
 
 export const MainPage = () => {
   return (
-    <div className={style.test}>
-      <Header />
-    </div>
+    <GeneralLayout>
+      <p>Hello world!</p>
+    </GeneralLayout>
   );
 };
