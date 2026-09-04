@@ -1,0 +1,48 @@
+import type { ISkill } from '../types/skill';
+
+export const MockSkills: ISkill[] = [
+  {
+    id: '1',
+    category: 'Разное',
+    description: 'Подробное описание данного навыка и на что его нужно обменять',
+    skill: 'Предлагаемый навык',
+    exchange: 'Желаемый навык',
+    media: 'Тип связи: telegram, Имя: rqgqer',
+    username: 'tester',
+    avatarUsername: null,
+    createdAt: '2026-08-05T13:04:00.426504Z',
+  },
+  {
+    id: '2',
+    category: 'Разное',
+    description: 'Подробное описание данного навыка и на что его нужно обменять',
+    skill: 'Предлагаемый навык',
+    exchange: 'Желаемый навык',
+    media: 'Тип связи: telegram, Имя: rqgqer',
+    username: 'tester',
+    avatarUsername: null,
+    createdAt: '2026-08-05T13:04:00.426504Z',
+  },
+  {
+    id: '3',
+    category: 'Разное',
+    description: 'Подробное описание данного навыка и на что его нужно обменять',
+    skill: 'Предлагаемый навык',
+    exchange: 'Желаемый навык',
+    media: 'Тип связи: telegram, Имя: rqgqer',
+    username: 'tester',
+    avatarUsername: null,
+    createdAt: '2026-08-05T13:04:00.426504Z',
+  },
+  {
+    id: '4',
+    category: 'Разное',
+    description: 'Подробное описание данного навыка и на что его нужно обменять',
+    skill: 'Предлагаемый навык',
+    exchange: 'Желаемый навык',
+    media: 'Тип связи: telegram, Имя: rqgqer',
+    username: 'tester',
+    avatarUsername: null,
+    createdAt: '2026-08-05T13:04:00.426504Z',
+  },
+];

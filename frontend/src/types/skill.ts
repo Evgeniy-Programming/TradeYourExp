@@ -8,7 +8,11 @@ export interface IAddSkill {
 export interface ISkill {
   id: string;
   category: string;
-  exchange: string;
+  description: string;
   skill: string;
+  exchange: string;
+  media: string;
   username: string;
+  avatarUsername: string | null;
+  createdAt: string;
 }

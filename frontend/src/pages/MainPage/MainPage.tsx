@@ -13,14 +13,7 @@ export const MainPage = () => {
       <SkillFilter />
       <div className={style.skills}>
         {skills.map((skill) => (
-          <Skill
-            key={skill.id}
-            contactType="site"
-            authorSkill={skill.skill}
-            requestSkill={skill.exchange}
-            author="author"
-            username={skill.username}
-          />
+          <Skill key={skill.id} skill={skill} />
         ))}
       </div>
     </GeneralLayout>
