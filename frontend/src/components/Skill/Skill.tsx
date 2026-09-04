@@ -6,22 +6,13 @@ import { useState } from 'react';
 import { SkillDescriptionModal } from '../SkillDescriptionModal/SkillDescriptionModal';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { ToAuthModal } from '../ToAuthModal/ToAuthModal';
+import type { ISkill } from '../../types/skill';
 
 interface SkillPropsType {
-  author: string;
-  authorSkill: string;
-  requestSkill: string;
-  contactType: string;
-  username: string | null;
+  skill: ISkill;
 }
 
-export const Skill: React.FC<SkillPropsType> = ({
-  author,
-  authorSkill,
-  requestSkill,
-  contactType,
-  username,
-}) => {
+export const Skill: React.FC<SkillPropsType> = ({ skill }) => {
   const [isOpenDescModal, setOpenDescModal] = useState(false);
   const [isOpenAuthModal, setOpenAuthModal] = useState(false);
   const profile = useAppSelector((state) => state.profile.profile);
@@ -36,12 +27,18 @@ export const Skill: React.FC<SkillPropsType> = ({
 
   return (
     <>
-      {isOpenDescModal && <SkillDescriptionModal onClose={() => setOpenDescModal(false)} />}
+      {isOpenDescModal && (
+        <SkillDescriptionModal skill={skill} onClose={() => setOpenDescModal(false)} />
+      )}
       {isOpenAuthModal && <ToAuthModal onClose={() => setOpenAuthModal(false)} />}
       <div className={style.skill}>
         <div className={style.skill__content}>
           <div className={style.skill__content__avatar}>
-            <AvatarLink profileAvatar={logoIMG} username={username} profileId={username} />
+            <AvatarLink
+              profileAvatar={logoIMG}
+              username={skill.username}
+              profileId={skill.username}
+            />
           </div>
           <div className={style.skill__contact}>
             <Button isMini onClick={handleOpenDesc}>
@@ -50,9 +47,9 @@ export const Skill: React.FC<SkillPropsType> = ({
           </div>
 
           <div className={style.skill__text}>
-            <b>{authorSkill}</b>
+            <b>{skill.skill}</b>
             <p>на</p>
-            <b>{requestSkill}</b>
+            <b>{skill.exchange}</b>
           </div>
         </div>
       </div>

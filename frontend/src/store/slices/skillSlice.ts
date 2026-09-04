@@ -1,34 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { ISkill } from '../../types/skill';
+import { MockSkills } from '../../mock/skills';
 
 interface SkillState {
   skills: ISkill[];
 }
 
 const initialState: SkillState = {
-  skills: [
-    {
-      id: '1',
-      skill: 'Test skill',
-      username: 'tester',
-      category: 'test',
-      exchange: 'Test skill 2',
-    },
-    {
-      id: '12',
-      skill: 'Test skill',
-      username: 'tester',
-      category: 'test',
-      exchange: 'Test skill 2',
-    },
-    {
-      id: '13',
-      skill: 'Test skill',
-      username: 'tester',
-      category: 'test',
-      exchange: 'Test skill 2',
-    },
-  ],
+  skills: MockSkills,
 };
 
 export const skillSlice = createSlice({
