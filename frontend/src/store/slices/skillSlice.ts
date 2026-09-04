@@ -1,42 +1,40 @@
-import { createSlice } from "@reduxjs/toolkit";
-import type { ISkill } from "../../types/skill";
+import { createSlice } from '@reduxjs/toolkit';
+import type { ISkill } from '../../types/skill';
 
 interface SkillState {
-    skills: ISkill[];
+  skills: ISkill[];
 }
 
 const initialState: SkillState = {
-    skills: [
-        {
-            id: '1',
-            skill: 'Test skill',
-            username: 'tester',
-            category: 'test',
-            exchange: 'Test skill 2'
-        },
-        {
-            id: '12',
-            skill: 'Test skill',
-            username: 'tester',
-            category: 'test',
-            exchange: 'Test skill 2'
-        },
-        {
-            id: '13',
-            skill: 'Test skill',
-            username: 'tester',
-            category: 'test',
-            exchange: 'Test skill 2'
-        }
-    ]
+  skills: [
+    {
+      id: '1',
+      skill: 'Test skill',
+      username: 'tester',
+      category: 'test',
+      exchange: 'Test skill 2',
+    },
+    {
+      id: '12',
+      skill: 'Test skill',
+      username: 'tester',
+      category: 'test',
+      exchange: 'Test skill 2',
+    },
+    {
+      id: '13',
+      skill: 'Test skill',
+      username: 'tester',
+      category: 'test',
+      exchange: 'Test skill 2',
+    },
+  ],
 };
 
 export const skillSlice = createSlice({
-    name: 'skill',
-    initialState,
-    reducers: {
-        
-    }
+  name: 'skill',
+  initialState,
+  reducers: {},
 });
 
 // export const { } = skillSlice.actions;

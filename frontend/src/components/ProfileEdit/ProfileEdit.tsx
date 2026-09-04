@@ -29,9 +29,7 @@ export const ProfileEdit = () => {
 
   return (
     <Block className={style.profile}>
-      {isOpenPasswordModal && (
-        <ChangePasswordModal onClose={() => setOpenPasswordModal(false)} />
-      )}
+      {isOpenPasswordModal && <ChangePasswordModal onClose={() => setOpenPasswordModal(false)} />}
       {!profile && (
         <div className={style.profile__auth}>
           <p>Вы не вошли в профиль.</p>

@@ -3,6 +3,7 @@ import Button from '../../ui/Button/Button';
 import Input from '../../ui/Input/Input';
 import style from './style.module.scss';
 import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
+import Dropdown from '../../ui/Dropdown/Dropdown';
 
 const categories = [
   'Все категории',
@@ -16,6 +17,7 @@ const categories = [
 export const SkillFilter = () => {
   const [skill, setSkill] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>('Все категории');
+  const [isOpenSelect, setOpenSelect] = useState(false);
 
   const searchSkill = () => {};
 
@@ -43,6 +45,16 @@ export const SkillFilter = () => {
           onChange={(e) => setSkill(e.target.value)}
           placeholder="Введите навык..."
         />
+        <div className={style.filter__select}>
+          <ButtonSecondary onClick={() => setOpenSelect(true)}>Обменять</ButtonSecondary>
+          {isOpenSelect && (
+            <Dropdown dropdownClose={() => setOpenSelect(false)} className={style.select}>
+              <Button>Все</Button>
+              <Button>Получить</Button>
+              <Button>Обменять</Button>
+            </Dropdown>
+          )}
+        </div>
         <Button onClick={searchSkill}>Найти</Button>
       </div>
     </div>
