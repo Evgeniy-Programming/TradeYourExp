@@ -25,15 +25,24 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ onClos
       <form className={style.form}>
         <div className={style.form__field}>
           <label>Старый пароль</label>
-          <InputPassword value={fieldCurrentPassword} onChange={(e) => setFieldCurrentPassword(e.target.value)} />
+          <InputPassword
+            value={fieldCurrentPassword}
+            onChange={(e) => setFieldCurrentPassword(e.target.value)}
+          />
         </div>
         <div className={style.form__field}>
           <label>Новый пароль</label>
-          <InputPassword value={fieldNewPassword} onChange={(e) => setFieldNewPassword(e.target.value)} />
+          <InputPassword
+            value={fieldNewPassword}
+            onChange={(e) => setFieldNewPassword(e.target.value)}
+          />
         </div>
         <div className={style.form__field}>
           <label>Повтор пароля</label>
-          <InputPassword value={fieldRepeatPassword} onChange={(e) => setFieldRepeatPassword(e.target.value)} />
+          <InputPassword
+            value={fieldRepeatPassword}
+            onChange={(e) => setFieldRepeatPassword(e.target.value)}
+          />
         </div>
 
         <Button onClick={editPassword}>Сохранить</Button>

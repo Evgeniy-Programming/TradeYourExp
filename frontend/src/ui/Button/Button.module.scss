@@ -37,4 +37,9 @@
     cursor: default;
     opacity: 0.5;
   }
+
+  &_mini {
+    padding: 3px 5px;
+    font-size: var(--font-size-small);
+  }
 }

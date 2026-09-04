@@ -36,6 +36,10 @@ export const router = createBrowserRouter([
         element: <div>Profile History page</div>,
       },
       {
+        path: '/profile/view/:profileId',
+        element: <div>Profile View page</div>,
+      },
+      {
         path: '/create',
         element: <div>Creator page</div>,
       },

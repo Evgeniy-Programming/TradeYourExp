@@ -2,20 +2,34 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
 
-.filter__category {
-  display: flex;
+  &__category {
+    display: flex;
   flex-wrap: wrap;
   gap: 5px;
-}
 
-.filter__category button {
-  padding: 5px;
+    button {
+padding: 5px;
   font-size: var(--font-size-small);
+    }
+  }
+
+  &__search {
+    display: flex;
+  gap: 5px;
+  }
+
+  &__select {
+    position: relative;
+  }
 }
 
-.filter__search {
+.select {
   display: flex;
+  flex-direction: column;
   gap: 5px;
+
+  button {
+    justify-content: flex-start;
+  }
 }

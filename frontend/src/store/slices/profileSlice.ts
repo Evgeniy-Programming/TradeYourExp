@@ -16,6 +16,7 @@ const initialState: ProfileState = {
     id: '42343',
     link: 'https://gergwejogj',
   },
+  // profile: null,
   isLoading: false,
 };
 

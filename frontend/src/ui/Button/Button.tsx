@@ -7,6 +7,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isMaxWidth?: boolean;
   isDanger?: boolean;
   isCircle?: boolean;
+  isMini?: boolean;
   disabled?: boolean;
   children: React.ReactNode;
 }
@@ -16,6 +17,7 @@ const Button: React.FC<ButtonProps> = ({
   isMaxWidth = false,
   isDanger = false,
   isCircle = false,
+  isMini = false,
   disabled = false,
   children,
   ...rest
@@ -34,6 +36,7 @@ const Button: React.FC<ButtonProps> = ({
         isMaxWidth && 'max-width',
         isDanger && style.button_danger,
         isCircle && style.button_circle,
+        isMini && style.button_mini,
         disabled && style.button_disabled
       )}
       onClick={handleClick}
