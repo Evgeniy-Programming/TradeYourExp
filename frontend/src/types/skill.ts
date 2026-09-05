@@ -1,13 +1,8 @@
-export interface IAddSkill {
-  category: string;
-  exchange: string;
-  skill: string;
-  username: string;
-}
+import type { categories, categoriesView } from '../constants/categories';
 
 export interface ISkill {
   id: string;
-  category: string;
+  category: CategoryViewType;
   description: string;
   skill: string;
   exchange: string;
@@ -16,3 +11,11 @@ export interface ISkill {
   avatarUsername: string | null;
   createdAt: string;
 }
+
+export type IEditSkill = Omit<
+  ISkill,
+  'id' | 'username' | 'avatarUsername' | 'createdAt' | 'category'
+> & { category: CategoryType };
+
+export type CategoryType = (typeof categories)[number];
+export type CategoryViewType = (typeof categoriesView)[number];

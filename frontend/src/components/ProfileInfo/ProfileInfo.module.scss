@@ -3,10 +3,10 @@
   flex-direction: column;
   gap: 20px;
   align-items: center;
+  align-self: flex-start;
 
   width: 100%;
   max-width: 300px;
-  min-height: 500px;
 
   &__auth {
     text-align: center;
