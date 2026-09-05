@@ -3,7 +3,7 @@ import type { ISkill } from '../types/skill';
 export const MockSkills: ISkill[] = [
   {
     id: '1',
-    category: 'Разное',
+    category: 'Технологии и IT',
     description: 'Подробное описание данного навыка и на что его нужно обменять',
     skill: 'Предлагаемый навык',
     exchange: 'Желаемый навык',
@@ -14,7 +14,7 @@ export const MockSkills: ISkill[] = [
   },
   {
     id: '2',
-    category: 'Разное',
+    category: 'Творчество и дизайн',
     description: 'Подробное описание данного навыка и на что его нужно обменять',
     skill: 'Предлагаемый навык',
     exchange: 'Желаемый навык',
@@ -25,7 +25,7 @@ export const MockSkills: ISkill[] = [
   },
   {
     id: '3',
-    category: 'Разное',
+    category: 'Наука, бизнес и саморазвитие',
     description: 'Подробное описание данного навыка и на что его нужно обменять',
     skill: 'Предлагаемый навык',
     exchange: 'Желаемый навык',
@@ -36,7 +36,7 @@ export const MockSkills: ISkill[] = [
   },
   {
     id: '4',
-    category: 'Разное',
+    category: 'Языки и коммуникация',
     description: 'Подробное описание данного навыка и на что его нужно обменять',
     skill: 'Предлагаемый навык',
     exchange: 'Желаемый навык',

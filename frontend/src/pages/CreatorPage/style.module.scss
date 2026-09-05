@@ -1,0 +1,65 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &__controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &__editor {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__controls {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  &__field {
+    position: relative;
+    padding: 10px;
+    border: 1px solid var(--color-block-transparent);
+    border-radius: var(--border-radius-large);
+
+    textarea {
+      resize: vertical;
+      height: 100px;
+      max-height: 200px;
+    }
+
+    &__tooltip {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+    }
+
+    &__category {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+
+      button {
+        padding: 5px;
+        font-size: var(--font-size-small);
+      }
+    }
+  }
+}

@@ -1,23 +1,9 @@
 import { instance } from '.';
+import type { IChangePassword, ILogin, IRegister } from '../types/auth';
 
 export const authAPI = {
-  registration: (data: RegisterType) => instance.post('auth/register', data),
-  login: (data: LoginType) => instance.post(`auth/login`, data),
+  registration: (data: IRegister) => instance.post('auth/register', data),
+  login: (data: ILogin) => instance.post(`auth/login`, data),
   logout: () => instance.post(`auth/logout`),
+  changePassword: (data: IChangePassword) => instance.post(`auth/changepassword`, data),
 };
-
-export interface RegisterType {
-  password: string;
-  email: string;
-  firstName: string;
-}
-
-export interface LoginType {
-  email: string;
-  password: string;
-}
-
-export interface ChangePasswordType {
-  currentPassword: string;
-  newPassword: string;
-}

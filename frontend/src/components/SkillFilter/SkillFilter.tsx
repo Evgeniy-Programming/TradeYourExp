@@ -4,24 +4,17 @@ import Input from '../../ui/Input/Input';
 import style from './style.module.scss';
 import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
 import Dropdown from '../../ui/Dropdown/Dropdown';
-
-const categories = [
-  'Все категории',
-  'Языки и коммуникация',
-  'Технологии и IT',
-  'Творчество и дизайн',
-  'Наука, бизнес и саморазвитие',
-  'Хобби, здоровье и образ жизни',
-];
+import { categories } from '../../constants/categories';
+import type { CategoryType } from '../../types/skill';
 
 export const SkillFilter = () => {
   const [skill, setSkill] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>('Все категории');
+  const [selectedCategory, setSelectedCategory] = useState<CategoryType>('Все категории');
   const [isOpenSelect, setOpenSelect] = useState(false);
 
   const searchSkill = () => {};
 
-  const findByCategory = (category: string | null) => {
+  const findByCategory = (category: CategoryType) => {
     setSelectedCategory(category);
   };
 
