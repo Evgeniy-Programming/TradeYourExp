@@ -1,10 +1,10 @@
 .badge {
-    padding: 2px 10px;
-    border-radius: var(--border-radius-small);
-    color: var(--color-text-light);
-    font-size: var(--font-size-small);
+  padding: 2px 10px;
+  border-radius: var(--border-radius-small);
+  font-size: var(--font-size-small);
+  color: var(--color-text-light);
 
-    &__bg {
-        background-color: var(--color-element);
-    }
+  &__bg {
+    background-color: var(--color-element);
+  }
 }

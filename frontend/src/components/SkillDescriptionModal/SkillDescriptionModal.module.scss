@@ -42,10 +42,10 @@
 
     &__desc,
     &__social {
+      position: relative;
       padding: 10px;
       border-radius: var(--border-radius-large);
       background-color: var(--color-block-transparent);
-      position: relative;
 
       &__badge {
         position: absolute;
@@ -74,14 +74,14 @@
 
 .badge {
   &_tg {
-    background-color: #24A1DE;
+    background-color: #24a1de;
   }
 
   &_vk {
-    background-color: #0077FF;
+    background-color: #0077ff;
   }
 
   &_wc {
-    background-color: #7BC142;
+    background-color: #7bc142;
   }
 }
