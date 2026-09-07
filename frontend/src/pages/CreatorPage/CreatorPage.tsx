@@ -10,12 +10,11 @@ import Input from '../../ui/Input/Input';
 import Tooltip from '../../ui/Tooltip/Tooltip';
 import { categories } from '../../constants/categories';
 import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
-import type { CategoryType } from '../../types/skill';
+import type { CategoryType, ContactType } from '../../types/skill';
 import { initEditSkill, setEditSkillField } from '../../store/slices/skillSlice';
 import { skillAPI } from '../../api/skill';
 import { useNavigate } from 'react-router-dom';
-import { setError } from '../../store/slices/appSlice';
-import { parseError } from '../../utils/parseError';
+import { setErrorWithTimeout } from '../../store/slices/appSlice';
 
 export const CreatorPage = () => {
   const [isOpenViewModal, setOpenViewModal] = useState(false);
@@ -25,6 +24,9 @@ export const CreatorPage = () => {
   const [fieldSkill, setFieldSkill] = useState('');
   const [fieldExchange, setFieldExchange] = useState('');
   const [fieldDesc, setFieldDesc] = useState('');
+  const [fieldContactType, setFieldContactType] = useState<ContactType>('site');
+  const [fieldContactValue, setFieldContactValue] = useState<string | null>(null);
+  const [isOpenContact, setOpenContact] = useState(false);
 
   const navigate = useNavigate();
 
@@ -38,7 +40,7 @@ export const CreatorPage = () => {
       await skillAPI.sendSkill(skill);
       navigate('/profile');
     } catch (error) {
-      dispatch(setError(parseError(error)));
+      dispatch(setErrorWithTimeout(error));
     }
   };
 
@@ -53,9 +55,23 @@ export const CreatorPage = () => {
         exchange: fieldExchange,
         skill: fieldSkill,
         description: fieldDesc,
+        contactType: fieldContactType,
+        contactValue: fieldContactValue
       })
     );
-  }, [dispatch, selectedCategory, fieldDesc, fieldExchange, fieldSkill]);
+  }, [dispatch, selectedCategory, fieldDesc, fieldExchange, fieldSkill, fieldContactType, fieldContactValue]);
+
+  const handleChangeContactType = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedType = e.target.value as ContactType;
+    setFieldContactType(selectedType);
+
+    if (selectedType === 'site') {
+      setOpenContact(false);
+      setFieldContactValue(null);
+    } else {
+      setOpenContact(true);
+    }
+  };
 
   return (
     <GeneralLayout>
@@ -127,6 +143,26 @@ export const CreatorPage = () => {
                   </div>
                 ))}
               </div>
+            </div>
+            <div className={style.form__field}>
+              <Tooltip
+                text="Укажите способ связи с вами"
+                className={style.form__field__tooltip}
+              />
+              <label htmlFor="fieldContactType">Способ связи</label>
+              <select id='fieldContactType' value={fieldContactType} onChange={handleChangeContactType}>
+                <option value="site">На сайте</option>
+                <option value="telegram">Телеграм</option>
+                <option value="vk">Вконтакте</option>
+                <option value="wechat">WeChat</option>
+              </select>
+              {isOpenContact && (
+                <Input
+                  className={style.form__field__contactValue}
+                  value={fieldContactValue || ''}
+                  onChange={(e) => setFieldContactValue(e.target.value)}
+                />
+              )}
             </div>
           </div>
 

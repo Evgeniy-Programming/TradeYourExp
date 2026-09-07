@@ -4,17 +4,17 @@ import Input from '../../ui/Input/Input';
 import style from './style.module.scss';
 import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
 import Dropdown from '../../ui/Dropdown/Dropdown';
-import { categories } from '../../constants/categories';
-import type { CategoryType } from '../../types/skill';
+import { categoriesView as categories } from '../../constants/categories';
+import type { CategoryViewType } from '../../types/skill';
 
 export const SkillFilter = () => {
   const [skill, setSkill] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<CategoryType>('Все категории');
+  const [selectedCategory, setSelectedCategory] = useState<CategoryViewType>('Все категории');
   const [isOpenSelect, setOpenSelect] = useState(false);
 
   const searchSkill = () => {};
 
-  const findByCategory = (category: CategoryType) => {
+  const findByCategory = (category: CategoryViewType) => {
     setSelectedCategory(category);
   };
 
@@ -22,13 +22,13 @@ export const SkillFilter = () => {
     <div className={style.filter}>
       <div className={style.filter__category}>
         {categories.map((category) => (
-          <>
+          <div key={category}>
             {selectedCategory === category ? (
               <Button onClick={() => findByCategory(category)}>{category}</Button>
             ) : (
               <ButtonSecondary onClick={() => findByCategory(category)}>{category}</ButtonSecondary>
             )}
-          </>
+          </div>
         ))}
       </div>
 

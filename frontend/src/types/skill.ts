@@ -6,7 +6,8 @@ export interface ISkill {
   description: string;
   skill: string;
   exchange: string;
-  media: string;
+  contactType: ContactType;
+  contactValue: string | null;
   username: string;
   avatarUsername: string | null;
   createdAt: string;
@@ -19,3 +20,5 @@ export type IEditSkill = Omit<
 
 export type CategoryType = (typeof categories)[number];
 export type CategoryViewType = (typeof categoriesView)[number];
+
+export type ContactType = 'site' | 'telegram' | 'vk' | 'wechat';

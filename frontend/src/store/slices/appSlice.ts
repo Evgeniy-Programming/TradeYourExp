@@ -1,6 +1,7 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { IErrorMessage } from '../../types/error';
 import type { IAlert } from '../../types/alert';
+import { parseError } from '../../utils/parseError';
 
 interface SkillState {
   alert: IAlert | null;
@@ -9,6 +10,17 @@ interface SkillState {
 const initialState: SkillState = {
   alert: null,
 };
+
+export const setErrorWithTimeout = createAsyncThunk(
+  'app/setErrorWithTimeout',
+  async (error: unknown, { dispatch }) => {
+    dispatch(appSlice.actions.setError(parseError(error)));
+
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    dispatch(appSlice.actions.clearAlert());
+  }
+)
 
 export const appSlice = createSlice({
   name: 'app',
@@ -20,8 +32,11 @@ export const appSlice = createSlice({
         ...action.payload,
       };
     },
+    clearAlert: (state) => {
+      state.alert = null;
+    }
   },
 });
 
-export const { setError } = appSlice.actions;
+export const { clearAlert } = appSlice.actions;
 export default appSlice.reducer;
