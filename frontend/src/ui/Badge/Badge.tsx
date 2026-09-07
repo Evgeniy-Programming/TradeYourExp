@@ -8,9 +8,7 @@ interface BadgeProps {
 
 const Badge: React.FC<BadgeProps> = ({ text, className }) => {
   return (
-    <div className={classNames(style.badge, !className && style.badge__bg, className)}>
-      {text}
-    </div>
+    <div className={classNames(style.badge, !className && style.badge__bg, className)}>{text}</div>
   );
 };
 

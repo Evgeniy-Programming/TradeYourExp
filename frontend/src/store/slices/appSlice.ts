@@ -20,7 +20,7 @@ export const setErrorWithTimeout = createAsyncThunk(
 
     dispatch(appSlice.actions.clearAlert());
   }
-)
+);
 
 export const appSlice = createSlice({
   name: 'app',
@@ -34,7 +34,7 @@ export const appSlice = createSlice({
     },
     clearAlert: (state) => {
       state.alert = null;
-    }
+    },
   },
 });
 

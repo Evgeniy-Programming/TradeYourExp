@@ -56,10 +56,18 @@ export const CreatorPage = () => {
         skill: fieldSkill,
         description: fieldDesc,
         contactType: fieldContactType,
-        contactValue: fieldContactValue
+        contactValue: fieldContactValue,
       })
     );
-  }, [dispatch, selectedCategory, fieldDesc, fieldExchange, fieldSkill, fieldContactType, fieldContactValue]);
+  }, [
+    dispatch,
+    selectedCategory,
+    fieldDesc,
+    fieldExchange,
+    fieldSkill,
+    fieldContactType,
+    fieldContactValue,
+  ]);
 
   const handleChangeContactType = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedType = e.target.value as ContactType;
@@ -145,12 +153,13 @@ export const CreatorPage = () => {
               </div>
             </div>
             <div className={style.form__field}>
-              <Tooltip
-                text="Укажите способ связи с вами"
-                className={style.form__field__tooltip}
-              />
+              <Tooltip text="Укажите способ связи с вами" className={style.form__field__tooltip} />
               <label htmlFor="fieldContactType">Способ связи</label>
-              <select id='fieldContactType' value={fieldContactType} onChange={handleChangeContactType}>
+              <select
+                id="fieldContactType"
+                value={fieldContactType}
+                onChange={handleChangeContactType}
+              >
                 <option value="site">На сайте</option>
                 <option value="telegram">Телеграм</option>
                 <option value="vk">Вконтакте</option>

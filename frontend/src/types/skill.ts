@@ -22,3 +22,5 @@ export type CategoryType = (typeof categories)[number];
 export type CategoryViewType = (typeof categoriesView)[number];
 
 export type ContactType = 'site' | 'telegram' | 'vk' | 'wechat';
+
+export type SkillSearchType = 'Все' | 'Получить' | 'Обменять';

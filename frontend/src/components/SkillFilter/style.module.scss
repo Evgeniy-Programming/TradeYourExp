@@ -21,6 +21,11 @@
 
   &__select {
     position: relative;
+
+    button > p {
+      width: 100%;
+      text-align: right;
+    }
   }
 }
 
@@ -28,6 +33,10 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
+
+  padding: 10px;
+
+  box-shadow: 0 10px 20px rgb(0 0 0 / 15%);
 
   button {
     justify-content: flex-start;
