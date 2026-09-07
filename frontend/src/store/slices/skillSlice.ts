@@ -22,7 +22,8 @@ export const skillSlice = createSlice({
         description: '',
         skill: '',
         exchange: '',
-        media: '',
+        contactType: 'site',
+        contactValue: null,
       };
     },
     removeEditSkill: (state) => {

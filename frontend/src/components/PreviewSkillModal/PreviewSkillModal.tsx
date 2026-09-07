@@ -8,6 +8,9 @@ import { formatTimestamp } from '../../utils/formatTimestamp';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
+import Badge from '../../ui/Badge/Badge';
+import classNames from 'classnames';
+import { formatContactType } from '../../utils/formatContactType';
 
 interface PreviewSkillModalProps {
   onClose: () => void;
@@ -62,8 +65,9 @@ export const PreviewSkillModal: React.FC<PreviewSkillModalProps> = ({ onClose, s
             </div>
 
             <div className={style.skill__content__social}>
+              {skill.contactType !== 'site' && <Badge text={formatContactType(skill.contactType)} className={classNames(style.skill__content__social__badge, skill.contactType === 'telegram' && style.badge_tg, skill.contactType === 'vk' && style.badge_vk, skill.contactType === 'wechat' && style.badge_wc)} />}
               <p className={style.skill__subtitle}>Контактная информация</p>
-              <p>{skill.media || 'Нет информации'}</p>
+              <p>{skill.contactType === 'site' ? 'На сайте' : skill.contactValue || 'Нет информации'}</p>
             </div>
 
             <p className={style.created}>Опубликовано {formatTimestamp(currentTime)}</p>

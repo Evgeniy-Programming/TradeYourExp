@@ -45,6 +45,13 @@
       padding: 10px;
       border-radius: var(--border-radius-large);
       background-color: var(--color-block-transparent);
+      position: relative;
+
+      &__badge {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+      }
     }
   }
 
@@ -63,4 +70,18 @@
 .created {
   font-size: var(--font-size-small);
   color: var(--color-text-transparent);
+}
+
+.badge {
+  &_tg {
+    background-color: #24A1DE;
+  }
+
+  &_vk {
+    background-color: #0077FF;
+  }
+
+  &_wc {
+    background-color: #7BC142;
+  }
 }
