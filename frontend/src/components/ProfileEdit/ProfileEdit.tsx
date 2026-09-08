@@ -10,8 +10,13 @@ import { useState } from 'react';
 import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
 import AvatarEdit from '../../ui/AvatarEdit/AvatarEdit';
 import { ChangePasswordModal } from '../ChangePasswordModal/ChangePasswordModal';
+import classNames from 'classnames';
 
-export const ProfileEdit = () => {
+interface ProfileEditProps {
+  className: string;
+}
+
+export const ProfileEdit: React.FC<ProfileEditProps> = ({ className }) => {
   const profile = useAppSelector((state) => state.profile.profile);
 
   const [isEditProfile, setEditProfile] = useState(false);
@@ -28,7 +33,7 @@ export const ProfileEdit = () => {
   };
 
   return (
-    <Block className={style.profile}>
+    <Block className={classNames(style.profile, className)}>
       {isOpenPasswordModal && <ChangePasswordModal onClose={() => setOpenPasswordModal(false)} />}
       {!profile && (
         <div className={style.profile__auth}>

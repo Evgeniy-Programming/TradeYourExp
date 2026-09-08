@@ -33,17 +33,19 @@ export const Skill: React.FC<SkillPropsType> = ({ skill }) => {
       {isOpenAuthModal && <ToAuthModal onClose={() => setOpenAuthModal(false)} />}
       <div className={style.skill}>
         <div className={style.skill__content}>
-          <div className={style.skill__content__avatar}>
-            <AvatarLink
-              profileAvatar={logoIMG}
-              username={skill.username}
-              profileId={skill.username}
-            />
-          </div>
-          <div className={style.skill__contact}>
-            <Button isMini onClick={handleOpenDesc}>
-              Подробнее
-            </Button>
+          <div className={style.skill__content__info}>
+            <div className={style.skill__content__avatar}>
+              <AvatarLink
+                profileAvatar={logoIMG}
+                username={skill.username}
+                profileId={skill.username}
+              />
+            </div>
+            <div className={style.skill__contact}>
+              <Button isMini onClick={handleOpenDesc}>
+                Подробнее
+              </Button>
+            </div>
           </div>
 
           <div className={style.skill__text}>
@@ -51,6 +53,8 @@ export const Skill: React.FC<SkillPropsType> = ({ skill }) => {
             <p>на</p>
             <b>{skill.exchange}</b>
           </div>
+
+          <div></div>
         </div>
       </div>
     </>

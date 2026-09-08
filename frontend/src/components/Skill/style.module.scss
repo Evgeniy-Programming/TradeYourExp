@@ -1,17 +1,20 @@
 .skill {
-  position: relative;
-
   padding: 10px;
   border-left: 2px solid var(--color-element);
   border-radius: var(--border-radius-large);
-
   background-color: var(--color-element-transparent);
 
   &__content {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 20px;
     justify-content: space-between;
+
+    &__info {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
 
     &__avatar {
       display: inline-flex;
@@ -19,11 +22,6 @@
   }
 
   &__text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
     text-align: center;
   }
 }

@@ -13,7 +13,7 @@ export const ProfileLayout: React.FC<ProfileLayoutProps> = ({ children }) => {
     <>
       <Header />
       <main className={classNames('container', style.main)}>
-        <ProfileEdit />
+        <ProfileEdit className={style.main__profile} />
         <Block className={style.main__block}>{children}</Block>
       </main>
     </>

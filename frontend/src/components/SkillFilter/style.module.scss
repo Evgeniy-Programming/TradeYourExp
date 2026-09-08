@@ -17,6 +17,11 @@
   &__search {
     display: flex;
     gap: 5px;
+
+    input {
+      width: 100%;
+      min-width: 100px;
+    }
   }
 
   &__select {
@@ -27,6 +32,24 @@
       text-align: right;
     }
   }
+
+  @media (width <= 600px) {
+    &__select {
+      button {
+        min-width: none;
+      }
+
+      button > p {
+        text-align: left;
+      }
+    }
+  }
+
+  @media (width <= 500px) {
+    &__search {
+      flex-wrap: wrap;
+    }
+  }
 }
 
 .select {
@@ -34,11 +57,15 @@
   flex-direction: column;
   gap: 5px;
 
+  max-width: 150px;
   padding: 10px;
-
-  box-shadow: 0 10px 20px rgb(0 0 0 / 15%);
 
   button {
     justify-content: flex-start;
   }
+}
+
+.label {
+  font-size: var(--font-size-small);
+  color: var(--color-text-transparent);
 }

@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import userIMG from '@/assets/img/logo.png';
 
 import style from './AvatarLink.module.scss';
 import classNames from 'classnames';

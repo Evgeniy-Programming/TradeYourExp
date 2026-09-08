@@ -23,6 +23,7 @@ export const SkillFilter = () => {
 
   return (
     <div className={style.filter}>
+      <p className="label">Категории предлагаемых навыков</p>
       <div className={style.filter__category}>
         {categories.map((category) => (
           <div key={category}>
@@ -35,6 +36,7 @@ export const SkillFilter = () => {
         ))}
       </div>
 
+      <p className="label">Поиск и фильтрация по названию</p>
       <div className={style.filter__search}>
         <Input
           value={skill}

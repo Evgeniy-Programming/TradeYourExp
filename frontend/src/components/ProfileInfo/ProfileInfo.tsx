@@ -5,12 +5,17 @@ import Block from '../../ui/Block/Block';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import A from '../../ui/A/A';
 import AButton from '../../ui/AButton/AButton';
+import classNames from 'classnames';
 
-export const ProfileInfo = () => {
+interface ProfileInfoProps {
+  className?: string;
+}
+
+export const ProfileInfo: React.FC<ProfileInfoProps> = ({ className }) => {
   const profile = useAppSelector((state) => state.profile.profile);
 
   return (
-    <Block className={style.profile}>
+    <Block className={classNames(style.profile, className)}>
       {!profile && (
         <div className={style.profile__auth}>
           <p>Вы не вошли в профиль.</p>
