@@ -83,7 +83,14 @@
     }
 
     &__burger {
+      position: absolute;
+      z-index: 100;
+
       display: block;
+
+      width: 100%;
+
+      box-shadow: 0 10px 20px rgb(0 0 0 / 15%);
     }
   }
 }

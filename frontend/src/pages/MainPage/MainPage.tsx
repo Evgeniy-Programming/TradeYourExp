@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { Skill } from '../../components/Skill/Skill';
 import { SkillFilter } from '../../components/SkillFilter/SkillFilter';
 import { useAppSelector } from '../../hooks/useAppDispatch';
@@ -11,6 +12,7 @@ export const MainPage = () => {
     <GeneralLayout>
       <h1 className={style.title}>Обмен навыками</h1>
       <SkillFilter />
+      <p className={classNames('label', style.label)}>Результаты</p>
       <div className={style.skills}>
         {skills.map((skill) => (
           <Skill key={skill.id} skill={skill} />

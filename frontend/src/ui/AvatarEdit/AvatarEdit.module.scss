@@ -23,26 +23,32 @@
     justify-content: center;
 
     width: 100%;
-    height: 20px;
-    border-bottom-right-radius: 50%;
-    border-bottom-left-radius: 50%;
+    height: 100%;
+    border-radius: 50%;
 
-    background-color: var(--color-block-transparent);
-
-    animation: down-to-up 0.3s;
+    background-color: rgba($color: #000000, $alpha: 70%);
   }
 
-  :hover > &__edit {
+  &__label {
+    position: absolute;
+    z-index: 200;
+    bottom: 0;
+
     display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
   }
 
-  @keyframes down-to-up {
-    0% {
-      bottom: -20px;
-    }
+  &__input {
+    display: none;
+  }
 
-    100% {
-      bottom: 0;
-    }
+  :hover > &__edit,
+  :active > &__edit {
+    display: flex;
   }
 }

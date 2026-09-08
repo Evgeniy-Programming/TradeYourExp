@@ -13,7 +13,7 @@ export const GeneralLayout: React.FC<GeneralLayoutProps> = ({ children }) => {
     <>
       <Header />
       <main className={classNames('container', style.main)}>
-        <ProfileInfo />
+        <ProfileInfo className={style.main__profile} />
         <Block className={style.main__block}>{children}</Block>
       </main>
     </>

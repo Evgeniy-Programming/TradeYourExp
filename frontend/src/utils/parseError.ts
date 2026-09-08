@@ -14,8 +14,14 @@ export const parseError = (error: unknown): IErrorMessage => {
   }
 
   if (axios.isAxiosError(error)) {
+    let message;
+
+    if (error.code === 'ERR_NETWORK') {
+      message = 'Проблема при подключении к серверу';
+    }
+
     return {
-      message: error.response?.data.message || error.message,
+      message: message || error.response?.data.message || error.message,
       status: error.response?.status,
     };
   }
