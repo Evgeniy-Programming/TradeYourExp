@@ -167,6 +167,7 @@ export const CreatorPage = () => {
               </select>
               {isOpenContact && (
                 <Input
+                  placeholder="Ваш никнейм"
                   className={style.form__field__contactValue}
                   value={fieldContactValue || ''}
                   onChange={(e) => setFieldContactValue(e.target.value)}
