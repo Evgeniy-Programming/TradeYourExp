@@ -2,7 +2,7 @@ import style from './ProfileEdit.module.scss';
 import logoIMG from '../../assets/img/logo.png';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import Block from '../../ui/Block/Block';
-import { useAppSelector } from '../../hooks/useAppDispatch';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import A from '../../ui/A/A';
 import Input from '../../ui/Input/Input';
 import Button from '../../ui/Button/Button';
@@ -11,6 +11,10 @@ import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
 import AvatarEdit from '../../ui/AvatarEdit/AvatarEdit';
 import { ChangePasswordModal } from '../ChangePasswordModal/ChangePasswordModal';
 import classNames from 'classnames';
+import { setErrorWithTimeout } from '../../store/slices/appSlice';
+import { authAPI } from '../../api/auth';
+import { setProfile } from '../../store/slices/profileSlice';
+import type { IEditProfile } from '../../types/profile';
 
 interface ProfileEditProps {
   className: string;
@@ -18,6 +22,7 @@ interface ProfileEditProps {
 
 export const ProfileEdit: React.FC<ProfileEditProps> = ({ className }) => {
   const profile = useAppSelector((state) => state.profile.profile);
+  const dispatch = useAppDispatch();
 
   const [isEditProfile, setEditProfile] = useState(false);
   const [isOpenPasswordModal, setOpenPasswordModal] = useState(false);
@@ -28,8 +33,27 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ className }) => {
   const [fieldLastName, setFieldLastName] = useState(profile?.lastName || '');
   const [fieldLink, setFieldLink] = useState(profile?.link || '');
 
-  const editProfile = () => {
+  const editProfile = async () => {
     setEditProfile((prev) => !prev);
+
+    if (isEditProfile) {
+      try {
+        const updateObject: IEditProfile = {};
+
+        if (fieldEmail) updateObject.email = fieldEmail;
+        if (fieldFirstName) updateObject.firstName = fieldFirstName;
+        if (fieldLastName) updateObject.lastName = fieldLastName;
+        if (fieldLink) updateObject.link = fieldLink;
+        if (fieldUsername) updateObject.username = fieldUsername;
+
+        await authAPI.update(updateObject);
+
+        const response = await authAPI.getMe();
+        dispatch(setProfile(response.data.data));
+      } catch (error) {
+        dispatch(setErrorWithTimeout(error));
+      }
+    }
   };
 
   return (
@@ -93,9 +117,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ className }) => {
             <b>{formatTimestamp(profile.createdAt)}</b>
           </div>
           <div className={style.profile__buttons}>
-            <Button onClick={() => editProfile()}>
-              {isEditProfile ? 'Сохранить' : 'Редактировать'}
-            </Button>
+            <Button onClick={editProfile}>{isEditProfile ? 'Сохранить' : 'Редактировать'}</Button>
             <ButtonSecondary onClick={() => setOpenPasswordModal(true)}>
               Изменить пароль
             </ButtonSecondary>

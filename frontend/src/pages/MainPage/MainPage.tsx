@@ -4,8 +4,10 @@ import { SkillFilter } from '../../components/SkillFilter/SkillFilter';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { GeneralLayout } from '../../layouts/GeneralLayout/GeneralLayout';
 import style from './style.module.scss';
+import { useProfile } from '../../hooks/useProfile';
 
 export const MainPage = () => {
+  useProfile();
   const skills = useAppSelector((state) => state.skill.skills);
 
   return (

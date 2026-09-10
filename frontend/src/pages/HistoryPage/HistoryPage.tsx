@@ -9,8 +9,10 @@ import type { SkillHistorySearchType } from '../../types/skill';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { formatSkillHistorySearchType } from '../../utils/formatSkillStatusType';
 import { SkillHistory } from '../../components/SkillHistory/SkillHistory';
+import { useProfile } from '../../hooks/useProfile';
 
 export const HistoryPage = () => {
+  useProfile();
   const [isOpenSelect, setOpenSelect] = useState(false);
   const [selectedSearchType, setSearchType] = useState<SkillHistorySearchType>('ALL');
 
