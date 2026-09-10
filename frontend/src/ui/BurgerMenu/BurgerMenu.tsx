@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import classNames from 'classnames';
 
-import style from './BurgerMenu.module.css';
+import style from './BurgerMenu.module.scss';
 
 interface BurgerMenuProps {
   onClick: () => void;

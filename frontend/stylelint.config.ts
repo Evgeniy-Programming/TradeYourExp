@@ -1,7 +1,8 @@
 /** @type {import('stylelint').Config} */
 export default {
   extends: [
-    'stylelint-config-standard',
+    'stylelint-config-standard-scss',
+    'stylelint-config-css-modules',
     'stylelint-config-clean-order',
     'stylelint-prettier/recommended',
   ],
@@ -17,5 +18,6 @@ export default {
     'value-keyword-case': 'lower',
     'selector-max-id': 1,
     'selector-class-pattern': null,
+    'scss/selector-no-union-class-name': null,
   },
 };

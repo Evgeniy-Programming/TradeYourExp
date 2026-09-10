@@ -1,0 +1,57 @@
+import { createBrowserRouter } from 'react-router-dom';
+import { MainPage } from '../pages/MainPage/MainPage';
+import { requireAuth, requireGuest } from './loaders/authLoader';
+import { LoginPage } from '../pages/LoginPage/LoginPage';
+import { RegisterPage } from '../pages/RegisterPage/RegisterPage';
+import { ProfilePage } from '../pages/ProfilePage/ProfilePage';
+import { CreatorPage } from '../pages/CreatorPage/CreatorPage';
+import { RootLayout } from '../layouts/RootLayout/RootLayout';
+import { HistoryPage } from '../pages/HistoryPage/HistoryPage';
+import { StatsPage } from '../pages/StatsPage/StatsPage';
+
+export const router = createBrowserRouter([
+  {
+    element: <RootLayout />,
+    children: [
+      {
+        path: '/',
+        element: <MainPage />,
+      },
+      {
+        path: '/login',
+        element: <LoginPage />,
+        loader: requireGuest,
+      },
+      {
+        path: '/register',
+        element: <RegisterPage />,
+        loader: requireGuest,
+      },
+      {
+        loader: requireAuth,
+        children: [
+          {
+            path: '/profile',
+            element: <ProfilePage />,
+          },
+          {
+            path: '/profile/stats',
+            element: <StatsPage />,
+          },
+          {
+            path: '/profile/history',
+            element: <HistoryPage />,
+          },
+          {
+            path: '/profile/view/:profileId',
+            element: <div>Profile View page</div>,
+          },
+          {
+            path: '/create',
+            element: <CreatorPage />,
+          },
+        ],
+      },
+    ],
+  },
+]);

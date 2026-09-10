@@ -1,5 +1,5 @@
-import style from './Avatar.module.css';
-import userIMG from './../../../public/img/user.png';
+import style from './Avatar.module.scss';
+import userIMG from '@/assets/img/logo.png';
 
 interface AvatarProps {
   profileAvatar: string | null;

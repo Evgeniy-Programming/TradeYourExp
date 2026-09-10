@@ -1,0 +1,33 @@
+.skill {
+  padding: 10px;
+  border-left: 2px solid var(--color-element);
+  border-radius: var(--border-radius-large);
+  background-color: var(--color-element-transparent);
+
+  &__content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+
+    &__info {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    &__avatar {
+      display: inline-flex;
+    }
+  }
+
+  &__text {
+    text-align: center;
+  }
+}
+
+.status {
+  &_active {
+    background-color: var(--color-block-gray);
+  }
+}

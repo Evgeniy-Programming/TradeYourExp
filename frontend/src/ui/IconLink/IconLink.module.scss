@@ -1,0 +1,11 @@
+.iconLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+
+  &__text {
+    font-size: var(--font-size-small);
+    text-align: center;
+  }
+}

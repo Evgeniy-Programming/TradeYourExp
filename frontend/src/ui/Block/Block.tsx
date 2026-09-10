@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 
-import style from './Block.module.css';
+import style from './Block.module.scss';
 
 interface BlockProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;

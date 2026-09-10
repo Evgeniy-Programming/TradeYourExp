@@ -4,7 +4,9 @@ import { baseURL } from '../constants/api';
 const instance = axios.create({
   withCredentials: true,
   baseURL: baseURL,
-  headers: {},
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 instance.interceptors.request.use((config) => {
@@ -20,7 +22,7 @@ instance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
@@ -30,8 +32,9 @@ instance.interceptors.response.use(
 
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return instance(originalRequest);
-      } catch {
+      } catch (refreshError) {
         localStorage.removeItem('accessToken');
+        return Promise.reject(refreshError);
       }
     }
 

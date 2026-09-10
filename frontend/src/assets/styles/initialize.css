@@ -38,12 +38,15 @@
   --color-text-title: #000000;
   --color-text-base: #000000;
   --color-text-transparent: rgb(0 0 0 / 50%);
+  --color-text-light: #ffffff;
   --color-text-link: #2b4a4a;
   --color-text-link-hover: #223838;
   --color-danger: #dc3545;
   --color-danger-hover: #c82333;
   --color-background: #e7e6e6;
   --color-block: #ffffff;
+  --color-block-transparent: rgb(0 0 0 / 5%);
+  --color-block-gray: gray;
   --color-element: #28a745;
   --color-element-hover: #218838;
   --color-element-transparent: rgb(106 164 162 / 20%);
@@ -158,4 +161,9 @@ a {
 ::-webkit-scrollbar-thumb {
   border-radius: 4px;
   background: var(--color-element-secondary);
+}
+
+.label {
+  font-size: var(--font-size-small);
+  color: var(--color-text-transparent);
 }

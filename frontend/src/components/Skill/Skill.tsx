@@ -1,32 +1,62 @@
-import style from './style.module.css';
+import style from './style.module.scss';
+import logoIMG from '../../assets/img/logo.png';
+import AvatarLink from '../../ui/AvatarLink/AvatarLink';
+import Button from '../../ui/Button/Button';
+import { useState } from 'react';
+import { SkillDescriptionModal } from '../SkillDescriptionModal/SkillDescriptionModal';
+import { useAppSelector } from '../../hooks/useAppDispatch';
+import { ToAuthModal } from '../ToAuthModal/ToAuthModal';
+import type { ISkill } from '../../types/skill';
 
-interface SkillPropsType {
-  author: string;
-  authorSkill: string;
-  requestSkill: string;
-  contactType: string;
-  username: string | null;
+interface SkillProps {
+  skill: ISkill;
 }
 
-export const Skill: React.FC<SkillPropsType> = ({
-  author,
-  authorSkill,
-  requestSkill,
-  contactType,
-  username,
-}) => {
+export const Skill: React.FC<SkillProps> = ({ skill }) => {
+  const [isOpenDescModal, setOpenDescModal] = useState(false);
+  const [isOpenAuthModal, setOpenAuthModal] = useState(false);
+  const profile = useAppSelector((state) => state.profile.profile);
+
+  const handleOpenDesc = () => {
+    if (profile) {
+      setOpenDescModal(true);
+    } else {
+      setOpenAuthModal(true);
+    }
+  };
+
   return (
-    <div className={style.skill}>
-      <div className={style.skill__content}>
-        <b>
-          {author}: {authorSkill} ↔ {requestSkill}
-        </b>
+    <>
+      {isOpenDescModal && (
+        <SkillDescriptionModal skill={skill} onClose={() => setOpenDescModal(false)} />
+      )}
+      {isOpenAuthModal && <ToAuthModal onClose={() => setOpenAuthModal(false)} />}
+      <div className={style.skill}>
+        <div className={style.skill__content}>
+          <div className={style.skill__content__info}>
+            <div className={style.skill__content__avatar}>
+              <AvatarLink
+                profileAvatar={logoIMG}
+                username={skill.username}
+                profileId={skill.username}
+              />
+            </div>
+            <div className={style.skill__contact}>
+              <Button isMini onClick={handleOpenDesc}>
+                Подробнее
+              </Button>
+            </div>
+          </div>
+
+          <div className={style.skill__text}>
+            <b>{skill.skill}</b>
+            <p>на</p>
+            <b>{skill.exchange}</b>
+          </div>
+
+          <div></div>
+        </div>
       </div>
-      <div className={style.skill__contact}>
-        <p>
-          Тип связи: {contactType}, Имя: {username}
-        </p>
-      </div>
-    </div>
+    </>
   );
 };

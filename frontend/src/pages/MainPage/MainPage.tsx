@@ -1,28 +1,25 @@
-import { AddSkillForm } from '../../components/AddSkillForm/AddSkillForm';
-import { LoginForm } from '../../components/LoginForm/LoginForm';
-import { MainLogo } from '../../components/MainLogo/MainLogo';
-import { RegisterForm } from '../../components/RegisterForm/RegisterForm';
+import classNames from 'classnames';
 import { Skill } from '../../components/Skill/Skill';
 import { SkillFilter } from '../../components/SkillFilter/SkillFilter';
-import Block from '../../ui/Block/Block';
-import style from './style.module.css';
+import { useAppSelector } from '../../hooks/useAppDispatch';
+import { GeneralLayout } from '../../layouts/GeneralLayout/GeneralLayout';
+import style from './style.module.scss';
+import { useProfile } from '../../hooks/useProfile';
 
 export const MainPage = () => {
-  return (
-    <div className={style.layout}>
-      <div className={style.layout__auth}>
-        <LoginForm />
-        <RegisterForm />
-      </div>
+  useProfile();
+  const skills = useAppSelector((state) => state.skill.skills);
 
-      <Block className={style.layout__main}>
-        <MainLogo />
-        <AddSkillForm />
-        <SkillFilter />
-        <div className={style.skills}>
-          <h2>Предложения</h2>
-        </div>
-      </Block>
-    </div>
+  return (
+    <GeneralLayout>
+      <h1 className={style.title}>Обмен навыками</h1>
+      <SkillFilter />
+      <p className={classNames('label', style.label)}>Результаты</p>
+      <div className={style.skills}>
+        {skills.map((skill) => (
+          <Skill key={skill.id} skill={skill} />
+        ))}
+      </div>
+    </GeneralLayout>
   );
 };

@@ -1,0 +1,14 @@
+.main {
+  display: flex;
+  gap: 40px;
+  margin-top: 40px;
+
+  &__block {
+    width: 100%;
+  }
+
+  @media (width <= 1000px) {
+    flex-direction: column;
+    gap: 20px;
+  }
+}

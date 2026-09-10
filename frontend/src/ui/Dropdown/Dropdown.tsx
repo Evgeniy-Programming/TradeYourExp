@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-import style from './Dropdown.module.css';
+import style from './Dropdown.module.scss';
 import Close from '../Close/Close';
 import classNames from 'classnames';
 import Block from '../Block/Block';
