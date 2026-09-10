@@ -1,13 +1,19 @@
 export interface IRegister {
-  password: string;
+  username: string;
   email: string;
-  firstName: string;
+  password: string;
+  firstName?: string;
+  lastName?: string;
+  link?: string;
 }
 
 export interface ILogin {
-  email: string;
+  type: LoginType;
+  login: string;
   password: string;
 }
+
+export type LoginType = 'email' | 'username';
 
 export interface IChangePassword {
   currentPassword: string;
