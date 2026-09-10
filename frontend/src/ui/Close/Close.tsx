@@ -3,12 +3,13 @@ import CloseSVG from './../svg/CloseSVG';
 
 interface CloseProps {
   onClick?: () => void;
+  color?: string;
 }
 
-const Close: React.FC<CloseProps> = ({ onClick }) => {
+const Close: React.FC<CloseProps> = ({ onClick, color = 'var(--color-element)' }) => {
   return (
     <button className={style.close} type="button" onClick={onClick} title="Закрыть">
-      <CloseSVG color="var(--color-element)" />
+      <CloseSVG color={color} />
     </button>
   );
 };
