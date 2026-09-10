@@ -7,6 +7,7 @@ import { ProfilePage } from '../pages/ProfilePage/ProfilePage';
 import { CreatorPage } from '../pages/CreatorPage/CreatorPage';
 import { RootLayout } from '../layouts/RootLayout/RootLayout';
 import { HistoryPage } from '../pages/HistoryPage/HistoryPage';
+import { StatsPage } from '../pages/StatsPage/StatsPage';
 
 export const router = createBrowserRouter([
   {
@@ -35,7 +36,7 @@ export const router = createBrowserRouter([
           },
           {
             path: '/profile/stats',
-            element: <div>Profile Stats page</div>,
+            element: <StatsPage />,
           },
           {
             path: '/profile/history',
