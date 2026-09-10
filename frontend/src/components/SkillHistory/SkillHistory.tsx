@@ -1,18 +1,21 @@
-import style from './style.module.scss';
+import style from './SkillHistory.module.scss';
 import logoIMG from '../../assets/img/logo.png';
 import AvatarLink from '../../ui/AvatarLink/AvatarLink';
 import Button from '../../ui/Button/Button';
 import { useState } from 'react';
-import { SkillDescriptionModal } from '../SkillDescriptionModal/SkillDescriptionModal';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { ToAuthModal } from '../ToAuthModal/ToAuthModal';
-import type { ISkill } from '../../types/skill';
+import type { ISkillHistory } from '../../types/skill';
+import Badge from '../../ui/Badge/Badge';
+import { formatSkillStatusType } from '../../utils/formatSkillStatusType';
+import classNames from 'classnames';
+import { SkillHistoryDescriptionModal } from '../SkillHistoryDescriptionModal/SkillHistoryDescriptionModal';
 
-interface SkillProps {
-  skill: ISkill;
+interface SkillHistoryProps {
+  skill: ISkillHistory;
 }
 
-export const Skill: React.FC<SkillProps> = ({ skill }) => {
+export const SkillHistory: React.FC<SkillHistoryProps> = ({ skill }) => {
   const [isOpenDescModal, setOpenDescModal] = useState(false);
   const [isOpenAuthModal, setOpenAuthModal] = useState(false);
   const profile = useAppSelector((state) => state.profile.profile);
@@ -28,7 +31,7 @@ export const Skill: React.FC<SkillProps> = ({ skill }) => {
   return (
     <>
       {isOpenDescModal && (
-        <SkillDescriptionModal skill={skill} onClose={() => setOpenDescModal(false)} />
+        <SkillHistoryDescriptionModal skill={skill} onClose={() => setOpenDescModal(false)} />
       )}
       {isOpenAuthModal && <ToAuthModal onClose={() => setOpenAuthModal(false)} />}
       <div className={style.skill}>
@@ -54,7 +57,14 @@ export const Skill: React.FC<SkillProps> = ({ skill }) => {
             <b>{skill.exchange}</b>
           </div>
 
-          <div></div>
+          <div className={style.skill__status}>
+            {skill.status && (
+              <Badge
+                className={classNames(skill.status === 'CLOSED' && style.status_active)}
+                text={formatSkillStatusType(skill.status)}
+              />
+            )}
+          </div>
         </div>
       </div>
     </>

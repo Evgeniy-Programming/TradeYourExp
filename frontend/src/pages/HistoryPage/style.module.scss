@@ -1,0 +1,40 @@
+.profile {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &__title {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: space-between;
+
+    &__select {
+      position: relative;
+
+      button > p {
+        width: 100%;
+        text-align: right;
+      }
+    }
+  }
+
+  &__skills {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+.select {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  max-width: 150px;
+  padding: 10px;
+
+  button {
+    justify-content: flex-start;
+  }
+}
