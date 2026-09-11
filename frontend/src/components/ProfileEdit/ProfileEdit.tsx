@@ -13,7 +13,7 @@ import { ChangePasswordModal } from '../ChangePasswordModal/ChangePasswordModal'
 import classNames from 'classnames';
 import { setErrorWithTimeout } from '../../store/slices/appSlice';
 import { authAPI } from '../../api/auth';
-import { setProfile } from '../../store/slices/profileSlice';
+import { clearProfile, setProfile } from '../../store/slices/profileSlice';
 import type { IEditProfile } from '../../types/profile';
 
 interface ProfileEditProps {
@@ -53,6 +53,16 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ className }) => {
       } catch (error) {
         dispatch(setErrorWithTimeout(error));
       }
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await authAPI.logout();
+
+      dispatch(clearProfile());
+    } catch (error) {
+      dispatch(setErrorWithTimeout(error));
     }
   };
 
@@ -124,6 +134,9 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ className }) => {
             {isEditProfile && (
               <ButtonSecondary onClick={() => setEditProfile(false)}>Отменить</ButtonSecondary>
             )}
+            <ButtonSecondary isDanger onClick={logout}>
+              Выйти
+            </ButtonSecondary>
           </div>
         </div>
       )}
