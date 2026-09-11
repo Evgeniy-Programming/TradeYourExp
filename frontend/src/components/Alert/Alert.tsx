@@ -32,7 +32,7 @@ const Alert: React.FC<AlertProps> = ({ alert }) => {
           })}
         >
           <div className={style.alert__close}>
-            <Close onClick={closeAlert} color="var(--color-text-transparent)" />
+            <Close onClick={closeAlert} color={`var(--color-alert-${alert.type}-text)`} />
           </div>
 
           {alert.type === 'error' && <ErrorSVG />}

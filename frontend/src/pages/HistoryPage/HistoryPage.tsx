@@ -13,8 +13,10 @@ import { useProfile } from '../../hooks/useProfile';
 
 export const HistoryPage = () => {
   useProfile();
+
+  const skillsFilter = useAppSelector((state) => state.skill.historySkillsFilter);
   const [isOpenSelect, setOpenSelect] = useState(false);
-  const [selectedSearchType, setSearchType] = useState<SkillHistorySearchType>('ALL');
+  const [selectedSearchType, setSearchType] = useState<SkillHistorySearchType>(skillsFilter);
 
   const skills = useAppSelector((state) => state.skill.historySkills);
   const filteredSkills = useMemo(() => {

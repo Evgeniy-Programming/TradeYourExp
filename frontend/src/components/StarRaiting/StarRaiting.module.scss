@@ -1,0 +1,32 @@
+$star-active-color: #fbbf24;
+$star-inactive-color: #d1d5db;
+
+.starRating {
+  display: inline-flex;
+  gap: 4px;
+  align-items: flex-end;
+}
+
+.star {
+  width: 48px;
+  height: 48px;
+  color: $star-inactive-color;
+
+  &.isActive {
+    color: $star-active-color;
+  }
+
+  &:nth-child(1),
+  &:nth-child(5) {
+    transform: scale(0.75);
+  }
+
+  &:nth-child(2),
+  &:nth-child(4) {
+    transform: scale(0.88);
+  }
+
+  &:nth-child(3) {
+    transform: scale(1.2);
+  }
+}

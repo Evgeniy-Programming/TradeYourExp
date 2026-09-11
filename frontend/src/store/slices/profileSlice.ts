@@ -1,9 +1,9 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { IProfile } from '../../types/profile';
+import type { IProfile, IProfileStats } from '../../types/profile';
 
 interface ProfileState {
   profile: IProfile | null;
-  isLoading: boolean;
+  stats: IProfileStats | null;
 }
 
 const initialState: ProfileState = {
@@ -17,7 +17,14 @@ const initialState: ProfileState = {
     link: 'https://gergwejogj',
   },
   // profile: null,
-  isLoading: false,
+  // stats: null,
+  stats: {
+    raiting: 4,
+    activeSkills: 2,
+    closedSkills: 2,
+    uniquePartners: 2,
+    successSkills: 50,
+  },
 };
 
 const profileSlice = createSlice({
@@ -38,12 +45,12 @@ const profileSlice = createSlice({
     clearProfile: (state) => {
       state.profile = null;
     },
-    setProfileLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
+    setProfileStats: (state, action: PayloadAction<IProfileStats>) => {
+      state.stats = action.payload;
     },
   },
 });
 
-export const { setProfile, updateProfileFields, clearProfile, setProfileLoading } =
+export const { setProfile, updateProfileFields, clearProfile, setProfileStats } =
   profileSlice.actions;
 export default profileSlice.reducer;

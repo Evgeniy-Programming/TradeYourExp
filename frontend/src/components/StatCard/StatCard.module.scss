@@ -1,0 +1,55 @@
+.card {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  max-width: 200px;
+  padding: 10px;
+  border-radius: var(--border-radius-large);
+
+  box-shadow: 0 0 15px rgb(0 0 0 / 5%);
+
+  &__arrow {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    box-shadow: 0 0 15px rgb(0 0 0 / 5%);
+  }
+
+  b {
+    font-size: var(--font-size-title);
+  }
+
+  &__color {
+    &_blue {
+      border: 1px solid var(--color-alert-info-border);
+      color: var(--color-alert-info-text);
+      background-color: var(--color-alert-info-background);
+    }
+
+    &_red {
+      border: 1px solid var(--color-alert-error-border);
+      color: var(--color-alert-error-text);
+      background-color: var(--color-alert-error-background);
+    }
+
+    &_yellow {
+      border: 1px solid var(--color-alert-warning-border);
+      color: var(--color-alert-warning-text);
+      background-color: var(--color-alert-warning-background);
+    }
+
+    &_green {
+      border: 1px solid var(--color-alert-success-border);
+      color: var(--color-alert-success-text);
+      background-color: var(--color-alert-success-background);
+    }
+
+    &_light {
+      border: 1px solid var(--color-block-transparent);
+      background-color: var(--color-block);
+    }
+  }
+}
