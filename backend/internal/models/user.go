@@ -24,3 +24,9 @@ type RegisterRequest struct {
 	Password string `json:"password" binding:"required,min=6"`
 	Role     string `json:"role" binding:"required,oneof=manager admin viewer"`
 }
+
+type AuthResponse struct {
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+	FirstName string `json:"firstName"`
+}

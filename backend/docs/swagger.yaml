@@ -28,14 +28,38 @@ definitions:
     - role
     - username
     type: object
-  models.Skill:
+  models.ResponseApi:
+    properties:
+      code:
+        description: '[!] доработать код ошибки [!]'
+        type: string
+      error:
+        type: string
+      message:
+        example: Information message
+        type: string
+      request_id:
+        example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        type: string
+      result: {}
+      status:
+        example: true
+        type: boolean
+    type: object
+  models.SkillFull:
     properties:
       category:
+        type: string
+      created_at:
+        type: string
+      description:
         type: string
       exchange:
         type: string
       id:
         type: integer
+      media:
+        type: string
       skill:
         type: string
       username:
@@ -84,18 +108,15 @@ paths:
         "200":
           description: Пользователь успешно вошел
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
         "400":
           description: Неверный формат данных
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
         "401":
           description: Неверные учетные данные
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
       summary: Авторизация пользователя
       tags:
       - users
@@ -117,18 +138,15 @@ paths:
         "201":
           description: Пользователь успешно создан
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
         "400":
           description: Неверный формат данных
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
         "409":
           description: Пользователь уже существует
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
       summary: Создание пользователя
       tags:
       - users
@@ -142,16 +160,16 @@ paths:
       responses:
         "200":
           description: Вывод пользовательских скиллов
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
         "400":
           description: Неверный формат
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
         "404":
           description: Пользователь не найден
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
       summary: Вывести все скиллы
       tags:
       - skills
@@ -165,29 +183,26 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/models.Skill'
+          $ref: '#/definitions/models.SkillFull'
       produces:
       - application/json
       responses:
         "201":
           description: Запрос навыка успешно создан
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
         "400":
           description: Неверный формат запроса
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
         "409":
           description: Конфликт при создании запроса
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            additionalProperties: true
-            type: object
-      security:
-      - ApiKeyAuth: []
+            $ref: '#/definitions/models.ResponseApi'
       summary: Добавление запроса с дополнительным описанием
       tags:
       - skills
@@ -207,16 +222,16 @@ paths:
       responses:
         "200":
           description: Вывод пользовательских скиллов
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
         "400":
           description: Неверный формат
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
         "404":
           description: Категория не найдена
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
       summary: Вывести все скиллы по категории.
       tags:
       - skills
@@ -236,16 +251,16 @@ paths:
       responses:
         "200":
           description: Запрос навыка успешно удален
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
         "404":
           description: Неверный формат ID
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
         "500":
           description: Запрос не найден
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
       summary: Удалить запрос
       tags:
       - skills
@@ -259,16 +274,16 @@ paths:
       responses:
         "200":
           description: Вывод списка доп. описаний
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
         "400":
           description: Неверный формат
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
         "404":
           description: Пользователь не найден
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
       summary: Вывести все доп.описания
       tags:
       - skills
@@ -288,16 +303,16 @@ paths:
       responses:
         "200":
           description: Вывод пользователя
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
         "400":
           description: Неверный формат Skill ID
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
         "404":
           description: Пользователь не найден
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
       summary: Вывод описания по skill_id
       tags:
       - skills
@@ -317,16 +332,16 @@ paths:
       responses:
         "200":
           description: Вывод пользовательских скиллов
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
         "400":
           description: Неверный формат
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
         "404":
           description: Категория не найдена
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
       summary: Вывести все скиллы по вхождению в ключевую строку.
       tags:
       - skills

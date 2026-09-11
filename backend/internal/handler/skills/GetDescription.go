@@ -15,30 +15,48 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param        id   path      string  true  "Вывод описания по skill_id"
-// @Success      200  {object}  nil     "Вывод пользователя"
-// @Failure      400  {object}  map[string]interface{} "Неверный формат Skill ID"
-// @Failure      404  {object}  map[string]interface{} "Пользователь не найден"
+// @Success      200  {object}  models.ResponseApi  "Вывод пользователя"
+// @Failure      400  {object}  models.ResponseApi "Неверный формат Skill ID"
+// @Failure      404  {object}  models.ResponseApi "Пользователь не найден"
 // @Router       /skills/desc/{id} [get]
 func (h *Handler) GetDescriptionByID(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil || id <= 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid skill id"})
+		c.JSON(http.StatusBadRequest, models.ResponseApi{
+			Status:  false,
+			Error:   err.Error(),
+			Message: "Invalid skill id",
+		})
 		return
 	}
 
 	desc, err := h.repo.Skills.GetDescriptionBySkillID(c.Request.Context(), id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
+		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			Status:  false,
+			Error:   err.Error(),
+			Message: "DataBase Error",
+		})
 		return
 	}
 
 	if desc == nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "description not found"})
+		c.JSON(http.StatusNotFound, models.ResponseApi{
+			Status:  false,
+			Message: "Description not found",
+		})
 		return
 	}
 
-	c.JSON(http.StatusOK, desc)
+	responseApi := models.ResponseApi{
+		RequestID: "", // доделать с MiddleWare
+		Status:    true,
+		Message:   "Description successfull received",
+		Result:    desc,
+	}
+
+	c.JSON(http.StatusOK, responseApi)
 }
 
 // GetAllDescriptions вывод списка всех доп. описаний.
@@ -47,14 +65,18 @@ func (h *Handler) GetDescriptionByID(c *gin.Context) {
 // @Tags         skills
 // @Accept       json
 // @Produce      json
-// @Success      200  {object}  nil     "Вывод списка доп. описаний"
-// @Failure      400  {object}  map[string]interface{} "Неверный формат"
-// @Failure      404  {object}  map[string]interface{} "Пользователь не найден"
+// @Success      200  {object}  models.ResponseApi "Вывод списка доп. описаний"
+// @Failure      400  {object}  models.ResponseApi "Неверный формат"
+// @Failure      404  {object}  models.ResponseApi "Пользователь не найден"
 // @Router       /skills/desc [get]
 func (h *Handler) GetAllDescriptions(c *gin.Context) {
 	descs, err := h.repo.Skills.GetAllDescriptions(c.Request.Context())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
+		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			Status:  false,
+			Error:   err.Error(),
+			Message: "DataBase Error",
+		})
 		return
 	}
 
@@ -62,6 +84,11 @@ func (h *Handler) GetAllDescriptions(c *gin.Context) {
 	if descs == nil {
 		descs = []models.SkillDescription{}
 	}
-
-	c.JSON(http.StatusOK, descs)
+	responseApi := models.ResponseApi{
+		RequestID: "", // доделать с MiddleWare
+		Status:    true,
+		Message:   "Description list successfull received",
+		Result:    descs,
+	}
+	c.JSON(http.StatusOK, responseApi)
 }

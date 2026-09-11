@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"Trade-y-exp/internal/models"
 	authdb "Trade-y-exp/proto/auth"
 
 	"github.com/gin-gonic/gin"
@@ -18,9 +19,9 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param input body models.LoginRequest true "Данные для входа"
-// @Success      200    {object}  map[string]interface{} "Пользователь успешно вошел"
-// @Failure      400    {object}  map[string]interface{} "Неверный формат данных"
-// @Failure      401    {object}  map[string]interface{} "Неверные учетные данные"
+// @Success      200    {object}  models.ResponseApi "Пользователь успешно вошел"
+// @Failure      400    {object}  models.ResponseApi "Неверный формат данных"
+// @Failure      401    {object}  models.ResponseApi "Неверные учетные данные"
 // @Router       /login [post]
 func (h *Handler) Login(c *gin.Context) {
 	var req struct {
@@ -29,7 +30,11 @@ func (h *Handler) Login(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid data", "type": err})
+		c.JSON(http.StatusBadRequest, models.ResponseApi{
+			Status:  false,
+			Error:   err.Error(),
+			Message: "Invalid data for login",
+		})
 		return
 	}
 
@@ -40,10 +45,18 @@ func (h *Handler) Login(c *gin.Context) {
 	})
 	if err != nil {
 		if status.Code(err) == codes.Unauthenticated {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "wrong creds"})
+			c.JSON(http.StatusUnauthorized, models.ResponseApi{
+				Status:  false,
+				Error:   err.Error(),
+				Message: "Invalid creds",
+			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "auth service error", "type": err})
+		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			Status:  false,
+			Error:   err.Error(),
+			Message: "Auth Service error",
+		})
 		return
 	}
 
@@ -58,6 +71,16 @@ func (h *Handler) Login(c *gin.Context) {
 		MaxAge:   int(resp.ExpiresIn),
 	})
 
-	c.JSON(http.StatusOK, gin.H{"status": "ok", "Username": resp.Username,
-		"Email": resp.Email})
+	responseApi := models.ResponseApi{
+		RequestID: "", // доделать с MiddleWare
+		Status:    true,
+		Message:   "User successfull login",
+		Result: models.AuthResponse{
+			Username:  resp.Username,
+			Email:     resp.Email,
+			FirstName: resp.Role,
+		},
+	}
+
+	c.JSON(http.StatusOK, responseApi)
 }
