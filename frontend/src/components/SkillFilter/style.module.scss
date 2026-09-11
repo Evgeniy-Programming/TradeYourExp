@@ -32,37 +32,6 @@
       text-align: right;
     }
   }
-
-  @media (width <= 600px) {
-    &__select {
-      button {
-        min-width: none;
-      }
-
-      button > p {
-        text-align: left;
-      }
-    }
-  }
-
-  @media (width <= 500px) {
-    &__search {
-      flex-wrap: wrap;
-    }
-  }
-}
-
-.select {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-
-  max-width: 150px;
-  padding: 10px;
-
-  button {
-    justify-content: flex-start;
-  }
 }
 
 .label {
