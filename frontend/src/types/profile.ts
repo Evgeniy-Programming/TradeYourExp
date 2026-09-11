@@ -15,3 +15,11 @@ export interface IEditProfile {
   lastName?: string;
   link?: string;
 }
+
+export interface IProfileStats {
+  raiting: number;
+  activeSkills: number;
+  closedSkills: number;
+  uniquePartners: number;
+  successSkills: number;
+}

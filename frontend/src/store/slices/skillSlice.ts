@@ -1,16 +1,18 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { IEditSkill, ISkill, ISkillHistory } from '../../types/skill';
+import type { IEditSkill, ISkill, ISkillHistory, SkillHistorySearchType } from '../../types/skill';
 import { MockSkills, MockSkillsHistory } from '../../mock/skills';
 
 interface SkillState {
   skills: ISkill[];
   historySkills: ISkillHistory[];
+  historySkillsFilter: SkillHistorySearchType;
   editSkill: IEditSkill | null;
 }
 
 const initialState: SkillState = {
   skills: MockSkills,
   historySkills: MockSkillsHistory,
+  historySkillsFilter: 'ALL',
   editSkill: null,
 };
 
@@ -39,8 +41,11 @@ export const skillSlice = createSlice({
         };
       }
     },
+    setHistorySkillsFilter: (state, action: PayloadAction<SkillHistorySearchType>) => {
+      state.historySkillsFilter = action.payload;
+    },
   },
 });
 
-export const { initEditSkill, setEditSkillField } = skillSlice.actions;
+export const { initEditSkill, setEditSkillField, setHistorySkillsFilter } = skillSlice.actions;
 export default skillSlice.reducer;

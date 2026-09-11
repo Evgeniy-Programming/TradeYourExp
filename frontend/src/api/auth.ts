@@ -9,5 +9,6 @@ export const authAPI = {
   changePassword: (data: IChangePassword) => instance.post(`auth/changepassword`, data),
   update: (data: IEditProfile) => instance.put(`auth/update`, data),
   getMe: () => instance.get('auth/me'),
+  getProfileStats: () => instance.get(`auth/me/static`),
   getProfile: (profileId: string) => instance.get(`auth/profile/${profileId}`),
 };

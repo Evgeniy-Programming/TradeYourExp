@@ -19,5 +19,6 @@ export default {
     'selector-max-id': 1,
     'selector-class-pattern': null,
     'scss/selector-no-union-class-name': null,
+    'scss/no-global-function-names': null,
   },
 };
