@@ -43,22 +43,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Пользователь успешно вошел",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     },
                     "400": {
                         "description": "Неверный формат данных",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     },
                     "401": {
                         "description": "Неверные учетные данные",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     }
                 }
@@ -92,22 +89,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Пользователь успешно создан",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     },
                     "400": {
                         "description": "Неверный формат данных",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     },
                     "409": {
                         "description": "Пользователь уже существует",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     }
                 }
@@ -128,30 +122,26 @@ const docTemplate = `{
                 "summary": "Вывести все скиллы",
                 "responses": {
                     "200": {
-                        "description": "Вывод пользовательских скиллов"
+                        "description": "Вывод пользовательских скиллов",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
                     },
                     "400": {
                         "description": "Неверный формат",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     },
                     "404": {
                         "description": "Пользователь не найден",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     }
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Создание нового запроса с описанием",
                 "consumes": [
                     "application/json"
@@ -170,33 +160,33 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Skill"
+                            "$ref": "#/definitions/models.SkillFull"
                         }
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "Запрос навыка успешно создан"
+                        "description": "Запрос навыка успешно создан",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
                     },
                     "400": {
                         "description": "Неверный формат запроса",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     },
                     "409": {
                         "description": "Конфликт при создании запроса",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     }
                 }
@@ -217,20 +207,21 @@ const docTemplate = `{
                 "summary": "Вывести все доп.описания",
                 "responses": {
                     "200": {
-                        "description": "Вывод списка доп. описаний"
+                        "description": "Вывод списка доп. описаний",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
                     },
                     "400": {
                         "description": "Неверный формат",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     },
                     "404": {
                         "description": "Пользователь не найден",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     }
                 }
@@ -260,20 +251,21 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Вывод пользователя"
+                        "description": "Вывод пользователя",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
                     },
                     "400": {
                         "description": "Неверный формат Skill ID",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     },
                     "404": {
                         "description": "Пользователь не найден",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     }
                 }
@@ -303,20 +295,21 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Вывод пользовательских скиллов"
+                        "description": "Вывод пользовательских скиллов",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
                     },
                     "400": {
                         "description": "Неверный формат",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     },
                     "404": {
                         "description": "Категория не найдена",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     }
                 }
@@ -346,20 +339,21 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Вывод пользовательских скиллов"
+                        "description": "Вывод пользовательских скиллов",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
                     },
                     "400": {
                         "description": "Неверный формат",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     },
                     "404": {
                         "description": "Категория не найдена",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     }
                 }
@@ -389,20 +383,21 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Запрос навыка успешно удален"
+                        "description": "Запрос навыка успешно удален",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
                     },
                     "404": {
                         "description": "Неверный формат ID",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     },
                     "500": {
                         "description": "Запрос не найден",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     }
                 }
@@ -543,10 +538,41 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Skill": {
+        "models.ResponseApi": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "[!] доработать код ошибки [!]",
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Information message"
+                },
+                "request_id": {
+                    "type": "string",
+                    "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                },
+                "result": {},
+                "status": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "models.SkillFull": {
             "type": "object",
             "properties": {
                 "category": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
                     "type": "string"
                 },
                 "exchange": {
@@ -554,6 +580,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "media": {
+                    "type": "string"
                 },
                 "skill": {
                     "type": "string"

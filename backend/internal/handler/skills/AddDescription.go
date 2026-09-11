@@ -1,6 +1,7 @@
 package skills
 
 import (
+	"Trade-y-exp/internal/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,19 +15,37 @@ func (h *Handler) CreateDescription(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
+		c.JSON(http.StatusBadRequest, models.ResponseApi{
+			Status:  false,
+			Error:   err.Error(),
+			Message: "Invalid request body",
+		})
 		return
 	}
 
 	if req.SkillID <= 0 || req.Description == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "skill_id and description are required"})
+		c.JSON(http.StatusBadRequest, models.ResponseApi{
+			Status:  false,
+			Message: "Skill_id and description is required",
+		})
 		return
 	}
 
 	if err := h.repo.Skills.UpsertDescription(c.Request.Context(), req.SkillID, req.Description, req.Media); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
+		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			Status:  false,
+			Error:   err.Error(),
+			Message: "DataBase Error",
+		})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"status": "ok"})
+	responseApi := models.ResponseApi{
+		RequestID: "",
+		Status:    true,
+		Message:   "Description create successfull",
+		Result:    req.Description,
+	}
+
+	c.JSON(http.StatusCreated, responseApi)
 }
