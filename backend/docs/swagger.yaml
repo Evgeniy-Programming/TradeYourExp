@@ -249,7 +249,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: Запрос навыка успешно удален
           schema:
             $ref: '#/definitions/models.ResponseApi'
@@ -359,18 +359,18 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: Пользователь успешно удален
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
         "404":
           description: Неверный формат ID
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
         "500":
           description: Пользователь не найден
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ResponseApi'
       summary: Удалить пользователя
       tags:
       - users

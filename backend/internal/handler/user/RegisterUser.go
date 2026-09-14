@@ -2,8 +2,10 @@ package user
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
+	"Trade-y-exp/internal/contextkeys"
 	"Trade-y-exp/internal/models"
 	authdb "Trade-y-exp/proto/auth"
 
@@ -24,6 +26,7 @@ import (
 // @Failure      409    {object}  models.ResponseApi "Пользователь уже существует"
 // @Router       /register [post]
 func (h *Handler) Register(c *gin.Context) {
+	requestID, _ := c.Get(contextkeys.RequestIDKey)
 	var req struct {
 		Username string `json:"username" binding:"required"`
 		Email    string `json:"email" binding:"required,email"`
@@ -33,9 +36,10 @@ func (h *Handler) Register(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, models.ResponseApi{
-			Status:  false,
-			Error:   err.Error(),
-			Message: "Invalid data",
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Invalid data",
 		})
 		return
 	}
@@ -50,22 +54,24 @@ func (h *Handler) Register(c *gin.Context) {
 	if err != nil {
 		if status.Code(err) == codes.AlreadyExists {
 			c.JSON(http.StatusConflict, models.ResponseApi{
-				Status:  false,
-				Error:   err.Error(),
-				Message: "User exists",
+				RequestID: fmt.Sprint(requestID),
+				Status:    false,
+				Error:     err.Error(),
+				Message:   "User exists",
 			})
 			return
 		}
 		c.JSON(http.StatusInternalServerError, models.ResponseApi{
-			Status:  false,
-			Error:   err.Error(),
-			Message: "Registraiton failed",
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Registraiton failed",
 		})
 		return
 	}
 
 	responseApi := models.ResponseApi{
-		RequestID: "", // доделать с MiddleWare
+		RequestID: fmt.Sprint(requestID),
 		Status:    true,
 		Message:   "User successfull login",
 		Result: models.AuthResponse{

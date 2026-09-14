@@ -1,6 +1,7 @@
 package skills
 
 import (
+	"Trade-y-exp/internal/contextkeys"
 	"Trade-y-exp/internal/models"
 	"fmt"
 	"net/http"
@@ -10,12 +11,14 @@ import (
 )
 
 func (h *Handler) CreateSkill(c *gin.Context) {
+	requestID, _ := c.Get(contextkeys.RequestIDKey)
 	var s models.Skill
 	if err := c.ShouldBindJSON(&s); err != nil {
 		c.JSON(http.StatusBadRequest, models.ResponseApi{
-			Status:  false,
-			Error:   err.Error(),
-			Message: "Bad request",
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Bad request",
 		})
 		return
 	}
@@ -24,14 +27,15 @@ func (h *Handler) CreateSkill(c *gin.Context) {
 	id, err := h.repo.Skills.SaveSkill(c.Request.Context(), &s)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ResponseApi{
-			Status:  false,
-			Error:   err.Error(),
-			Message: "Failed DataBase",
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Failed DataBase",
 		})
 		return
 	}
 	responseApi := models.ResponseApi{
-		RequestID: "", // доделать с MiddleWare
+		RequestID: fmt.Sprint(requestID),
 		Status:    true,
 		Message:   "Skill succesfull created",
 		Result:    strconv.Itoa(id),
@@ -51,6 +55,7 @@ func (h *Handler) CreateSkill(c *gin.Context) {
 // @Failure 500 {object} models.ResponseApi "Внутренняя ошибка сервера"
 // @Router /skills [post]
 func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
+	requestID, _ := c.Get(contextkeys.RequestIDKey)
 	var req struct {
 		Username     string `json:"username"`
 		Skill        string `json:"skill"`
@@ -63,17 +68,19 @@ func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, models.ResponseApi{
-			Status:  false,
-			Error:   err.Error(),
-			Message: "Validation failed",
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Validation failed",
 		})
 		return
 	}
 
 	if req.Username == "" || req.Skill == "" || req.Exchange == "" {
 		c.JSON(http.StatusBadRequest, models.ResponseApi{
-			Status:  false,
-			Message: "Username, skill and exchange are required",
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Message:   "Username, skill and exchange are required",
 		})
 		return
 	}
@@ -85,9 +92,10 @@ func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
 	skillID, err := h.repo.Skills.SaveSkill(c.Request.Context(), skill)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ResponseApi{
-			Status:  false,
-			Error:   err.Error(),
-			Message: "Failed DataBase",
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Failed DataBase",
 		})
 		return
 	}
@@ -102,9 +110,10 @@ func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
 		if fullDesc != "" || media != "" {
 			if err := h.repo.Skills.UpsertDescription(c.Request.Context(), skillID, fullDesc, media); err != nil {
 				c.JSON(http.StatusInternalServerError, models.ResponseApi{
-					Status:  false,
-					Error:   err.Error(),
-					Message: "Failed to save description",
+					RequestID: fmt.Sprint(requestID),
+					Status:    false,
+					Error:     err.Error(),
+					Message:   "Failed to save description",
 				})
 				return
 			}
@@ -112,7 +121,7 @@ func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
 	}
 
 	responseApi := models.ResponseApi{
-		RequestID: "", // доделать с MiddleWare
+		RequestID: fmt.Sprint(requestID),
 		Status:    true,
 		Message:   "Skill successfull added",
 		Result:    strconv.Itoa(skillID),

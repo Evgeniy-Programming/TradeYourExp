@@ -382,7 +382,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Запрос навыка успешно удален",
                         "schema": {
                             "$ref": "#/definitions/models.ResponseApi"
@@ -476,21 +476,22 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "Пользователь успешно удален"
+                    "201": {
+                        "description": "Пользователь успешно удален",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
                     },
                     "404": {
                         "description": "Неверный формат ID",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     },
                     "500": {
                         "description": "Пользователь не найден",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ResponseApi"
                         }
                     }
                 }

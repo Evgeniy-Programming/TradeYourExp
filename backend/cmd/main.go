@@ -73,6 +73,7 @@ func main() {
 
 	// === Gin Setup ===
 	app := gin.Default()
+	app.Use(handler.RequestIDMiddleware())
 
 	// CORS
 	app.Use(func(c *gin.Context) {

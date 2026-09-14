@@ -1,7 +1,9 @@
 package skills
 
 import (
+	"Trade-y-exp/internal/contextkeys"
 	"Trade-y-exp/internal/models"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -19,6 +21,7 @@ import (
 // @Failure      404  {object}  models.ResponseApi "Пользователь не найден"
 // @Router       /skills [get]
 func (h *Handler) GetSkills(c *gin.Context) {
+	requestID, _ := c.Get(contextkeys.RequestIDKey)
 	list, err := h.repo.Skills.GetAllSkills()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ResponseApi{
@@ -30,7 +33,7 @@ func (h *Handler) GetSkills(c *gin.Context) {
 	}
 
 	responseApi := models.ResponseApi{
-		RequestID: "", // доделать с MiddleWare
+		RequestID: fmt.Sprint(requestID),
 		Status:    true,
 		Message:   "Skills successfull received",
 		Result:    list,
@@ -51,6 +54,7 @@ func (h *Handler) GetSkills(c *gin.Context) {
 // @Failure      404  {object}  models.ResponseApi "Категория не найдена"
 // @Router       /skills/{category} [get]
 func (h *Handler) GetSkillByCategory(c *gin.Context) {
+	requestID, _ := c.Get(contextkeys.RequestIDKey)
 	category := c.Param("category")
 	if strings.TrimSpace(category) == "" {
 		skills, err := h.repo.Skills.GetAllSkills()
@@ -84,7 +88,7 @@ func (h *Handler) GetSkillByCategory(c *gin.Context) {
 		return
 	}
 	responseApi := models.ResponseApi{
-		RequestID: "", // доделать с MiddleWare
+		RequestID: fmt.Sprint(requestID),
 		Status:    true,
 		Message:   "Skills by category successfull received",
 		Result:    skills,
@@ -105,6 +109,7 @@ func (h *Handler) GetSkillByCategory(c *gin.Context) {
 // @Failure      404  {object}  models.ResponseApi "Категория не найдена"
 // @Router       /skills/filter/{search} [get]
 func (h *Handler) GetSkillByFilters(c *gin.Context) {
+	requestID, _ := c.Get(contextkeys.RequestIDKey)
 	search := c.Param("search")
 
 	if strings.TrimSpace(search) == "" {
@@ -112,14 +117,15 @@ func (h *Handler) GetSkillByFilters(c *gin.Context) {
 		skills, err := h.repo.Skills.GetAllSkills()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, models.ResponseApi{
-				Status:  false,
-				Error:   err.Error(),
-				Message: "DataBase Error",
+				RequestID: fmt.Sprint(requestID),
+				Status:    false,
+				Error:     err.Error(),
+				Message:   "DataBase Error",
 			})
 			return
 		}
 		c.JSON(http.StatusOK, models.ResponseApi{
-			RequestID: "",
+			RequestID: fmt.Sprint(requestID),
 			Status:    true,
 			Message:   "All skills successfull received",
 			Result:    skills,
@@ -130,22 +136,24 @@ func (h *Handler) GetSkillByFilters(c *gin.Context) {
 	skills, err := h.repo.Skills.GetSkillByFilters(c.Request.Context(), strings.TrimSpace(search))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ResponseApi{
-			Status:  false,
-			Error:   err.Error(),
-			Message: "DataBase Error",
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "DataBase Error",
 		})
 		return
 	}
 
 	if skills == nil || len(*skills) == 0 {
 		c.JSON(http.StatusNotFound, models.ResponseApi{
-			Status:  false,
-			Message: "Parametres for search is not found",
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Message:   "Parametres for search is not found",
 		})
 		return
 	}
 	responseApi := models.ResponseApi{
-		RequestID: "", // доделать с MiddleWare
+		RequestID: fmt.Sprint(requestID),
 		Status:    true,
 		Message:   "Skills by filter successfull received",
 		Result:    skills,

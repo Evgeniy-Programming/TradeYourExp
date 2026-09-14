@@ -1,7 +1,9 @@
 package skills
 
 import (
+	"Trade-y-exp/internal/contextkeys"
 	"Trade-y-exp/internal/models"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -20,13 +22,15 @@ import (
 // @Failure      404  {object}  models.ResponseApi "Пользователь не найден"
 // @Router       /skills/desc/{id} [get]
 func (h *Handler) GetDescriptionByID(c *gin.Context) {
+	requestID, _ := c.Get(contextkeys.RequestIDKey)
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil || id <= 0 {
 		c.JSON(http.StatusBadRequest, models.ResponseApi{
-			Status:  false,
-			Error:   err.Error(),
-			Message: "Invalid skill id",
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Invalid skill id",
 		})
 		return
 	}
@@ -34,23 +38,25 @@ func (h *Handler) GetDescriptionByID(c *gin.Context) {
 	desc, err := h.repo.Skills.GetDescriptionBySkillID(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ResponseApi{
-			Status:  false,
-			Error:   err.Error(),
-			Message: "DataBase Error",
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "DataBase Error",
 		})
 		return
 	}
 
 	if desc == nil {
 		c.JSON(http.StatusNotFound, models.ResponseApi{
-			Status:  false,
-			Message: "Description not found",
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Message:   "Description not found",
 		})
 		return
 	}
 
 	responseApi := models.ResponseApi{
-		RequestID: "", // доделать с MiddleWare
+		RequestID: fmt.Sprint(requestID),
 		Status:    true,
 		Message:   "Description successfull received",
 		Result:    desc,
@@ -70,12 +76,14 @@ func (h *Handler) GetDescriptionByID(c *gin.Context) {
 // @Failure      404  {object}  models.ResponseApi "Пользователь не найден"
 // @Router       /skills/desc [get]
 func (h *Handler) GetAllDescriptions(c *gin.Context) {
+	requestID, _ := c.Get(contextkeys.RequestIDKey)
 	descs, err := h.repo.Skills.GetAllDescriptions(c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ResponseApi{
-			Status:  false,
-			Error:   err.Error(),
-			Message: "DataBase Error",
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "DataBase Error",
 		})
 		return
 	}
@@ -85,7 +93,7 @@ func (h *Handler) GetAllDescriptions(c *gin.Context) {
 		descs = []models.SkillDescription{}
 	}
 	responseApi := models.ResponseApi{
-		RequestID: "", // доделать с MiddleWare
+		RequestID: fmt.Sprint(requestID),
 		Status:    true,
 		Message:   "Description list successfull received",
 		Result:    descs,
