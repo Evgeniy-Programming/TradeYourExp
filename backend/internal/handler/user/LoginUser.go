@@ -2,8 +2,10 @@ package user
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
+	"Trade-y-exp/internal/contextkeys"
 	"Trade-y-exp/internal/models"
 	authdb "Trade-y-exp/proto/auth"
 
@@ -24,6 +26,7 @@ import (
 // @Failure      401    {object}  models.ResponseApi "Неверные учетные данные"
 // @Router       /login [post]
 func (h *Handler) Login(c *gin.Context) {
+	requestID, _ := c.Get(contextkeys.RequestIDKey)
 	var req struct {
 		Username string `json:"username" binding:"required"`
 		Password string `json:"password" binding:"required"`
@@ -31,9 +34,10 @@ func (h *Handler) Login(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, models.ResponseApi{
-			Status:  false,
-			Error:   err.Error(),
-			Message: "Invalid data for login",
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Invalid data for login",
 		})
 		return
 	}
@@ -46,16 +50,18 @@ func (h *Handler) Login(c *gin.Context) {
 	if err != nil {
 		if status.Code(err) == codes.Unauthenticated {
 			c.JSON(http.StatusUnauthorized, models.ResponseApi{
-				Status:  false,
-				Error:   err.Error(),
-				Message: "Invalid creds",
+				RequestID: fmt.Sprint(requestID),
+				Status:    false,
+				Error:     err.Error(),
+				Message:   "Invalid creds",
 			})
 			return
 		}
 		c.JSON(http.StatusInternalServerError, models.ResponseApi{
-			Status:  false,
-			Error:   err.Error(),
-			Message: "Auth Service error",
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Auth Service error",
 		})
 		return
 	}
@@ -72,7 +78,7 @@ func (h *Handler) Login(c *gin.Context) {
 	})
 
 	responseApi := models.ResponseApi{
-		RequestID: "", // доделать с MiddleWare
+		RequestID: fmt.Sprint(requestID),
 		Status:    true,
 		Message:   "User successfull login",
 		Result: models.AuthResponse{
