@@ -1,12 +1,15 @@
-package middleware
+package handler
 
 import (
 	"context"
 	"errors"
 	"net/http"
 
+	"Trade-y-exp/internal/contextkeys"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -62,9 +65,9 @@ func AuthMiddleware(cfg Config) gin.HandlerFunc {
 		if err == nil && token.Valid {
 			if claims, ok := token.Claims.(jwt.MapClaims); ok {
 				// Inject user data into Gin context
-				c.Set(ContextUserID, claims["user_id"])
-				c.Set(ContextUsername, claims["username"])
-				c.Set(ContextRole, claims["role"])
+				c.Set(contextkeys.UserIDKey, claims["user_id"])
+				c.Set(contextkeys.UsernameKey, claims["username"])
+				c.Set(contextkeys.RoleKey, claims["role"])
 				c.Next()
 				return
 			}
@@ -79,14 +82,13 @@ func AuthMiddleware(cfg Config) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		c.Set(ContextUserID, resp.GetUserId())
-		c.Set(ContextUsername, resp.GetUsername())
-		c.Set(ContextRole, resp.GetRole())
+		c.Set(contextkeys.UserIDKey, resp.GetUserId())
+		c.Set(contextkeys.UsernameKey, resp.GetUsername())
+		c.Set(contextkeys.RoleKey, resp.GetRole())
 		c.Next()
 	}
 }
 
-// RequireRole — middleware для проверки роли
 func RequireRole(allowedRoles ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		role, exists := c.Get(ContextRole)
@@ -113,4 +115,32 @@ func RequireRole(allowedRoles ...string) gin.HandlerFunc {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden: insufficient permissions"})
 		c.Abort()
 	}
+}
+
+// gen requestID
+func RequestIDMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// 1. Берём ID из заголовка (если клиент передал) или генерируем новый
+		requestID := c.GetHeader("X-Request-ID")
+		if requestID == "" {
+			requestID = uuid.New().String()
+		}
+
+		// 2. Добавляем в контекст
+		c.Set(contextkeys.RequestIDKey, requestID)
+
+		// 3. Возвращаем в заголовке ответа (для трейсинга)
+		c.Header("X-Request-ID", requestID)
+
+		c.Next()
+	}
+}
+
+func GetRequestID(c *gin.Context) string {
+	if val, ok := c.Get(string(contextkeys.RequestIDKey)); ok {
+		if id, ok := val.(string); ok {
+			return id
+		}
+	}
+	return ""
 }

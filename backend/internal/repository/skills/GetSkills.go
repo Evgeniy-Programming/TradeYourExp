@@ -59,21 +59,27 @@ func (r *Repository) GetSkillByFilters(ctx context.Context, search string) (*[]m
 	search = "%" + strings.ReplaceAll(strings.ReplaceAll(search, "%", "\\%"), "_", "\\_") + "%"
 
 	rows, err := r.db.QueryContext(ctx, `
-        SELECT 
-            sd.id, sd.description, sd.media, sd.created_at,
-            s.skill, s.exchange, s.username, s.category
-        FROM skill_descriptions sd
-        JOIN skills s ON s.id = sd.skill_id
-        WHERE 
-            LOWER(
-                COALESCE(sd.description, '') || ' ' ||
-                COALESCE(s.skill, '') || ' ' ||
-                COALESCE(s.exchange, '') || ' ' ||
-                COALESCE(s.username, '') || ' ' ||
+		SELECT 
+			s.id, 
+			COALESCE(sd.description, '') as description,
+			COALESCE(sd.media, '') as media,
+			COALESCE(sd.created_at, NOW()) as created_at,
+			s.skill, 
+			s.exchange, 
+			s.username, 
+			s.category
+		FROM skills s
+		LEFT JOIN skill_descriptions sd ON s.id = sd.skill_id
+		WHERE 
+			LOWER(
+				COALESCE(sd.description, '') || ' ' ||
+				COALESCE(s.skill, '') || ' ' ||
+				COALESCE(s.exchange, '') || ' ' ||
+				COALESCE(s.username, '') || ' ' ||
 				COALESCE(s.category, '')
-            ) LIKE LOWER($1)
-        ORDER BY sd.created_at DESC
-    `, search)
+			) LIKE LOWER($1)
+		ORDER BY COALESCE(sd.created_at, s.created_at) DESC
+	`, search)
 
 	if err != nil {
 		return nil, err

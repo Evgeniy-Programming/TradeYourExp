@@ -1,42 +1,61 @@
 package skills
 
 import (
+	"Trade-y-exp/internal/contextkeys"
 	"Trade-y-exp/internal/models"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 func (h *Handler) CreateSkill(c *gin.Context) {
+	requestID, _ := c.Get(contextkeys.RequestIDKey)
 	var s models.Skill
 	if err := c.ShouldBindJSON(&s); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
+		c.JSON(http.StatusBadRequest, models.ResponseApi{
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Bad request",
+		})
 		return
 	}
 
 	// Исправлено: передаём контекст и игнорируем возвращаемый ID (он не нужен для простого добавления)
-	_, err := h.repo.Skills.SaveSkill(c.Request.Context(), &s)
+	id, err := h.repo.Skills.SaveSkill(c.Request.Context(), &s)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
+		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Failed DataBase",
+		})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"status": "ok"})
+	responseApi := models.ResponseApi{
+		RequestID: fmt.Sprint(requestID),
+		Status:    true,
+		Message:   "Skill succesfull created",
+		Result:    strconv.Itoa(id),
+	}
+	c.JSON(http.StatusCreated, responseApi)
 }
 
 // @Summary Добавление запроса с дополнительным описанием
 // @Description Создание нового запроса с описанием
 // @Tags skills
-// @Security ApiKeyAuth
 // @Accept       json
 // @Produce      json
-// @Param input body models.Skill true "Данные запроса навыка"
-// @Success 201 {object} nil "Запрос навыка успешно создан"
-// @Failure 400 {object} map[string]interface{} "Неверный формат запроса"
-// @Failure 409 {object} map[string]interface{} "Конфликт при создании запроса"
-// @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
+// @Param input body models.SkillFull true "Данные запроса навыка"
+// @Success 201 {object} models.ResponseApi "Запрос навыка успешно создан"
+// @Failure 400 {object} models.ResponseApi "Неверный формат запроса"
+// @Failure 409 {object} models.ResponseApi "Конфликт при создании запроса"
+// @Failure 500 {object} models.ResponseApi "Внутренняя ошибка сервера"
 // @Router /skills [post]
 func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
+	requestID, _ := c.Get(contextkeys.RequestIDKey)
 	var req struct {
 		Username     string `json:"username"`
 		Skill        string `json:"skill"`
@@ -48,12 +67,21 @@ func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
+		c.JSON(http.StatusBadRequest, models.ResponseApi{
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Validation failed",
+		})
 		return
 	}
 
 	if req.Username == "" || req.Skill == "" || req.Exchange == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "username, skill and exchange are required"})
+		c.JSON(http.StatusBadRequest, models.ResponseApi{
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Message:   "Username, skill and exchange are required",
+		})
 		return
 	}
 	skill := &models.Skill{
@@ -63,7 +91,12 @@ func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
 	}
 	skillID, err := h.repo.Skills.SaveSkill(c.Request.Context(), skill)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
+		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Failed DataBase",
+		})
 		return
 	}
 
@@ -76,11 +109,22 @@ func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
 		}
 		if fullDesc != "" || media != "" {
 			if err := h.repo.Skills.UpsertDescription(c.Request.Context(), skillID, fullDesc, media); err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
+				c.JSON(http.StatusInternalServerError, models.ResponseApi{
+					RequestID: fmt.Sprint(requestID),
+					Status:    false,
+					Error:     err.Error(),
+					Message:   "Failed to save description",
+				})
 				return
 			}
 		}
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"status": "ok", "skill_id": skillID})
+	responseApi := models.ResponseApi{
+		RequestID: fmt.Sprint(requestID),
+		Status:    true,
+		Message:   "Skill successfull added",
+		Result:    strconv.Itoa(skillID),
+	}
+	c.JSON(http.StatusCreated, responseApi)
 }

@@ -31,3 +31,9 @@ type SkillFull struct {
 	CreatedAt   time.Time `json:"created_at"`
 	Media       string    `json:"media,omitempty"`
 }
+
+type TestStruct struct {
+	UserID   string
+	Role     string
+	Username string
+}

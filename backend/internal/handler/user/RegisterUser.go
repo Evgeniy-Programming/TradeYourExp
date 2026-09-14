@@ -2,8 +2,11 @@ package user
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
+	"Trade-y-exp/internal/contextkeys"
+	"Trade-y-exp/internal/models"
 	authdb "Trade-y-exp/proto/auth"
 
 	"github.com/gin-gonic/gin"
@@ -18,11 +21,12 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param        input  body      models.RegisterRequest  true  "Данные пользователя"
-// @Success      201    {object}  map[string]interface{} "Пользователь успешно создан"
-// @Failure      400    {object}  map[string]interface{} "Неверный формат данных"
-// @Failure      409    {object}  map[string]interface{} "Пользователь уже существует"
+// @Success      201    {object}  models.ResponseApi "Пользователь успешно создан"
+// @Failure      400    {object}  models.ResponseApi "Неверный формат данных"
+// @Failure      409    {object}  models.ResponseApi "Пользователь уже существует"
 // @Router       /register [post]
 func (h *Handler) Register(c *gin.Context) {
+	requestID, _ := c.Get(contextkeys.RequestIDKey)
 	var req struct {
 		Username string `json:"username" binding:"required"`
 		Email    string `json:"email" binding:"required,email"`
@@ -31,7 +35,12 @@ func (h *Handler) Register(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid data"})
+		c.JSON(http.StatusBadRequest, models.ResponseApi{
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Invalid data",
+		})
 		return
 	}
 
@@ -44,12 +53,33 @@ func (h *Handler) Register(c *gin.Context) {
 	})
 	if err != nil {
 		if status.Code(err) == codes.AlreadyExists {
-			c.JSON(http.StatusConflict, gin.H{"error": "user exists"})
+			c.JSON(http.StatusConflict, models.ResponseApi{
+				RequestID: fmt.Sprint(requestID),
+				Status:    false,
+				Error:     err.Error(),
+				Message:   "User exists",
+			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "registration failed"})
+		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Registraiton failed",
+		})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"status": "ok", "user_id": resp.UserId})
+	responseApi := models.ResponseApi{
+		RequestID: fmt.Sprint(requestID),
+		Status:    true,
+		Message:   "User successfull login",
+		Result: models.AuthResponse{
+			Username:  resp.Username,
+			Email:     resp.Email,
+			FirstName: resp.Role,
+		},
+	}
+
+	c.JSON(http.StatusCreated, responseApi)
 }
