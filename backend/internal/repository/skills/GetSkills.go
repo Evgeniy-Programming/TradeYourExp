@@ -32,14 +32,14 @@ func (r *Repository) GetSkillsByCategory(ctx context.Context, category string) (
 		return nil, errors.New("category is invalid")
 	}
 
-	const q = `
-        SELECT id, username, skill, exchange, category
+	rows, err := r.db.QueryContext(ctx, `
+        SELECT 
+            id, username, skill, exchange, category
         FROM skills
         WHERE category = $1
-        ORDER BY id DESC
-    `
+		ORDER BY id DESC
+	`, category)
 
-	rows, err := r.db.QueryContext(ctx, q, category)
 	if err != nil {
 		return nil, fmt.Errorf("query skills by category: %w", err)
 	}
