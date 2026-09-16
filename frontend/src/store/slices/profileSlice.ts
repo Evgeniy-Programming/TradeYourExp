@@ -1,30 +1,21 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { IProfile, IProfileStats } from '../../types/profile';
+import type { IProfile, IProfileStats, IProfileView } from '../../types/profile';
+import { MockProfile, MockProfileStats, MockProfileView } from '../../mock/profile';
 
 interface ProfileState {
   profile: IProfile | null;
   stats: IProfileStats | null;
+  profileView: IProfileView | null;
 }
 
 const initialState: ProfileState = {
-  profile: {
-    username: 'Test',
-    firstName: 'Test',
-    createdAt: Date.now(),
-    lastName: 'Test',
-    email: 'test@mail.ru',
-    id: '42343',
-    link: 'https://gergwejogj',
-  },
   // profile: null,
   // stats: null,
-  stats: {
-    raiting: 4,
-    activeSkills: 2,
-    closedSkills: 2,
-    uniquePartners: 2,
-    successSkills: 50,
-  },
+  // profileView: null,
+
+  profile: MockProfile,
+  stats: MockProfileStats,
+  profileView: MockProfileView[1],
 };
 
 const profileSlice = createSlice({
@@ -48,9 +39,21 @@ const profileSlice = createSlice({
     setProfileStats: (state, action: PayloadAction<IProfileStats>) => {
       state.stats = action.payload;
     },
+    setProfileView: (state, action: PayloadAction<IProfileView>) => {
+      state.profileView = action.payload;
+    },
+    clearProfileView: (state) => {
+      state.profileView = null;
+    },
   },
 });
 
-export const { setProfile, updateProfileFields, clearProfile, setProfileStats } =
-  profileSlice.actions;
+export const {
+  setProfile,
+  updateProfileFields,
+  clearProfile,
+  setProfileStats,
+  setProfileView,
+  clearProfileView,
+} = profileSlice.actions;
 export default profileSlice.reducer;

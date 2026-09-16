@@ -11,7 +11,7 @@ export const useProfile = () => {
     const getProfile = async () => {
       try {
         const response = await authAPI.getMe();
-        dispatch(setProfile(response.data.data));
+        dispatch(setProfile(response.data.result));
       } catch (error) {
         dispatch(setErrorWithTimeout(error));
       }
