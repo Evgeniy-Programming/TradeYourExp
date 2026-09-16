@@ -67,6 +67,8 @@ definitions:
     type: object
   models.User:
     properties:
+      created_at:
+        type: string
       email:
         type: string
       firstName:
@@ -406,6 +408,81 @@ paths:
             additionalProperties: true
             type: object
       summary: Обновить данные
+      tags:
+      - users
+  /users/me:
+    get:
+      consumes:
+      - application/json
+      description: Вывод полного профиля.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Вывод профиля
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "400":
+          description: Неверный формат
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "404":
+          description: Пользователь не найден
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Вывести собственный профиль
+      tags:
+      - users
+  /users/me/static:
+    get:
+      consumes:
+      - application/json
+      description: Вывод полной статистики.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Вывод статистики
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "400":
+          description: Неверный формат
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "404":
+          description: Пользователь не найден
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Вывести собственный статистики
+      tags:
+      - users
+  /users/profile/{username}:
+    get:
+      consumes:
+      - application/json
+      description: Вывод полного профиля пользователя.
+      parameters:
+      - description: Имя (UserName) пользователя
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Вывод профиля пользователя
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "400":
+          description: Неверный формат
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "404":
+          description: Пользователь не найден
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Вывести сторонний профиль
       tags:
       - users
 schemes:

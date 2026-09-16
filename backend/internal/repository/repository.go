@@ -24,6 +24,9 @@ type UserRepository interface {
 	UpdateUser(u *models.User, id string) error
 	DeleteUser(id string) error
 	GetByEmail(email string) (*models.User, error)
+	GetMyProfile(userId string) (*models.ProfileRequest, error)
+	GetProfile(username string) (*models.ProfileRequest, error)
+	GetMyProfileStatic(userId string) (*models.ProfileRequest, error)
 }
 
 type Repository struct {

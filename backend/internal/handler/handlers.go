@@ -26,6 +26,9 @@ type UserHandler interface {
 	Register(c *gin.Context)
 	UpdateUser(c *gin.Context)
 	DeleteUser(c *gin.Context)
+	GetMyProfile(c *gin.Context)
+	GetProfile(c *gin.Context)
+	GetMyProfileStatic(c *gin.Context)
 }
 
 type Handler struct {

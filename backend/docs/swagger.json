@@ -401,6 +401,120 @@
                 }
             }
         },
+        "/users/me": {
+            "get": {
+                "description": "Вывод полного профиля.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Вывести собственный профиль",
+                "responses": {
+                    "200": {
+                        "description": "Вывод профиля",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный формат",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/me/static": {
+            "get": {
+                "description": "Вывод полной статистики.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Вывести собственный статистики",
+                "responses": {
+                    "200": {
+                        "description": "Вывод статистики",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный формат",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/profile/{username}": {
+            "get": {
+                "description": "Вывод полного профиля пользователя.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Вывести сторонний профиль",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Имя (UserName) пользователя",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Вывод профиля пользователя",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный формат",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{id}": {
             "put": {
                 "description": "Обновляет данные в базе данных по его UUID.",
@@ -594,6 +708,9 @@
         "models.User": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
