@@ -8,6 +8,7 @@ import { CreatorPage } from '../pages/CreatorPage/CreatorPage';
 import { RootLayout } from '../layouts/RootLayout/RootLayout';
 import { HistoryPage } from '../pages/HistoryPage/HistoryPage';
 import { StatsPage } from '../pages/StatsPage/StatsPage';
+import { ProfileViewPage } from '../pages/ProfileViewPage/ProfileViewPage';
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ export const router = createBrowserRouter([
         loader: requireGuest,
       },
       {
+        path: '/profile/view/:profileId',
+        element: <ProfileViewPage />,
+      },
+      {
         loader: requireAuth,
         children: [
           {
@@ -41,10 +46,6 @@ export const router = createBrowserRouter([
           {
             path: '/profile/history',
             element: <HistoryPage />,
-          },
-          {
-            path: '/profile/view/:profileId',
-            element: <div>Profile View page</div>,
           },
           {
             path: '/create',

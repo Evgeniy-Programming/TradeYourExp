@@ -23,3 +23,16 @@ export const formatSkillHistorySearchType = (text: SkillHistorySearchType) => {
       return text;
   }
 };
+
+export const formatSkillHistoryViewTextType = (text: SkillHistorySearchType) => {
+  switch (text) {
+    case 'ACTIVE':
+      return 'активных';
+    case 'CLOSED':
+      return 'завершенных';
+    case 'ALL':
+      return 'всех';
+    default:
+      return text;
+  }
+};

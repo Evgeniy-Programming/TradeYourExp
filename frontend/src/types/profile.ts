@@ -23,3 +23,13 @@ export interface IProfileStats {
   uniquePartners: number;
   successSkills: number;
 }
+
+export interface IProfileView {
+  id: string;
+  username: string;
+  firstName: string | null;
+  lastName: string | null;
+  link: string | null;
+  createdAt: string | number;
+  stats: IProfileStats;
+}

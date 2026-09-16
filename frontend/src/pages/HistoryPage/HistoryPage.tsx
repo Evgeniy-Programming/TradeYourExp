@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ProfileLayout } from '../../layouts/ProfileLayout/ProfileLayout';
 import ArrowSVG from '../../ui/svg/ArrowSVG';
 import Dropdown from '../../ui/Dropdown/Dropdown';
@@ -6,14 +6,18 @@ import ButtonAction from '../../ui/ButtonAction/ButtonAction';
 import Button from '../../ui/Button/Button';
 import style from './style.module.scss';
 import type { SkillHistorySearchType } from '../../types/skill';
-import { useAppSelector } from '../../hooks/useAppDispatch';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { formatSkillHistorySearchType } from '../../utils/formatSkillStatusType';
 import { SkillHistory } from '../../components/SkillHistory/SkillHistory';
 import { useProfile } from '../../hooks/useProfile';
+import { setHistorySkills } from '../../store/slices/skillSlice';
+import { skillAPI } from '../../api/skill';
+import { setErrorWithTimeout } from '../../store/slices/appSlice';
 
 export const HistoryPage = () => {
   useProfile();
 
+  const dispatch = useAppDispatch();
   const skillsFilter = useAppSelector((state) => state.skill.historySkillsFilter);
   const [isOpenSelect, setOpenSelect] = useState(false);
   const [selectedSearchType, setSearchType] = useState<SkillHistorySearchType>(skillsFilter);
@@ -30,6 +34,20 @@ export const HistoryPage = () => {
         return skills;
     }
   }, [skills, selectedSearchType]);
+
+  useEffect(() => {
+    const getSkills = async () => {
+      try {
+        const response = await skillAPI.getMy();
+
+        dispatch(setHistorySkills(response.data.result));
+      } catch (error) {
+        dispatch(setErrorWithTimeout(error));
+      }
+    };
+
+    getSkills();
+  }, [dispatch]);
 
   return (
     <ProfileLayout>
