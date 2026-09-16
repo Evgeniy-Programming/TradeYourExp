@@ -2,8 +2,11 @@ package skills
 
 import (
 	"Trade-y-exp/internal/models"
+	"Trade-y-exp/pkg/repo"
 	"context"
 	"database/sql"
+	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -23,34 +26,38 @@ func (r *Repository) GetAllSkills() ([]models.Skill, error) {
 	}
 	return res, nil
 }
-func (r *Repository) GetSkillByCategory(ctx context.Context, category string) (*[]models.Skill, error) {
-	var skills []models.Skill
-	rows, err := r.db.QueryContext(ctx, `
-        SELECT 
-            id, username, skill, exchange, category
+
+func (r *Repository) GetSkillsByCategory(ctx context.Context, category string) ([]models.Skill, error) {
+	if !repo.IsValidCategory(category) {
+		return nil, errors.New("category is invalid")
+	}
+
+	const q = `
+        SELECT id, username, skill, exchange, category
         FROM skills
         WHERE category = $1
-		ORDER BY id DESC
-	`, category)
+        ORDER BY id DESC
+    `
 
+	rows, err := r.db.QueryContext(ctx, q, category)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("query skills by category: %w", err)
 	}
-
 	defer rows.Close()
 
+	var skills []models.Skill
 	for rows.Next() {
-		var skill models.Skill
-		if err := rows.Scan(&skill.ID, &skill.Username, &skill.Skill, &skill.Exchange, &skill.Category); err != nil {
+		var s models.Skill
+		if err := rows.Scan(&s.ID, &s.Username, &s.Skill, &s.Exchange, &s.Category); err != nil {
 			return nil, err
 		}
-		skills = append(skills, skill)
+		skills = append(skills, s)
 	}
-
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-	return &skills, rows.Err()
+
+	return skills, nil
 }
 
 func (r *Repository) GetSkillByFilters(ctx context.Context, search string) (*[]models.SkillFull, error) {

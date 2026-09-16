@@ -70,7 +70,7 @@ func (h *Handler) GetSkillByCategory(c *gin.Context) {
 		return
 	}
 
-	skills, err := h.repo.Skills.GetSkillByCategory(c.Request.Context(), strings.TrimSpace(category))
+	skills, err := h.repo.Skills.GetSkillsByCategory(c.Request.Context(), strings.TrimSpace(category))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ResponseApi{
 			Status:  false,
@@ -80,10 +80,10 @@ func (h *Handler) GetSkillByCategory(c *gin.Context) {
 		return
 	}
 
-	if skills == nil || len(*skills) == 0 {
+	if len(skills) == 0 {
 		c.JSON(http.StatusNotFound, models.ResponseApi{
 			Status:  false,
-			Message: "Category not found",
+			Message: "No data availbable",
 		})
 		return
 	}

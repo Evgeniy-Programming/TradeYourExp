@@ -2,11 +2,16 @@ package skills
 
 import (
 	"Trade-y-exp/internal/models"
+	"Trade-y-exp/pkg/repo"
 	"context"
+	"errors"
 )
 
 func (r *Repository) SaveSkill(ctx context.Context, s *models.Skill) (int, error) {
 	var id int
+	if !repo.IsValidCategory(s.Category) {
+		return 0, errors.New("category is invalid")
+	}
 	err := r.db.QueryRowContext(ctx,
 		`INSERT INTO skills (username, skill, exchange, category) VALUES ($1, $2, $3, $4) RETURNING id`,
 		s.Username, s.Skill, s.Exchange, s.Category).Scan(&id)
