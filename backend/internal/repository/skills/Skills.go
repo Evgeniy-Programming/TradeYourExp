@@ -16,7 +16,3 @@ func NewSkillRepository(DB *sql.DB) *Repository {
 	}
 	return &Repository{db: DB}
 }
-
-// func (r *Repository) GetDB() *sql.DB {
-// 	return r.db
-// }

@@ -25,16 +25,18 @@ func (h *Handler) DeleteUser(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
 		c.JSON(http.StatusBadRequest, models.ResponseApi{
-			Status:  false,
-			Message: "Id is required",
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Message:   "Id is required",
 		})
 		return
 	}
 	if err := h.repo.User.DeleteUser(id); err != nil {
 		c.JSON(http.StatusInternalServerError, models.ResponseApi{
-			Status:  false,
-			Error:   err.Error(),
-			Message: "DataBase Error",
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "DataBase Error",
 		})
 		return
 	}

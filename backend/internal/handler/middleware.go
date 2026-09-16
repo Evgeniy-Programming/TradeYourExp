@@ -120,16 +120,13 @@ func RequireRole(allowedRoles ...string) gin.HandlerFunc {
 // gen requestID
 func RequestIDMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 1. Берём ID из заголовка (если клиент передал) или генерируем новый
 		requestID := c.GetHeader("X-Request-ID")
 		if requestID == "" {
 			requestID = uuid.New().String()
 		}
-
-		// 2. Добавляем в контекст
 		c.Set(contextkeys.RequestIDKey, requestID)
 
-		// 3. Возвращаем в заголовке ответа (для трейсинга)
+		// для трейсинга
 		c.Header("X-Request-ID", requestID)
 
 		c.Next()

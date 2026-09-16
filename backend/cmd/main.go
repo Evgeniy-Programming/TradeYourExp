@@ -116,6 +116,9 @@ func main() {
 			protected.GET("/skills/desc", h.Skills.GetAllDescriptions)
 			protected.POST("/skills/desc", h.Skills.CreateDescription)
 			protected.POST("/skills/with-desc", h.Skills.CreateSkillWithDesc)
+			protected.GET("users/me", h.User.GetMyProfile)
+			protected.GET("users/me/static", h.User.GetMyProfileStatic)
+			protected.GET("users/profile/:username", h.User.GetProfile)
 		}
 
 		admin := v1.Group("")

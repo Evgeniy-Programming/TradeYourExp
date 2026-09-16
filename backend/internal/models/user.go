@@ -12,6 +12,14 @@ type User struct {
 	FirstName  string    `json:"firstName"`
 	LastName   string    `json:"lastName"`
 	SocialLink string    `json:"socialLink"`
+	CreatedAt  string    `json:"created_at"`
+}
+
+type ProfileRequest struct {
+	Username   string `json:"username"`
+	Email      string `json:"email"`
+	SocialLink string `json:"socialLink"`
+	CreatedAt  string `json:"created_at"`
 }
 
 type LoginRequest struct {
