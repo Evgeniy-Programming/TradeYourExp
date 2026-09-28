@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"Trade-y-exp/auth_service/internal/repository"
+	"Trade-y-exp/auth_service/internal/models"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -40,7 +40,7 @@ func NewManager() *Manager {
 	}
 }
 
-func (m *Manager) NewAccessToken(user *repository.User) (string, error) {
+func (m *Manager) NewAccessToken(user models.User) (string, error) {
 	claims := TokenClaims{
 		UserID:   user.ID,
 		Username: user.Username,
@@ -55,7 +55,7 @@ func (m *Manager) NewAccessToken(user *repository.User) (string, error) {
 	return token.SignedString(m.AccessSecret)
 }
 
-func (m *Manager) NewRefreshToken(user *repository.User) (string, error) {
+func (m *Manager) NewRefreshToken(user models.User) (string, error) {
 	claims := TokenClaims{
 		UserID: user.ID,
 		RegisteredClaims: jwt.RegisteredClaims{

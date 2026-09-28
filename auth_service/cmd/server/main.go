@@ -42,9 +42,9 @@ func main() {
 	log.Println("Connected to database")
 
 	// Init components
-	userRepo := repository.NewUserRepo(db)
+	userRepo := repository.NewRepository(db)
 	jwtMgr := jwt.NewManager()
-	authHandler := handler.NewAuth(userRepo, jwtMgr)
+	authHandler := handler.NewMainHandler(*userRepo, jwtMgr)
 
 	// gRPC server
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", grpcPort))
@@ -53,7 +53,7 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
-	authpb.RegisterAuthServiceServer(grpcServer, authHandler)
+	authpb.RegisterAuthServiceServer(grpcServer, authHandler.User)
 
 	log.Printf("Auth service starting on port %s", grpcPort)
 	if err := grpcServer.Serve(lis); err != nil {
