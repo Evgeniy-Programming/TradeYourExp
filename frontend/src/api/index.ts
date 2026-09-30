@@ -1,6 +1,8 @@
-import axios from 'axios';
+import axios, { type AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import { baseURL } from '../constants/api';
+import type { IApiResponse } from '../types/api';
 
+// Токены хранятся в HttpOnly-cookie, которые ставит бэкенд, поэтому достаточно withCredentials
 const instance = axios.create({
   withCredentials: true,
   baseURL: baseURL,
@@ -9,32 +11,35 @@ const instance = axios.create({
   },
 });
 
-instance.interceptors.request.use((config) => {
-  const accessToken = localStorage.getItem('accessToken');
-  if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`;
-  }
-  return config;
-});
+// На этих эндпоинтах 401 означает неверные данные, а не истёкшую сессию
+const noRefreshUrls = ['auth/login', 'auth/register', 'auth/refresh', 'auth/logout'];
+
+// Один общий refresh на все запросы, одновременно получившие 401
+let refreshRequest: Promise<unknown> | null = null;
 
 instance.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  async (error: AxiosError) => {
+    const originalRequest = error.config as
+      (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined;
 
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry &&
+      !noRefreshUrls.includes(originalRequest.url ?? '')
+    ) {
       originalRequest._retry = true;
 
       try {
-        const response = await instance.post('auth/refresh');
-        const accessToken = response.data.data.access_token;
-        localStorage.setItem('accessToken', accessToken);
+        refreshRequest ??= instance.post('auth/refresh').finally(() => {
+          refreshRequest = null;
+        });
+        await refreshRequest;
 
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return instance(originalRequest);
-      } catch (refreshError) {
-        localStorage.removeItem('accessToken');
-        return Promise.reject(refreshError);
+      } catch {
+        return Promise.reject(error);
       }
     }
 
@@ -42,4 +47,8 @@ instance.interceptors.response.use(
   }
 );
 
-export { instance };
+// Достаёт полезные данные из ответа бэкенда
+const unwrap = <T>(request: Promise<AxiosResponse<IApiResponse<T>>>): Promise<T> =>
+  request.then((response) => response.data.result);
+
+export { instance, unwrap };

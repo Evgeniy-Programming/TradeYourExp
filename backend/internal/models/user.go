@@ -14,27 +14,3 @@ type User struct {
 	SocialLink string    `json:"socialLink"`
 	CreatedAt  string    `json:"created_at"`
 }
-
-type ProfileRequest struct {
-	Username   string `json:"username"`
-	Email      string `json:"email"`
-	SocialLink string `json:"socialLink"`
-	CreatedAt  string `json:"created_at"`
-}
-
-type LoginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-type RegisterRequest struct {
-	Username string `json:"username" binding:"required"`
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required,min=6"`
-	Role     string `json:"role" binding:"required,oneof=manager admin viewer"`
-}
-
-type AuthResponse struct {
-	Username  string `json:"username"`
-	Email     string `json:"email"`
-	FirstName string `json:"firstName"`
-}

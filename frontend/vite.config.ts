@@ -7,7 +7,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        // в docker-compose бэкенд доступен по имени сервиса: API_PROXY_TARGET=http://app:8080
+        target: process.env.API_PROXY_TARGET || 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
       },

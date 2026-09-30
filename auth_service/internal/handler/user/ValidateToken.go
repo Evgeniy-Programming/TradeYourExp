@@ -6,7 +6,7 @@ import (
 )
 
 func (a *UserHandler) ValidateToken(ctx context.Context, req *authpb.ValidateRequest) (*authpb.ValidateResponse, error) {
-	if _, banned := a.blacklist[req.Token]; banned {
+	if a.isRevoked(req.Token) {
 		return &authpb.ValidateResponse{IsValid: false}, nil
 	}
 

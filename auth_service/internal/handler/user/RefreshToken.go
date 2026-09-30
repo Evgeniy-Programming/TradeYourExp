@@ -9,7 +9,7 @@ import (
 )
 
 func (a *UserHandler) RefreshToken(ctx context.Context, req *authpb.RefreshRequest) (*authpb.AuthResponse, error) {
-	claims, err := a.jwtMgr.ParseAccessToken(req.RefreshToken)
+	claims, err := a.jwtMgr.ParseRefreshToken(req.RefreshToken)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "invalid refresh token")
 	}

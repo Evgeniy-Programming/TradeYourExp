@@ -1,32 +1,80 @@
 basePath: /api/v1
 definitions:
-  models.LoginRequest:
+  models.AuthLoginRequest:
     properties:
+      login:
+        type: string
       password:
         type: string
-      username:
+      type:
+        enum:
+        - email
+        - username
         type: string
+    required:
+    - login
+    - password
     type: object
-  models.RegisterRequest:
+  models.AuthRegisterRequest:
     properties:
       email:
         type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      link:
+        type: string
       password:
         minLength: 6
-        type: string
-      role:
-        enum:
-        - manager
-        - admin
-        - viewer
         type: string
       username:
         type: string
     required:
     - email
     - password
-    - role
     - username
+    type: object
+  models.ChangePasswordRequest:
+    properties:
+      currentPassword:
+        type: string
+      newPassword:
+        minLength: 6
+        type: string
+    required:
+    - currentPassword
+    - newPassword
+    type: object
+  models.Profile:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: string
+      lastName:
+        type: string
+      link:
+        type: string
+      username:
+        type: string
+    type: object
+  models.ProfileUpdate:
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      link:
+        type: string
+      username:
+        type: string
     type: object
   models.ResponseApi:
     properties:
@@ -46,23 +94,74 @@ definitions:
         example: true
         type: boolean
     type: object
-  models.SkillFull:
+  models.SkillCard:
     properties:
+      avatarUsername:
+        type: string
       category:
         type: string
-      created_at:
+      contactType:
+        type: string
+      contactValue:
+        type: string
+      createdAt:
         type: string
       description:
         type: string
       exchange:
         type: string
       id:
-        type: integer
-      media:
+        example: "0"
         type: string
       skill:
         type: string
+      status:
+        type: string
       username:
+        type: string
+    type: object
+  models.SkillCreateRequest:
+    properties:
+      category:
+        type: string
+      contactType:
+        enum:
+        - site
+        - telegram
+        - vk
+        - wechat
+        type: string
+      contactValue:
+        type: string
+      description:
+        type: string
+      exchange:
+        type: string
+      skill:
+        type: string
+    required:
+    - category
+    - exchange
+    - skill
+    type: object
+  models.SkillStats:
+    properties:
+      active:
+        type: integer
+      byMonth:
+        items:
+          $ref: '#/definitions/models.SkillStatsMonth'
+        type: array
+      closed:
+        type: integer
+      total:
+        type: integer
+    type: object
+  models.SkillStatsMonth:
+    properties:
+      count:
+        type: integer
+      month:
         type: string
     type: object
   models.User:
@@ -89,132 +188,277 @@ host: localhost:8080
 info:
   contact: {}
   description: Trade Your Exp.
-  title: Swagger Example API
+  title: Trade Your Exp API
   version: "1.0"
 paths:
-  /login:
+  /auth/changepassword:
     post:
       consumes:
       - application/json
-      description: Авторизирует пользователя по введенным данным.
       parameters:
-      - description: Данные для входа
+      - description: Текущий и новый пароль
         in: body
         name: input
         required: true
         schema:
-          $ref: '#/definitions/models.LoginRequest'
+          $ref: '#/definitions/models.ChangePasswordRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: Пользователь успешно вошел
+          description: OK
           schema:
             $ref: '#/definitions/models.ResponseApi'
         "400":
-          description: Неверный формат данных
+          description: Bad Request
           schema:
             $ref: '#/definitions/models.ResponseApi'
-        "401":
-          description: Неверные учетные данные
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-      summary: Авторизация пользователя
+      summary: Смена пароля
       tags:
-      - users
-  /register:
+      - auth
+  /auth/login:
     post:
       consumes:
       - application/json
-      description: Создание пользователя с заполнением требуемых полей.
+      parameters:
+      - description: Логин (никнейм или email) и пароль
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.AuthLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseApi'
+            - properties:
+                result:
+                  $ref: '#/definitions/models.Profile'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Вход
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Выход
+      tags:
+      - auth
+  /auth/me:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseApi'
+            - properties:
+                result:
+                  $ref: '#/definitions/models.Profile'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Мой профиль
+      tags:
+      - auth
+  /auth/profile/{username}:
+    get:
+      parameters:
+      - description: Никнейм
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseApi'
+            - properties:
+                result:
+                  $ref: '#/definitions/models.Profile'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Профиль пользователя
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Обновление токенов
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
       parameters:
       - description: Данные пользователя
         in: body
         name: input
         required: true
         schema:
-          $ref: '#/definitions/models.RegisterRequest'
+          $ref: '#/definitions/models.AuthRegisterRequest'
       produces:
       - application/json
       responses:
         "201":
-          description: Пользователь успешно создан
+          description: Created
           schema:
-            $ref: '#/definitions/models.ResponseApi'
+            allOf:
+            - $ref: '#/definitions/models.ResponseApi'
+            - properties:
+                result:
+                  $ref: '#/definitions/models.Profile'
+              type: object
         "400":
-          description: Неверный формат данных
+          description: Bad Request
           schema:
             $ref: '#/definitions/models.ResponseApi'
         "409":
-          description: Пользователь уже существует
+          description: Conflict
           schema:
             $ref: '#/definitions/models.ResponseApi'
-      summary: Создание пользователя
+      summary: Регистрация
       tags:
-      - users
-  /skills:
-    get:
+      - auth
+  /auth/update:
+    put:
       consumes:
       - application/json
-      description: Вывод полного списка навыков.
+      parameters:
+      - description: Изменяемые поля
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProfileUpdate'
       produces:
       - application/json
       responses:
         "200":
-          description: Вывод пользовательских скиллов
+          description: OK
           schema:
-            $ref: '#/definitions/models.ResponseApi'
+            allOf:
+            - $ref: '#/definitions/models.ResponseApi'
+            - properties:
+                result:
+                  $ref: '#/definitions/models.Profile'
+              type: object
         "400":
-          description: Неверный формат
+          description: Bad Request
           schema:
             $ref: '#/definitions/models.ResponseApi'
-        "404":
-          description: Пользователь не найден
+        "409":
+          description: Conflict
           schema:
             $ref: '#/definitions/models.ResponseApi'
-      summary: Вывести все скиллы
+      summary: Редактирование профиля
+      tags:
+      - auth
+  /skills:
+    get:
+      parameters:
+      - description: Код категории (it, communicate, art, knowledge, hobby)
+        in: query
+        name: category
+        type: string
+      - description: Строка поиска
+        in: query
+        name: search
+        type: string
+      - description: 'Где искать: skill — предлагаемый навык, exchange — желаемый;
+          пусто — везде'
+        in: query
+        name: searchIn
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseApi'
+            - properties:
+                result:
+                  items:
+                    $ref: '#/definitions/models.SkillCard'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Лента обменов
       tags:
       - skills
     post:
       consumes:
       - application/json
-      description: Создание нового запроса с описанием
       parameters:
-      - description: Данные запроса навыка
+      - description: Данные обмена
         in: body
         name: input
         required: true
         schema:
-          $ref: '#/definitions/models.SkillFull'
+          $ref: '#/definitions/models.SkillCreateRequest'
       produces:
       - application/json
       responses:
         "201":
-          description: Запрос навыка успешно создан
+          description: Created
           schema:
             $ref: '#/definitions/models.ResponseApi'
         "400":
-          description: Неверный формат запроса
+          description: Bad Request
           schema:
             $ref: '#/definitions/models.ResponseApi'
-        "409":
-          description: Конфликт при создании запроса
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-        "500":
-          description: Внутренняя ошибка сервера
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-      summary: Добавление запроса с дополнительным описанием
+      summary: Создать обмен
       tags:
       - skills
   /skills/{category}:
     get:
-      consumes:
-      - application/json
-      description: Вывод полного списка скиллов по категории.
       parameters:
-      - description: Категория скилла
+      - description: Код категории
         in: path
         name: category
         required: true
@@ -223,27 +467,27 @@ paths:
       - application/json
       responses:
         "200":
-          description: Вывод пользовательских скиллов
+          description: OK
           schema:
-            $ref: '#/definitions/models.ResponseApi'
+            allOf:
+            - $ref: '#/definitions/models.ResponseApi'
+            - properties:
+                result:
+                  items:
+                    $ref: '#/definitions/models.SkillCard'
+                  type: array
+              type: object
         "400":
-          description: Неверный формат
+          description: Bad Request
           schema:
             $ref: '#/definitions/models.ResponseApi'
-        "404":
-          description: Категория не найдена
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-      summary: Вывести все скиллы по категории.
+      summary: Обмены по категории
       tags:
       - skills
   /skills/{id}:
     delete:
-      consumes:
-      - application/json
-      description: Удаляет запрос навыка по его ID
       parameters:
-      - description: ID запроса
+      - description: ID обмена
         in: path
         name: id
         required: true
@@ -251,19 +495,15 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Запрос навыка успешно удален
+        "200":
+          description: OK
           schema:
             $ref: '#/definitions/models.ResponseApi'
         "404":
-          description: Неверный формат ID
+          description: Not Found
           schema:
             $ref: '#/definitions/models.ResponseApi'
-        "500":
-          description: Запрос не найден
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-      summary: Удалить запрос
+      summary: Удалить обмен
       tags:
       - skills
   /skills/desc:
@@ -320,11 +560,8 @@ paths:
       - skills
   /skills/filter/{search}:
     get:
-      consumes:
-      - application/json
-      description: Вывод полного списка скиллов по переданной строке.
       parameters:
-      - description: Ключевая строка поиска
+      - description: Строка поиска
         in: path
         name: search
         required: true
@@ -333,18 +570,53 @@ paths:
       - application/json
       responses:
         "200":
-          description: Вывод пользовательских скиллов
+          description: OK
           schema:
-            $ref: '#/definitions/models.ResponseApi'
-        "400":
-          description: Неверный формат
+            allOf:
+            - $ref: '#/definitions/models.ResponseApi'
+            - properties:
+                result:
+                  items:
+                    $ref: '#/definitions/models.SkillCard'
+                  type: array
+              type: object
+      summary: Поиск обменов
+      tags:
+      - skills
+  /skills/my:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
           schema:
-            $ref: '#/definitions/models.ResponseApi'
-        "404":
-          description: Категория не найдена
+            allOf:
+            - $ref: '#/definitions/models.ResponseApi'
+            - properties:
+                result:
+                  items:
+                    $ref: '#/definitions/models.SkillCard'
+                  type: array
+              type: object
+      summary: Мои обмены
+      tags:
+      - skills
+  /skills/my/stats:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
           schema:
-            $ref: '#/definitions/models.ResponseApi'
-      summary: Вывести все скиллы по вхождению в ключевую строку.
+            allOf:
+            - $ref: '#/definitions/models.ResponseApi'
+            - properties:
+                result:
+                  $ref: '#/definitions/models.SkillStats'
+              type: object
+      summary: Моя статистика
       tags:
       - skills
   /users/{id}:
@@ -408,81 +680,6 @@ paths:
             additionalProperties: true
             type: object
       summary: Обновить данные
-      tags:
-      - users
-  /users/me:
-    get:
-      consumes:
-      - application/json
-      description: Вывод полного профиля.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Вывод профиля
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-        "400":
-          description: Неверный формат
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-        "404":
-          description: Пользователь не найден
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-      summary: Вывести собственный профиль
-      tags:
-      - users
-  /users/me/static:
-    get:
-      consumes:
-      - application/json
-      description: Вывод полной статистики.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Вывод статистики
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-        "400":
-          description: Неверный формат
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-        "404":
-          description: Пользователь не найден
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-      summary: Вывести собственный статистики
-      tags:
-      - users
-  /users/profile/{username}:
-    get:
-      consumes:
-      - application/json
-      description: Вывод полного профиля пользователя.
-      parameters:
-      - description: Имя (UserName) пользователя
-        in: path
-        name: username
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Вывод профиля пользователя
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-        "400":
-          description: Неверный формат
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-        "404":
-          description: Пользователь не найден
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-      summary: Вывести сторонний профиль
       tags:
       - users
 schemes:
