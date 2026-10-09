@@ -8,6 +8,6 @@ import (
 )
 
 func (a *UserHandler) Logout(ctx context.Context, req *authpb.LogoutRequest) (*authpb.LogoutResponse, error) {
-	a.blacklist[req.Token] = time.Now().Add(jwt.AccessTokenExp)
+	a.revoke(req.Token, time.Now().Add(jwt.AccessTokenExp))
 	return &authpb.LogoutResponse{Success: true}, nil
 }

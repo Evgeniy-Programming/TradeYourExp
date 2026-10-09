@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ProfileLayout } from '../../layouts/ProfileLayout/ProfileLayout';
 import ArrowSVG from '../../ui/svg/ArrowSVG';
 import Dropdown from '../../ui/Dropdown/Dropdown';
@@ -6,17 +6,25 @@ import ButtonAction from '../../ui/ButtonAction/ButtonAction';
 import Button from '../../ui/Button/Button';
 import style from './style.module.scss';
 import type { SkillHistorySearchType } from '../../types/skill';
-import { useAppSelector } from '../../hooks/useAppDispatch';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
+import { fetchHistorySkills } from '../../store/slices/skillSlice';
+import { setErrorWithTimeout } from '../../store/slices/appSlice';
 import { formatSkillHistorySearchType } from '../../utils/formatSkillStatusType';
 import { SkillHistory } from '../../components/SkillHistory/SkillHistory';
-import { useProfile } from '../../hooks/useProfile';
 
 export const HistoryPage = () => {
-  useProfile();
   const [isOpenSelect, setOpenSelect] = useState(false);
   const [selectedSearchType, setSearchType] = useState<SkillHistorySearchType>('ALL');
 
   const skills = useAppSelector((state) => state.skill.historySkills);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchHistorySkills())
+      .unwrap()
+      .catch((error) => dispatch(setErrorWithTimeout(error)));
+  }, [dispatch]);
+
   const filteredSkills = useMemo(() => {
     switch (selectedSearchType) {
       case 'ACTIVE':
@@ -56,6 +64,7 @@ export const HistoryPage = () => {
           {filteredSkills.map((skill) => (
             <SkillHistory key={skill.id} skill={skill} />
           ))}
+          {filteredSkills.length === 0 && <p>Сделок пока нет</p>}
         </div>
       </div>
     </ProfileLayout>

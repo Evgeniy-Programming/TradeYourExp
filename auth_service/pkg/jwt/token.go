@@ -69,11 +69,19 @@ func (m *Manager) NewRefreshToken(user models.User) (string, error) {
 }
 
 func (m *Manager) ParseAccessToken(tokenStr string) (*TokenClaims, error) {
+	return parseToken(tokenStr, m.AccessSecret)
+}
+
+func (m *Manager) ParseRefreshToken(tokenStr string) (*TokenClaims, error) {
+	return parseToken(tokenStr, m.RefreshSecret)
+}
+
+func parseToken(tokenStr string, secret []byte) (*TokenClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &TokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")
 		}
-		return m.AccessSecret, nil
+		return secret, nil
 	})
 	if err != nil {
 		return nil, err

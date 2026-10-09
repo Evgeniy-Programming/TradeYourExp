@@ -4,11 +4,10 @@ import { SkillFilter } from '../../components/SkillFilter/SkillFilter';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { GeneralLayout } from '../../layouts/GeneralLayout/GeneralLayout';
 import style from './style.module.scss';
-import { useProfile } from '../../hooks/useProfile';
 
 export const MainPage = () => {
-  useProfile();
   const skills = useAppSelector((state) => state.skill.skills);
+  const isLoading = useAppSelector((state) => state.skill.isLoading);
 
   return (
     <GeneralLayout>
@@ -19,6 +18,7 @@ export const MainPage = () => {
         {skills.map((skill) => (
           <Skill key={skill.id} skill={skill} />
         ))}
+        {!isLoading && skills.length === 0 && <p>Обменов не найдено</p>}
       </div>
     </GeneralLayout>
   );

@@ -5,116 +5,101 @@ import (
 	"Trade-y-exp/pkg/repo"
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"strings"
 )
 
-func (r *Repository) GetAllSkills() ([]models.Skill, error) {
-	rows, err := r.db.Query("SELECT id, username, skill, exchange, category FROM skills ORDER BY id DESC")
-	if err != nil {
-		return nil, err
+// ListSkills возвращает карточки обменов с учётом фильтров. Пустой результат — пустой срез.
+func (r *Repository) ListSkills(ctx context.Context, f models.SkillFilter) ([]models.SkillCard, error) {
+	var (
+		where []string
+		args  []any
+	)
+	arg := func(v any) string {
+		args = append(args, v)
+		return fmt.Sprintf("$%d", len(args))
 	}
-	defer rows.Close()
 
-	var res []models.Skill
-	for rows.Next() {
-		var s models.Skill
-		if err := rows.Scan(&s.ID, &s.Username, &s.Skill, &s.Exchange, &s.Category); err == nil {
-			res = append(res, s)
+	if f.Category != "" {
+		if !repo.IsValidCategory(f.Category) {
+			return nil, ErrInvalidCategory
+		}
+		where = append(where, "s.category = "+arg(f.Category))
+	}
+	if f.Username != "" {
+		where = append(where, "s.username = "+arg(f.Username))
+	}
+	if search := strings.TrimSpace(f.Search); search != "" {
+		pattern := arg("%" + strings.NewReplacer(`\`, `\\`, "%", `\%`, "_", `\_`).Replace(search) + "%")
+		switch f.SearchIn {
+		case "skill":
+			where = append(where, "s.skill ILIKE "+pattern)
+		case "exchange":
+			where = append(where, "s.exchange ILIKE "+pattern)
+		default:
+			where = append(where, "(s.skill || ' ' || s.exchange || ' ' || COALESCE(sd.description, '') || ' ' || s.username) ILIKE "+pattern)
 		}
 	}
-	return res, nil
-}
 
-func (r *Repository) GetSkillsByCategory(ctx context.Context, category string) ([]models.Skill, error) {
-	if !repo.IsValidCategory(category) {
-		return nil, errors.New("category is invalid")
-	}
-
-	rows, err := r.db.QueryContext(ctx, `
-        SELECT 
-            id, username, skill, exchange, category
-        FROM skills
-        WHERE category = $1
-		ORDER BY id DESC
-	`, category)
-
-	if err != nil {
-		return nil, fmt.Errorf("query skills by category: %w", err)
-	}
-	defer rows.Close()
-
-	var skills []models.Skill
-	for rows.Next() {
-		var s models.Skill
-		if err := rows.Scan(&s.ID, &s.Username, &s.Skill, &s.Exchange, &s.Category); err != nil {
-			return nil, err
-		}
-		skills = append(skills, s)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return skills, nil
-}
-
-func (r *Repository) GetSkillByFilters(ctx context.Context, search string) (*[]models.SkillFull, error) {
-	var records []models.SkillFull
-
-	search = "%" + strings.ReplaceAll(strings.ReplaceAll(search, "%", "\\%"), "_", "\\_") + "%"
-
-	rows, err := r.db.QueryContext(ctx, `
-		SELECT 
-			s.id, 
-			COALESCE(sd.description, '') as description,
-			COALESCE(sd.media, '') as media,
-			COALESCE(sd.created_at, NOW()) as created_at,
-			s.skill, 
-			s.exchange, 
-			s.username, 
-			s.category
+	q := `
+		SELECT s.id, s.category, COALESCE(sd.description, ''), COALESCE(s.skill, ''), COALESCE(s.exchange, ''),
+		       s.contact_type, s.contact_value, COALESCE(s.username, ''), s.created_at, s.status
 		FROM skills s
-		LEFT JOIN skill_descriptions sd ON s.id = sd.skill_id
-		WHERE 
-			LOWER(
-				COALESCE(sd.description, '') || ' ' ||
-				COALESCE(s.skill, '') || ' ' ||
-				COALESCE(s.exchange, '') || ' ' ||
-				COALESCE(s.username, '') || ' ' ||
-				COALESCE(s.category, '')
-			) LIKE LOWER($1)
-		ORDER BY COALESCE(sd.created_at, s.created_at) DESC
-	`, search)
+		LEFT JOIN skill_descriptions sd ON sd.skill_id = s.id`
+	if len(where) > 0 {
+		q += " WHERE " + strings.Join(where, " AND ")
+	}
+	q += " ORDER BY s.created_at DESC, s.id DESC"
 
+	rows, err := r.db.QueryContext(ctx, q, args...)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("list skills: %w", err)
+	}
+	defer rows.Close()
+
+	cards := []models.SkillCard{}
+	for rows.Next() {
+		var c models.SkillCard
+		if err := rows.Scan(&c.ID, &c.Category, &c.Description, &c.Skill, &c.Exchange,
+			&c.ContactType, &c.ContactValue, &c.Username, &c.CreatedAt, &c.Status); err != nil {
+			return nil, err
+		}
+		cards = append(cards, c)
+	}
+	return cards, rows.Err()
+}
+
+// GetStats считает обмены пользователя: итоги по статусам и по месяцам за последний год.
+func (r *Repository) GetStats(ctx context.Context, username string) (*models.SkillStats, error) {
+	stats := &models.SkillStats{ByMonth: []models.SkillStatsMonth{}}
+	err := r.db.QueryRowContext(ctx, `
+		SELECT COUNT(*),
+		       COUNT(*) FILTER (WHERE status = 'ACTIVE'),
+		       COUNT(*) FILTER (WHERE status = 'CLOSED')
+		FROM skills WHERE username = $1`, username).Scan(&stats.Total, &stats.Active, &stats.Closed)
+	if err != nil {
+		return nil, fmt.Errorf("skill totals: %w", err)
+	}
+
+	rows, err := r.db.QueryContext(ctx, `
+		SELECT to_char(m.month, 'YYYY-MM'), COUNT(s.id)
+		FROM generate_series(date_trunc('month', NOW()) - INTERVAL '11 months', date_trunc('month', NOW()), INTERVAL '1 month') AS m(month)
+		LEFT JOIN skills s ON s.username = $1 AND date_trunc('month', s.created_at) = m.month
+		GROUP BY m.month
+		ORDER BY m.month`, username)
+	if err != nil {
+		return nil, fmt.Errorf("skill stats by month: %w", err)
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		var record models.SkillFull
-		if err := rows.Scan(
-			&record.ID,
-			&record.Description,
-			&record.Media,
-			&record.CreatedAt,
-			&record.Skill,
-			&record.Exchange,
-			&record.Username,
-			&record.Category,
-		); err != nil {
+		var m models.SkillStatsMonth
+		if err := rows.Scan(&m.Month, &m.Count); err != nil {
 			return nil, err
 		}
-		records = append(records, record)
+		stats.ByMonth = append(stats.ByMonth, m)
 	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return &records, nil
+	return stats, rows.Err()
 }
 
 func (r *Repository) GetDescriptionBySkillID(ctx context.Context, skillID int) (*models.SkillDescription, error) {

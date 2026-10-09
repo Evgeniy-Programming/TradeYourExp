@@ -2,14 +2,13 @@ package user
 
 import (
 	"Trade-y-exp/internal/repository"
-	authpb "Trade-y-exp/proto/auth"
 )
 
+// Handler — административные операции над пользователями.
 type Handler struct {
-	repo       repository.Repository
-	authClient authpb.AuthServiceClient
+	repo repository.Repository
 }
 
-func NewUserHandler(repo repository.Repository, authClient authpb.AuthServiceClient) *Handler {
-	return &Handler{repo: repo, authClient: authClient}
+func NewUserHandler(repo repository.Repository) *Handler {
+	return &Handler{repo: repo}
 }

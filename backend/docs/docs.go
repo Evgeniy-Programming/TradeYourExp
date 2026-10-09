@@ -15,9 +15,8 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/login": {
+        "/auth/changepassword": {
             "post": {
-                "description": "Авторизирует пользователя по введенным данным.",
                 "consumes": [
                     "application/json"
                 ],
@@ -25,35 +24,29 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "auth"
                 ],
-                "summary": "Авторизация пользователя",
+                "summary": "Смена пароля",
                 "parameters": [
                     {
-                        "description": "Данные для входа",
+                        "description": "Текущий и новый пароль",
                         "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.LoginRequest"
+                            "$ref": "#/definitions/models.ChangePasswordRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Пользователь успешно вошел",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.ResponseApi"
                         }
                     },
                     "400": {
-                        "description": "Неверный формат данных",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "401": {
-                        "description": "Неверные учетные данные",
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/models.ResponseApi"
                         }
@@ -61,9 +54,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/register": {
+        "/auth/login": {
             "post": {
-                "description": "Создание пользователя с заполнением требуемых полей.",
                 "consumes": [
                     "application/json"
                 ],
@@ -71,9 +63,193 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "auth"
                 ],
-                "summary": "Создание пользователя",
+                "summary": "Вход",
+                "parameters": [
+                    {
+                        "description": "Логин (никнейм или email) и пароль",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AuthLoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseApi"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/models.Profile"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Выход",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/me": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Мой профиль",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseApi"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/models.Profile"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/profile/{username}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Профиль пользователя",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Никнейм",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseApi"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/models.Profile"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Обновление токенов",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Регистрация",
                 "parameters": [
                     {
                         "description": "Данные пользователя",
@@ -81,25 +257,94 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.RegisterRequest"
+                            "$ref": "#/definitions/models.AuthRegisterRequest"
                         }
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "Пользователь успешно создан",
+                        "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseApi"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/models.Profile"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
-                        "description": "Неверный формат данных",
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/models.ResponseApi"
                         }
                     },
                     "409": {
-                        "description": "Пользователь уже существует",
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/update": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Редактирование профиля",
+                "parameters": [
+                    {
+                        "description": "Изменяемые поля",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ProfileUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseApi"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/models.Profile"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
                         "schema": {
                             "$ref": "#/definitions/models.ResponseApi"
                         }
@@ -109,32 +354,57 @@ const docTemplate = `{
         },
         "/skills": {
             "get": {
-                "description": "Вывод полного списка навыков.",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "skills"
                 ],
-                "summary": "Вывести все скиллы",
+                "summary": "Лента обменов",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Код категории (it, communicate, art, knowledge, hobby)",
+                        "name": "category",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Строка поиска",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Где искать: skill — предлагаемый навык, exchange — желаемый; пусто — везде",
+                        "name": "searchIn",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Вывод пользовательских скиллов",
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseApi"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.SkillCard"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
-                        "description": "Неверный формат",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "404": {
-                        "description": "Пользователь не найден",
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/models.ResponseApi"
                         }
@@ -142,7 +412,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Создание нового запроса с описанием",
                 "consumes": [
                     "application/json"
                 ],
@@ -152,39 +421,27 @@ const docTemplate = `{
                 "tags": [
                     "skills"
                 ],
-                "summary": "Добавление запроса с дополнительным описанием",
+                "summary": "Создать обмен",
                 "parameters": [
                     {
-                        "description": "Данные запроса навыка",
+                        "description": "Данные обмена",
                         "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.SkillFull"
+                            "$ref": "#/definitions/models.SkillCreateRequest"
                         }
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "Запрос навыка успешно создан",
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/models.ResponseApi"
                         }
                     },
                     "400": {
-                        "description": "Неверный формат запроса",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "409": {
-                        "description": "Конфликт при создании запроса",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/models.ResponseApi"
                         }
@@ -273,21 +530,17 @@ const docTemplate = `{
         },
         "/skills/filter/{search}": {
             "get": {
-                "description": "Вывод полного списка скиллов по переданной строке.",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "skills"
                 ],
-                "summary": "Вывести все скиллы по вхождению в ключевую строку.",
+                "summary": "Поиск обменов",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Ключевая строка поиска",
+                        "description": "Строка поиска",
                         "name": "search",
                         "in": "path",
                         "required": true
@@ -295,21 +548,89 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Вывод пользовательских скиллов",
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseApi"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.SkillCard"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
-                    },
-                    "400": {
-                        "description": "Неверный формат",
+                    }
+                }
+            }
+        },
+        "/skills/my": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "skills"
+                ],
+                "summary": "Мои обмены",
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseApi"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.SkillCard"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
-                    },
-                    "404": {
-                        "description": "Категория не найдена",
+                    }
+                }
+            }
+        },
+        "/skills/my/stats": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "skills"
+                ],
+                "summary": "Моя статистика",
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseApi"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/models.SkillStats"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -317,21 +638,17 @@ const docTemplate = `{
         },
         "/skills/{category}": {
             "get": {
-                "description": "Вывод полного списка скиллов по категории.",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "skills"
                 ],
-                "summary": "Вывести все скиллы по категории.",
+                "summary": "Обмены по категории",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Категория скилла",
+                        "description": "Код категории",
                         "name": "category",
                         "in": "path",
                         "required": true
@@ -339,19 +656,28 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Вывод пользовательских скиллов",
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseApi"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.SkillCard"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
-                        "description": "Неверный формат",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "404": {
-                        "description": "Категория не найдена",
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/models.ResponseApi"
                         }
@@ -361,155 +687,31 @@ const docTemplate = `{
         },
         "/skills/{id}": {
             "delete": {
-                "description": "Удаляет запрос навыка по его ID",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "skills"
                 ],
-                "summary": "Удалить запрос",
+                "summary": "Удалить обмен",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID запроса",
+                        "description": "ID обмена",
                         "name": "id",
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Запрос навыка успешно удален",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "404": {
-                        "description": "Неверный формат ID",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "500": {
-                        "description": "Запрос не найден",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/me": {
-            "get": {
-                "description": "Вывод полного профиля.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Вывести собственный профиль",
-                "responses": {
                     "200": {
-                        "description": "Вывод профиля",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "400": {
-                        "description": "Неверный формат",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.ResponseApi"
                         }
                     },
                     "404": {
-                        "description": "Пользователь не найден",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/me/static": {
-            "get": {
-                "description": "Вывод полной статистики.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Вывести собственный статистики",
-                "responses": {
-                    "200": {
-                        "description": "Вывод статистики",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "400": {
-                        "description": "Неверный формат",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "404": {
-                        "description": "Пользователь не найден",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/profile/{username}": {
-            "get": {
-                "description": "Вывод полного профиля пользователя.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Вывести сторонний профиль",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Имя (UserName) пользователя",
-                        "name": "username",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Вывод профиля пользователя",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "400": {
-                        "description": "Неверный формат",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "404": {
-                        "description": "Пользователь не найден",
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/models.ResponseApi"
                         }
@@ -613,10 +815,92 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.LoginRequest": {
+        "models.AuthLoginRequest": {
+            "type": "object",
+            "required": [
+                "login",
+                "password"
+            ],
+            "properties": {
+                "login": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "email",
+                        "username"
+                    ]
+                }
+            }
+        },
+        "models.AuthRegisterRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "link": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ChangePasswordRequest": {
+            "type": "object",
+            "required": [
+                "currentPassword",
+                "newPassword"
+            ],
+            "properties": {
+                "currentPassword": {
+                    "type": "string"
+                },
+                "newPassword": {
+                    "type": "string",
+                    "minLength": 6
+                }
+            }
+        },
+        "models.Profile": {
             "type": "object",
             "properties": {
-                "password": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "link": {
                     "type": "string"
                 },
                 "username": {
@@ -624,29 +908,20 @@ const docTemplate = `{
                 }
             }
         },
-        "models.RegisterRequest": {
+        "models.ProfileUpdate": {
             "type": "object",
-            "required": [
-                "email",
-                "password",
-                "role",
-                "username"
-            ],
             "properties": {
                 "email": {
                     "type": "string"
                 },
-                "password": {
-                    "type": "string",
-                    "minLength": 6
+                "firstName": {
+                    "type": "string"
                 },
-                "role": {
-                    "type": "string",
-                    "enum": [
-                        "manager",
-                        "admin",
-                        "viewer"
-                    ]
+                "lastName": {
+                    "type": "string"
+                },
+                "link": {
+                    "type": "string"
                 },
                 "username": {
                     "type": "string"
@@ -678,13 +953,22 @@ const docTemplate = `{
                 }
             }
         },
-        "models.SkillFull": {
+        "models.SkillCard": {
             "type": "object",
             "properties": {
+                "avatarUsername": {
+                    "type": "string"
+                },
                 "category": {
                     "type": "string"
                 },
-                "created_at": {
+                "contactType": {
+                    "type": "string"
+                },
+                "contactValue": {
+                    "type": "string"
+                },
+                "createdAt": {
                     "type": "string"
                 },
                 "description": {
@@ -694,15 +978,81 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
-                },
-                "media": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "0"
                 },
                 "skill": {
                     "type": "string"
                 },
+                "status": {
+                    "type": "string"
+                },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.SkillCreateRequest": {
+            "type": "object",
+            "required": [
+                "category",
+                "exchange",
+                "skill"
+            ],
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "contactType": {
+                    "type": "string",
+                    "enum": [
+                        "site",
+                        "telegram",
+                        "vk",
+                        "wechat"
+                    ]
+                },
+                "contactValue": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "exchange": {
+                    "type": "string"
+                },
+                "skill": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.SkillStats": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "integer"
+                },
+                "byMonth": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.SkillStatsMonth"
+                    }
+                },
+                "closed": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.SkillStatsMonth": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "month": {
                     "type": "string"
                 }
             }
@@ -746,7 +1096,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8080",
 	BasePath:         "/api/v1",
 	Schemes:          []string{"http", "https"},
-	Title:            "Swagger Example API",
+	Title:            "Trade Your Exp API",
 	Description:      "Trade Your Exp.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

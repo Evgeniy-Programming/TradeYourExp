@@ -29,7 +29,6 @@ func (h *Handler) GetDescriptionByID(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
-			Error:     err.Error(),
 			Message:   "Invalid skill id",
 		})
 		return

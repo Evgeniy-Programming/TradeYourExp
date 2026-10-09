@@ -1,18 +1,28 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { IEditSkill, ISkill, ISkillHistory } from '../../types/skill';
-import { MockSkills, MockSkillsHistory } from '../../mock/skills';
+import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import type { IEditSkill, ISkill, ISkillHistory, ISkillQuery } from '../../types/skill';
+import { skillAPI } from '../../api/skill';
 
 interface SkillState {
   skills: ISkill[];
   historySkills: ISkillHistory[];
   editSkill: IEditSkill | null;
+  isLoading: boolean;
 }
 
 const initialState: SkillState = {
-  skills: MockSkills,
-  historySkills: MockSkillsHistory,
+  skills: [],
+  historySkills: [],
   editSkill: null,
+  isLoading: false,
 };
+
+export const fetchSkills = createAsyncThunk('skill/fetchSkills', (query: ISkillQuery) =>
+  skillAPI.getSkills(query)
+);
+
+export const fetchHistorySkills = createAsyncThunk('skill/fetchHistorySkills', () =>
+  skillAPI.getMySkills()
+);
 
 export const skillSlice = createSlice({
   name: 'skill',
@@ -39,6 +49,22 @@ export const skillSlice = createSlice({
         };
       }
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchSkills.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchSkills.fulfilled, (state, action) => {
+        state.skills = action.payload;
+        state.isLoading = false;
+      })
+      .addCase(fetchSkills.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(fetchHistorySkills.fulfilled, (state, action) => {
+        state.historySkills = action.payload;
+      });
   },
 });
 

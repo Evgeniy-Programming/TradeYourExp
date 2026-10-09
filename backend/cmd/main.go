@@ -19,7 +19,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-// @title           Swagger Example API
+// @title           Trade Your Exp API
 // @version         1.0
 // @description     Trade Your Exp.
 // @host      localhost:8080
@@ -39,6 +39,10 @@ func main() {
 	}
 	defer dB.Close()
 
+	if err := dB.Ping(); err != nil {
+		log.Fatalf("failed to ping database: %v", err)
+	}
+
 	db.RunMigrations(dB, "trade_db")
 	repo := repository.NewHMainRepository(dB)
 
@@ -56,17 +60,10 @@ func main() {
 
 	authClient := authpb.NewAuthServiceClient(conn)
 
-	// === Auth Middleware Config ===
-	authCfg := handler.Config{
-		AuthServiceAddr: authAddr,
-		JWTSecret:       os.Getenv("JWT_SECRET"),
-		PublicPaths: []string{
-			"/api/v1/login",
-			"/api/v1/register",
-			"/swagger/*any",
-			"/",
-		},
-	}
+	// === Auth Middleware ===
+	requireAuth := handler.AuthMiddleware(handler.Config{
+		JWTSecret: os.Getenv("JWT_SECRET"),
+	}, authClient)
 
 	// === Handler Initialization ===
 	h := handler.NewHMainHandler(*repo, authClient)
@@ -75,11 +72,15 @@ func main() {
 	app := gin.Default()
 	app.Use(handler.RequestIDMiddleware())
 
-	// CORS
+	// CORS нужен только при обращении к API напрямую, в обход прокси Vite
+	corsOrigin := os.Getenv("CORS_ORIGIN")
+	if corsOrigin == "" {
+		corsOrigin = "http://localhost:5173"
+	}
 	app.Use(func(c *gin.Context) {
-		c.Header("Access-Control-Allow-Origin", "http://localhost:5173")
+		c.Header("Access-Control-Allow-Origin", corsOrigin)
 		c.Header("Access-Control-Allow-Credentials", "true")
-		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Request-ID")
 		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(http.StatusNoContent)
@@ -101,31 +102,37 @@ func main() {
 	// === API Routes ===
 	v1 := app.Group("/api/v1")
 	{
-		v1.POST("/register", h.User.Register)
-		v1.POST("/login", h.User.Login)
+		authGroup := v1.Group("/auth")
+		{
+			authGroup.POST("/register", h.Auth.Register)
+			authGroup.POST("/login", h.Auth.Login)
+			authGroup.POST("/refresh", h.Auth.Refresh)
+			authGroup.POST("/logout", h.Auth.Logout)
+
+			authGroup.GET("/me", requireAuth, h.Auth.Me)
+			authGroup.PUT("/update", requireAuth, h.Auth.Update)
+			authGroup.POST("/changepassword", requireAuth, h.Auth.ChangePassword)
+			authGroup.GET("/profile/:username", requireAuth, h.Auth.GetProfile)
+		}
+
 		v1.GET("/skills", h.Skills.GetSkills)
 		v1.GET("/skills/:category", h.Skills.GetSkillByCategory)
 		v1.GET("/skills/filter/:search", h.Skills.GetSkillByFilters)
 
 		protected := v1.Group("")
-		protected.Use(handler.AuthMiddleware(authCfg))
+		protected.Use(requireAuth)
 		{
 			protected.POST("/skills", h.Skills.CreateSkill)
+			protected.GET("/skills/my", h.Skills.GetMySkills)
+			protected.GET("/skills/my/stats", h.Skills.GetMyStats)
 			protected.DELETE("/skills/:id", h.Skills.DeleteSkill)
 			protected.GET("/skills/desc/:id", h.Skills.GetDescriptionByID)
 			protected.GET("/skills/desc", h.Skills.GetAllDescriptions)
 			protected.POST("/skills/desc", h.Skills.CreateDescription)
-			protected.POST("/skills/with-desc", h.Skills.CreateSkillWithDesc)
-			protected.GET("users/me", h.User.GetMyProfile)
-			protected.GET("users/me/static", h.User.GetMyProfileStatic)
-			protected.GET("users/profile/:username", h.User.GetProfile)
 		}
 
 		admin := v1.Group("")
-		admin.Use(
-			handler.AuthMiddleware(authCfg),
-			handler.RequireRole("admin"),
-		)
+		admin.Use(requireAuth, handler.RequireRole("admin"))
 		{
 			admin.PUT("/users/:id", h.User.UpdateUser)
 			admin.DELETE("/users/:id", h.User.DeleteUser)
