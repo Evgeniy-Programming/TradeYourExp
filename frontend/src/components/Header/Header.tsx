@@ -35,7 +35,7 @@ export const Header = () => {
             {profile && (
               <A to="/profile">
                 <div className={style.profile}>
-                  <Avatar profileAvatar={logoIMG} username="Username123" />
+                  <Avatar profileAvatar={logoIMG} username={profile.username} />
                   <ArrowSVG size={15} direction="right" />
                 </div>
               </A>

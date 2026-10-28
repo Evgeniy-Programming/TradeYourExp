@@ -8,3 +8,10 @@ func (r *Repository) GetByEmail(email string) (*models.User, error) {
 	err := r.db.QueryRow(q, email).Scan(&u.ID, &u.Username, &u.Email, &u.Password, &u.FirstName)
 	return u, err
 }
+
+func (r *Repository) GetUsernameByEmail(email string) (string, error) {
+	var username string
+	q := `SELECT username FROM users WHERE email = $1`
+	err := r.db.QueryRow(q, email).Scan(&username)
+	return username, err
+}

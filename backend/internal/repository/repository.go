@@ -2,6 +2,7 @@ package repository
 
 import (
 	"Trade-y-exp/internal/models"
+	"Trade-y-exp/internal/repository/raiting"
 	"Trade-y-exp/internal/repository/skills"
 	"Trade-y-exp/internal/repository/user"
 	"context"
@@ -11,8 +12,8 @@ import (
 type SkillRepository interface {
 	SaveSkill(ctx context.Context, s *models.Skill) (int, error)
 	DeleteSkill(id string) error
-	FetchSkills() ([]models.Skill, error)
-	GetSkilllByCategory(ctx context.Context, category string) (*[]models.Skill, error)
+	FetchSkills() ([]models.SkillFull, error)
+	GetSkilllByCategory(ctx context.Context, category string) (*[]models.SkillFull, error)
 	GetSkillByFilters(ctx context.Context, search string) (*[]models.SkillFull, error)
 	GetAllDescriptions(ctx context.Context) ([]models.SkillDescription, error)
 	GetDescriptionBySkillID(ctx context.Context, skillID int) (*models.SkillDescription, error)
@@ -27,17 +28,25 @@ type UserRepository interface {
 	GetMyProfile(userId string) (*models.ProfileRequest, error)
 	GetProfile(username string) (*models.ProfileRequest, error)
 	GetMyProfileStatic(userId string) (*models.ProfileRequest, error)
+	GetUsernameByEmail(email string) (string, error)
+	UpdateProfile(u *models.UpdateProfileRequest, id string) error
+	GetPasswordHash(id string) (string, error)
+	UpdatePassword(hash, id string) error
 }
 
+type RaitingRepository interface{}
+
 type Repository struct {
-	Skills skills.Repository
-	User   user.Repository
-	DB     *sql.DB
+	Skills  *skills.Repository
+	User    *user.Repository
+	Raiting *raiting.Repository
+	DB      *sql.DB
 }
 
 func NewHMainRepository(DB *sql.DB) *Repository {
 	return &Repository{
-		User:   *user.NewUserRepository(DB),
-		Skills: *skills.NewSkillRepository(DB),
+		User:    user.NewUserRepository(DB),
+		Skills:  skills.NewSkillRepository(DB),
+		Raiting: raiting.NewRaitingRepository(DB),
 	}
 }

@@ -1,24 +1,28 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { IProfile } from '../../types/profile';
+import { authAPI } from '../../api/auth';
 
 interface ProfileState {
   profile: IProfile | null;
   isLoading: boolean;
+  // true после первой попытки получить профиль — до неё роутер не знает, вошёл ли пользователь
+  isInitialized: boolean;
 }
 
 const initialState: ProfileState = {
-  profile: {
-    username: 'Test',
-    firstName: 'Test',
-    createdAt: Date.now(),
-    lastName: 'Test',
-    email: 'test@mail.ru',
-    id: '42343',
-    link: 'https://gergwejogj',
-  },
-  // profile: null,
+  profile: null,
   isLoading: false,
+  isInitialized: false,
 };
+
+// Гость — не ошибка: при отсутствии сессии профиль просто остаётся пустым
+export const fetchProfile = createAsyncThunk('profile/fetchProfile', async () => {
+  try {
+    return await authAPI.getMe();
+  } catch {
+    return null;
+  }
+});
 
 const profileSlice = createSlice({
   name: 'profile',
@@ -26,6 +30,7 @@ const profileSlice = createSlice({
   reducers: {
     setProfile: (state, action: PayloadAction<IProfile>) => {
       state.profile = action.payload;
+      state.isInitialized = true;
     },
     updateProfileFields: (state, action: PayloadAction<Partial<IProfile>>) => {
       if (state.profile) {
@@ -41,6 +46,17 @@ const profileSlice = createSlice({
     setProfileLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchProfile.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchProfile.fulfilled, (state, action) => {
+        state.profile = action.payload;
+        state.isLoading = false;
+        state.isInitialized = true;
+      });
   },
 });
 
