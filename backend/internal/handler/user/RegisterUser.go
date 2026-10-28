@@ -28,10 +28,12 @@ import (
 func (h *Handler) Register(c *gin.Context) {
 	requestID, _ := c.Get(contextkeys.RequestIDKey)
 	var req struct {
-		Username string `json:"username" binding:"required"`
-		Email    string `json:"email" binding:"required,email"`
-		Password string `json:"password" binding:"required,min=6"`
-		Role     string `json:"role" binding:"required,oneof=manager admin viewer"`
+		Username   string `json:"username" binding:"required"`
+		Email      string `json:"email" binding:"required,email"`
+		Password   string `json:"password" binding:"required,min=6"`
+		FirstName  string `json:"firstName"`
+		LastName   string `json:"lastName"`
+		SocialLink string `json:"socialLink"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -49,7 +51,7 @@ func (h *Handler) Register(c *gin.Context) {
 		Username: req.Username,
 		Email:    req.Email,
 		Password: req.Password, // auth-service сам захеширует через bcrypt
-		Role:     req.Role,
+		Role:     defaultRole,  // роль назначает сервер, а не клиент
 	})
 	if err != nil {
 		if status.Code(err) == codes.AlreadyExists {
@@ -66,6 +68,21 @@ func (h *Handler) Register(c *gin.Context) {
 			Status:    false,
 			Error:     err.Error(),
 			Message:   "Registraiton failed",
+		})
+		return
+	}
+
+	// необязательные поля профиля auth-service не хранит — дописываем их сами
+	if err := h.repo.User.UpdateProfile(&models.UpdateProfileRequest{
+		FirstName:  req.FirstName,
+		LastName:   req.LastName,
+		SocialLink: req.SocialLink,
+	}, resp.UserId); err != nil {
+		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Failed to save profile data",
 		})
 		return
 	}

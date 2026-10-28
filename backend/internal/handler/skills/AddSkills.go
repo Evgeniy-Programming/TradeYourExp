@@ -53,13 +53,14 @@ func (h *Handler) CreateSkill(c *gin.Context) {
 // @Failure 400 {object} models.ResponseApi "Неверный формат запроса"
 // @Failure 409 {object} models.ResponseApi "Конфликт при создании запроса"
 // @Failure 500 {object} models.ResponseApi "Внутренняя ошибка сервера"
-// @Router /skills [post]
+// @Router /skills/with-desc [post]
 func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
 	requestID, _ := c.Get(contextkeys.RequestIDKey)
 	var req struct {
 		Username     string `json:"username"`
 		Skill        string `json:"skill"`
 		Exchange     string `json:"exchange"`
+		Category     string `json:"category"`
 		Description  string `json:"description"`
 		Media        string `json:"media"`
 		ContactType  string `json:"contact_type"`
@@ -88,6 +89,7 @@ func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
 		Username: req.Username,
 		Skill:    req.Skill,
 		Exchange: req.Exchange,
+		Category: req.Category,
 	}
 	skillID, err := h.repo.Skills.SaveSkill(c.Request.Context(), skill)
 	if err != nil {

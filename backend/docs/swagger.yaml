@@ -1,5 +1,16 @@
 basePath: /api/v1
 definitions:
+  models.ChangePasswordRequest:
+    properties:
+      currentPassword:
+        type: string
+      newPassword:
+        minLength: 6
+        type: string
+    required:
+    - currentPassword
+    - newPassword
+    type: object
   models.LoginRequest:
     properties:
       password:
@@ -11,21 +22,20 @@ definitions:
     properties:
       email:
         type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
       password:
         minLength: 6
         type: string
-      role:
-        enum:
-        - manager
-        - admin
-        - viewer
+      socialLink:
         type: string
       username:
         type: string
     required:
     - email
     - password
-    - role
     - username
     type: object
   models.ResponseApi:
@@ -65,6 +75,19 @@ definitions:
       username:
         type: string
     type: object
+  models.UpdateProfileRequest:
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      socialLink:
+        type: string
+      username:
+        type: string
+    type: object
   models.User:
     properties:
       created_at:
@@ -98,7 +121,7 @@ paths:
       - application/json
       description: Авторизирует пользователя по введенным данным.
       parameters:
-      - description: Данные для входа
+      - description: Данные для входа (в username можно передать email)
         in: body
         name: input
         required: true
@@ -120,6 +143,40 @@ paths:
           schema:
             $ref: '#/definitions/models.ResponseApi'
       summary: Авторизация пользователя
+      tags:
+      - users
+  /logout:
+    post:
+      description: Отзывает access-токен в auth-service и удаляет cookie с токенами.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Пользователь успешно вышел
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "500":
+          description: Ошибка auth-service
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Выход пользователя
+      tags:
+      - users
+  /refresh:
+    post:
+      description: Выдает новую пару токенов по refresh-токену из cookie.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Токены успешно обновлены
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "401":
+          description: Refresh-токен отсутствует или недействителен
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Обновление токенов
       tags:
       - users
   /register:
@@ -173,39 +230,6 @@ paths:
           schema:
             $ref: '#/definitions/models.ResponseApi'
       summary: Вывести все скиллы
-      tags:
-      - skills
-    post:
-      consumes:
-      - application/json
-      description: Создание нового запроса с описанием
-      parameters:
-      - description: Данные запроса навыка
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/models.SkillFull'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Запрос навыка успешно создан
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-        "400":
-          description: Неверный формат запроса
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-        "409":
-          description: Конфликт при создании запроса
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-        "500":
-          description: Внутренняя ошибка сервера
-          schema:
-            $ref: '#/definitions/models.ResponseApi'
-      summary: Добавление запроса с дополнительным описанием
       tags:
       - skills
   /skills/{category}:
@@ -347,6 +371,40 @@ paths:
       summary: Вывести все скиллы по вхождению в ключевую строку.
       tags:
       - skills
+  /skills/with-desc:
+    post:
+      consumes:
+      - application/json
+      description: Создание нового запроса с описанием
+      parameters:
+      - description: Данные запроса навыка
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.SkillFull'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Запрос навыка успешно создан
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "400":
+          description: Неверный формат запроса
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "409":
+          description: Конфликт при создании запроса
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Добавление запроса с дополнительным описанием
+      tags:
+      - skills
   /users/{id}:
     delete:
       consumes:
@@ -431,6 +489,61 @@ paths:
           schema:
             $ref: '#/definitions/models.ResponseApi'
       summary: Вывести собственный профиль
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Обновляет только переданные непустые поля профиля.
+      parameters:
+      - description: Новые данные профиля
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Профиль успешно обновлен
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "400":
+          description: Неверный формат данных
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "409":
+          description: Username уже занят
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Обновить собственный профиль
+      tags:
+      - users
+  /users/me/password:
+    put:
+      consumes:
+      - application/json
+      description: Проверяет текущий пароль и сохраняет новый.
+      parameters:
+      - description: Текущий и новый пароль
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.ChangePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Пароль успешно изменен
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "400":
+          description: Неверный формат данных или текущий пароль
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Сменить пароль
       tags:
       - users
   /users/me/static:
