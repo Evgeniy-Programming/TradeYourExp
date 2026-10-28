@@ -48,8 +48,8 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ className }) => {
         if (fieldLink) updateObject.link = fieldLink;
         if (fieldUsername) updateObject.username = fieldUsername;
 
-        const updatedProfile = await authAPI.update(updateObject);
-        dispatch(setProfile(updatedProfile));
+        await authAPI.update(updateObject);
+        dispatch(setProfile(await authAPI.getMe()));
       } catch (error) {
         dispatch(setErrorWithTimeout(error));
       }

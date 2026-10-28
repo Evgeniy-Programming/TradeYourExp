@@ -31,13 +31,14 @@ export const CreatorPage = () => {
   const navigate = useNavigate();
 
   const skill = useAppSelector((state) => state.skill.editSkill);
+  const profile = useAppSelector((state) => state.profile.profile);
   const dispatch = useAppDispatch();
 
   const sendSkill = async () => {
-    if (!skill) return;
+    if (!skill || !profile) return;
 
     try {
-      await skillAPI.sendSkill(skill);
+      await skillAPI.sendSkill(skill, profile.username);
       navigate('/profile/history');
     } catch (error) {
       dispatch(setErrorWithTimeout(error));

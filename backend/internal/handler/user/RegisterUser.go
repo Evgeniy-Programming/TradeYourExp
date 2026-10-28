@@ -1,0 +1,102 @@
+package user
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+
+	"Trade-y-exp/internal/contextkeys"
+	"Trade-y-exp/internal/models"
+	authdb "Trade-y-exp/proto/auth"
+
+	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
+
+// Register создает нового пользователя через auth-service.
+// @Summary      Создание пользователя
+// @Description  Создание пользователя с заполнением требуемых полей.
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        input  body      models.RegisterRequest  true  "Данные пользователя"
+// @Success      201    {object}  models.ResponseApi "Пользователь успешно создан"
+// @Failure      400    {object}  models.ResponseApi "Неверный формат данных"
+// @Failure      409    {object}  models.ResponseApi "Пользователь уже существует"
+// @Router       /register [post]
+func (h *Handler) Register(c *gin.Context) {
+	requestID, _ := c.Get(contextkeys.RequestIDKey)
+	var req struct {
+		Username   string `json:"username" binding:"required"`
+		Email      string `json:"email" binding:"required,email"`
+		Password   string `json:"password" binding:"required,min=6"`
+		FirstName  string `json:"firstName"`
+		LastName   string `json:"lastName"`
+		SocialLink string `json:"socialLink"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, models.ResponseApi{
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Invalid data",
+		})
+		return
+	}
+
+	// Проксируем запрос в auth-service через gRPC
+	resp, err := h.authClient.Register(context.Background(), &authdb.RegisterRequest{
+		Username: req.Username,
+		Email:    req.Email,
+		Password: req.Password, // auth-service сам захеширует через bcrypt
+		Role:     defaultRole,  // роль назначает сервер, а не клиент
+	})
+	if err != nil {
+		if status.Code(err) == codes.AlreadyExists {
+			c.JSON(http.StatusConflict, models.ResponseApi{
+				RequestID: fmt.Sprint(requestID),
+				Status:    false,
+				Error:     err.Error(),
+				Message:   "User exists",
+			})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Registraiton failed",
+		})
+		return
+	}
+
+	// необязательные поля профиля auth-service не хранит — дописываем их сами
+	if err := h.repo.User.UpdateProfile(&models.UpdateProfileRequest{
+		FirstName:  req.FirstName,
+		LastName:   req.LastName,
+		SocialLink: req.SocialLink,
+	}, resp.UserId); err != nil {
+		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "Failed to save profile data",
+		})
+		return
+	}
+
+	responseApi := models.ResponseApi{
+		RequestID: fmt.Sprint(requestID),
+		Status:    true,
+		Message:   "User successfull login",
+		Result: models.AuthResponse{
+			Username:  resp.Username,
+			Email:     resp.Email,
+			FirstName: resp.Role,
+		},
+	}
+
+	c.JSON(http.StatusCreated, responseApi)
+}

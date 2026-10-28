@@ -12,7 +12,7 @@ const instance = axios.create({
 });
 
 // На этих эндпоинтах 401 означает неверные данные, а не истёкшую сессию
-const noRefreshUrls = ['auth/login', 'auth/register', 'auth/refresh', 'auth/logout'];
+const noRefreshUrls = ['login', 'register', 'refresh', 'logout'];
 
 // Один общий refresh на все запросы, одновременно получившие 401
 let refreshRequest: Promise<unknown> | null = null;
@@ -32,7 +32,7 @@ instance.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        refreshRequest ??= instance.post('auth/refresh').finally(() => {
+        refreshRequest ??= instance.post('refresh').finally(() => {
           refreshRequest = null;
         });
         await refreshRequest;
