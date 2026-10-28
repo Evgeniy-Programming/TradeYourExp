@@ -29,13 +29,13 @@ export const LoginPage = () => {
     }
 
     try {
-      const profile = await authAPI.login({
+      await authAPI.login({
         type: loginType,
         login: fieldLogin,
         password: fieldPassword,
       });
 
-      dispatch(setProfile(profile));
+      dispatch(setProfile(await authAPI.getMe()));
       navigate('/');
     } catch (error) {
       dispatch(setErrorWithTimeout(error));

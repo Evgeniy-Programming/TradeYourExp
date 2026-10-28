@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { IEditSkill, ISkill, ISkillHistory, ISkillQuery } from '../../types/skill';
 import { skillAPI } from '../../api/skill';
+import type { RootState } from '..';
 
 interface SkillState {
   skills: ISkill[];
@@ -20,8 +21,12 @@ export const fetchSkills = createAsyncThunk('skill/fetchSkills', (query: ISkillQ
   skillAPI.getSkills(query)
 );
 
-export const fetchHistorySkills = createAsyncThunk('skill/fetchHistorySkills', () =>
-  skillAPI.getMySkills()
+export const fetchHistorySkills = createAsyncThunk(
+  'skill/fetchHistorySkills',
+  (_: void, { getState }) => {
+    const { profile } = (getState() as RootState).profile;
+    return profile ? skillAPI.getUserSkills(profile.username) : [];
+  }
 );
 
 export const skillSlice = createSlice({

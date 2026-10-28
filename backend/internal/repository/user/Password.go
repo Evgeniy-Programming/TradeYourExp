@@ -1,27 +1,35 @@
 package user
 
 import (
-	"context"
 	"database/sql"
-	"errors"
+
+	"github.com/google/uuid"
 )
 
-func (r *Repository) GetPasswordHash(ctx context.Context, userID string) (string, error) {
-	var hash string
-	err := r.db.QueryRowContext(ctx, `SELECT password FROM users WHERE id = $1`, userID).Scan(&hash)
-	if errors.Is(err, sql.ErrNoRows) {
-		return "", ErrNotFound
+func (r *Repository) GetPasswordHash(id string) (string, error) {
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		return "", err
 	}
+	var hash string
+	q := `SELECT password FROM users WHERE id=$1`
+	err = r.db.QueryRow(q, parsedID).Scan(&hash)
 	return hash, err
 }
 
-func (r *Repository) UpdatePasswordHash(ctx context.Context, userID, hash string) error {
-	res, err := r.db.ExecContext(ctx, `UPDATE users SET password = $1 WHERE id = $2`, hash, userID)
+func (r *Repository) UpdatePassword(hash, id string) error {
+	parsedID, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
-	if n, _ := res.RowsAffected(); n == 0 {
-		return ErrNotFound
+	q := `UPDATE users SET password=$1 WHERE id=$2`
+	result, err := r.db.Exec(q, hash, parsedID)
+	if err != nil {
+		return err
+	}
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		return sql.ErrNoRows
 	}
 	return nil
 }

@@ -12,24 +12,17 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-const defaultRole = "manager"
-
 func (a *UserHandler) Register(ctx context.Context, req *authpb.RegisterRequest) (*authpb.AuthResponse, error) {
 	hashedPwd, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to hash password")
 	}
 
-	role := req.Role
-	if role == "" {
-		role = defaultRole
-	}
-
 	user := &models.User{
 		Username: req.Username,
 		Email:    req.Email,
 		Password: string(hashedPwd),
-		Role:     role,
+		Role:     req.Role,
 	}
 
 	if err := a.repo.User.CreateUser(ctx, user); err != nil {

@@ -2,14 +2,8 @@ package user
 
 import (
 	"database/sql"
-	"errors"
 
 	_ "github.com/lib/pq"
-)
-
-var (
-	ErrNotFound   = errors.New("user not found")
-	ErrUserExists = errors.New("username or email already taken")
 )
 
 type Repository struct {

@@ -1,17 +1,17 @@
 package user
 
-import (
-	"context"
-	"database/sql"
-	"errors"
-)
+import "Trade-y-exp/internal/models"
 
-// GetUsernameByEmail нужен для входа по email: auth-service логинит только по username.
-func (r *Repository) GetUsernameByEmail(ctx context.Context, email string) (string, error) {
+func (r *Repository) GetByEmail(email string) (*models.User, error) {
+	u := &models.User{}
+	q := `SELECT id, username, email, password, first_name FROM users WHERE email = $1`
+	err := r.db.QueryRow(q, email).Scan(&u.ID, &u.Username, &u.Email, &u.Password, &u.FirstName)
+	return u, err
+}
+
+func (r *Repository) GetUsernameByEmail(email string) (string, error) {
 	var username string
-	err := r.db.QueryRowContext(ctx, `SELECT username FROM users WHERE LOWER(email) = LOWER($1)`, email).Scan(&username)
-	if errors.Is(err, sql.ErrNoRows) {
-		return "", ErrNotFound
-	}
+	q := `SELECT username FROM users WHERE email = $1`
+	err := r.db.QueryRow(q, email).Scan(&username)
 	return username, err
 }

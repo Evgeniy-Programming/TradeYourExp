@@ -1,106 +1,163 @@
 package skills
 
 import (
-	"errors"
-	"net/http"
-
-	"Trade-y-exp/internal/handler/respond"
+	"Trade-y-exp/internal/contextkeys"
 	"Trade-y-exp/internal/models"
-	skillsrepo "Trade-y-exp/internal/repository/skills"
+	"fmt"
+	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) listSkills(c *gin.Context, filter models.SkillFilter) {
-	cards, err := h.repo.Skills.ListSkills(c.Request.Context(), filter)
-	if errors.Is(err, skillsrepo.ErrInvalidCategory) {
-		respond.Error(c, http.StatusBadRequest, "Неизвестная категория", nil)
-		return
-	}
-	if err != nil {
-		respond.Error(c, http.StatusInternalServerError, "Не удалось загрузить обмены", err)
-		return
-	}
-	respond.OK(c, http.StatusOK, "Обмены получены", cards)
-}
-
-// GetSkills вывод ленты обменов с фильтрами.
-// @Summary      Лента обменов
+// GetSkills вывод списка скиллов всех пользователей.
+// @Summary      Вывести все скиллы
+// @Description  Вывод полного списка навыков.
 // @Tags         skills
+// @Accept       json
 // @Produce      json
-// @Param        category  query     string  false  "Код категории (it, communicate, art, knowledge, hobby)"
-// @Param        search    query     string  false  "Строка поиска"
-// @Param        searchIn  query     string  false  "Где искать: skill — предлагаемый навык, exchange — желаемый; пусто — везде"
-// @Success      200       {object}  models.ResponseApi{result=[]models.SkillCard}
-// @Failure      400       {object}  models.ResponseApi
+// @Success      200  {object}  models.ResponseApi "Вывод пользовательских скиллов"
+// @Failure      400  {object}  models.ResponseApi "Неверный формат"
+// @Failure      404  {object}  models.ResponseApi "Пользователь не найден"
 // @Router       /skills [get]
 func (h *Handler) GetSkills(c *gin.Context) {
-	searchIn := c.Query("searchIn")
-	if searchIn != "" && searchIn != "skill" && searchIn != "exchange" {
-		respond.Error(c, http.StatusBadRequest, "Некорректный параметр searchIn", nil)
+	requestID, _ := c.Get(contextkeys.RequestIDKey)
+	list, err := h.repo.Skills.GetAllSkills()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			Status:  false,
+			Error:   err.Error(),
+			Message: "Failed to fetch",
+		})
 		return
 	}
-	h.listSkills(c, models.SkillFilter{
-		Category: c.Query("category"),
-		Search:   c.Query("search"),
-		SearchIn: searchIn,
-	})
+
+	responseApi := models.ResponseApi{
+		RequestID: fmt.Sprint(requestID),
+		Status:    true,
+		Message:   "Skills successfull received",
+		Result:    list,
+	}
+
+	c.JSON(http.StatusOK, responseApi)
 }
 
-// GetSkillByCategory вывод обменов по категории.
-// @Summary      Обмены по категории
+// GetSkillByCategory вывод списка скиллов по категории.
+// @Summary      Вывести все скиллы по категории.
+// @Description  Вывод полного списка скиллов по категории.
 // @Tags         skills
+// @Accept       json
 // @Produce      json
-// @Param        category  path      string  true  "Код категории"
-// @Success      200       {object}  models.ResponseApi{result=[]models.SkillCard}
-// @Failure      400       {object}  models.ResponseApi
+// @Param        category   path      string  true  "Категория скилла"
+// @Success      200  {object}  models.ResponseApi "Вывод пользовательских скиллов"
+// @Failure      400  {object}  models.ResponseApi "Неверный формат"
+// @Failure      404  {object}  models.ResponseApi "Категория не найдена"
 // @Router       /skills/{category} [get]
 func (h *Handler) GetSkillByCategory(c *gin.Context) {
-	h.listSkills(c, models.SkillFilter{Category: c.Param("category")})
+	requestID, _ := c.Get(contextkeys.RequestIDKey)
+	category := c.Param("category")
+	if strings.TrimSpace(category) == "" {
+		skills, err := h.repo.Skills.GetAllSkills()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, models.ResponseApi{
+				Status:  false,
+				Error:   err.Error(),
+				Message: "DataBase Error",
+			})
+			return
+		}
+		c.JSON(http.StatusNotFound, skills)
+		return
+	}
+
+	skills, err := h.repo.Skills.GetSkillsByCategory(c.Request.Context(), strings.TrimSpace(category))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			Status:  false,
+			Error:   err.Error(),
+			Message: "DataBase Error",
+		})
+		return
+	}
+
+	if len(skills) == 0 {
+		c.JSON(http.StatusNotFound, models.ResponseApi{
+			Status:  false,
+			Message: "No data availbable",
+		})
+		return
+	}
+	responseApi := models.ResponseApi{
+		RequestID: fmt.Sprint(requestID),
+		Status:    true,
+		Message:   "Skills by category successfull received",
+		Result:    skills,
+	}
+
+	c.JSON(http.StatusOK, responseApi)
 }
 
-// GetSkillByFilters вывод обменов по строке поиска.
-// @Summary      Поиск обменов
+// GetSkillByFilters вывод списка скиллов по ключевой строке.
+// @Summary      Вывести все скиллы по вхождению в ключевую строку.
+// @Description  Вывод полного списка скиллов по переданной строке.
 // @Tags         skills
+// @Accept       json
 // @Produce      json
-// @Param        search  path      string  true  "Строка поиска"
-// @Success      200     {object}  models.ResponseApi{result=[]models.SkillCard}
+// @Param        search   path      string  true  "Ключевая строка поиска"
+// @Success      200  {object}  models.ResponseApi "Вывод пользовательских скиллов"
+// @Failure      400  {object}  models.ResponseApi "Неверный формат"
+// @Failure      404  {object}  models.ResponseApi "Категория не найдена"
 // @Router       /skills/filter/{search} [get]
 func (h *Handler) GetSkillByFilters(c *gin.Context) {
-	h.listSkills(c, models.SkillFilter{Search: c.Param("search")})
-}
+	requestID, _ := c.Get(contextkeys.RequestIDKey)
+	search := c.Param("search")
 
-// GetMySkills вывод обменов текущего пользователя (история).
-// @Summary      Мои обмены
-// @Tags         skills
-// @Produce      json
-// @Success      200  {object}  models.ResponseApi{result=[]models.SkillCard}
-// @Router       /skills/my [get]
-func (h *Handler) GetMySkills(c *gin.Context) {
-	username, err := h.currentUsername(c)
-	if err != nil {
-		respond.Error(c, http.StatusUnauthorized, "Пользователь не найден", err)
+	if strings.TrimSpace(search) == "" {
+		// Если строка пустая — возвращаем все записи
+		skills, err := h.repo.Skills.GetAllSkills()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, models.ResponseApi{
+				RequestID: fmt.Sprint(requestID),
+				Status:    false,
+				Error:     err.Error(),
+				Message:   "DataBase Error",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, models.ResponseApi{
+			RequestID: fmt.Sprint(requestID),
+			Status:    true,
+			Message:   "All skills successfull received",
+			Result:    skills,
+		})
 		return
 	}
-	h.listSkills(c, models.SkillFilter{Username: username})
-}
 
-// GetMyStats статистика обменов текущего пользователя.
-// @Summary      Моя статистика
-// @Tags         skills
-// @Produce      json
-// @Success      200  {object}  models.ResponseApi{result=models.SkillStats}
-// @Router       /skills/my/stats [get]
-func (h *Handler) GetMyStats(c *gin.Context) {
-	username, err := h.currentUsername(c)
+	skills, err := h.repo.Skills.GetSkillByFilters(c.Request.Context(), strings.TrimSpace(search))
 	if err != nil {
-		respond.Error(c, http.StatusUnauthorized, "Пользователь не найден", err)
+		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "DataBase Error",
+		})
 		return
 	}
-	stats, err := h.repo.Skills.GetStats(c.Request.Context(), username)
-	if err != nil {
-		respond.Error(c, http.StatusInternalServerError, "Не удалось загрузить статистику", err)
+
+	if skills == nil || len(*skills) == 0 {
+		c.JSON(http.StatusNotFound, models.ResponseApi{
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Message:   "Parametres for search is not found",
+		})
 		return
 	}
-	respond.OK(c, http.StatusOK, "Статистика получена", stats)
+	responseApi := models.ResponseApi{
+		RequestID: fmt.Sprint(requestID),
+		Status:    true,
+		Message:   "Skills by filter successfull received",
+		Result:    skills,
+	}
+
+	c.JSON(http.StatusOK, responseApi)
 }

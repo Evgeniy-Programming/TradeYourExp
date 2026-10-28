@@ -1,44 +1,50 @@
 package skills
 
 import (
-	"database/sql"
-	"errors"
+	"Trade-y-exp/internal/contextkeys"
+	"Trade-y-exp/internal/models"
+	"fmt"
 	"net/http"
-	"strconv"
-
-	"Trade-y-exp/internal/handler/respond"
 
 	"github.com/gin-gonic/gin"
 )
 
-// DeleteSkill удаляет обмен текущего пользователя.
-// @Summary      Удалить обмен
+// DeleteSkill удаляет запрос навыка по ID
+// @Summary      Удалить запрос
+// @Description  Удаляет запрос навыка по его ID
 // @Tags         skills
+// @Accept       json
 // @Produce      json
-// @Param        id   path      string  true  "ID обмена"
-// @Success      200  {object}  models.ResponseApi
-// @Failure      404  {object}  models.ResponseApi
+// @Param        id   path      string  true  "ID запроса"
+// @Success      201  {object}  models.ResponseApi  "Запрос навыка успешно удален"
+// @Failure      404  {object}  models.ResponseApi  "Неверный формат ID"
+// @Failure      500  {object}  models.ResponseApi  "Запрос не найден"
 // @Router       /skills/{id} [delete]
 func (h *Handler) DeleteSkill(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 {
-		respond.Error(c, http.StatusBadRequest, "Некорректный id обмена", nil)
+	requestID, _ := c.Get(contextkeys.RequestIDKey)
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, models.ResponseApi{
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Message:   "Skill is required",
+		})
 		return
 	}
-	username, err := h.currentUsername(c)
-	if err != nil {
-		respond.Error(c, http.StatusUnauthorized, "Пользователь не найден", err)
+	if err := h.repo.Skills.DeleteSkill(id); err != nil {
+		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			RequestID: fmt.Sprint(requestID),
+			Status:    false,
+			Error:     err.Error(),
+			Message:   "DataBase Error",
+		})
 		return
 	}
-
-	err = h.repo.Skills.DeleteSkill(c.Request.Context(), id, username)
-	if errors.Is(err, sql.ErrNoRows) {
-		respond.Error(c, http.StatusNotFound, "Обмен не найден", nil)
-		return
+	responseApi := models.ResponseApi{
+		RequestID: fmt.Sprint(requestID),
+		Status:    true,
+		Message:   "Skill successfull deleted",
+		Result:    id,
 	}
-	if err != nil {
-		respond.Error(c, http.StatusInternalServerError, "Не удалось удалить обмен", err)
-		return
-	}
-	respond.OK(c, http.StatusOK, "Обмен удалён", strconv.Itoa(id))
+	c.JSON(http.StatusCreated, responseApi)
 }

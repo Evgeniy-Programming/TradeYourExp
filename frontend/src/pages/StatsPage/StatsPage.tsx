@@ -3,7 +3,7 @@ import AnalyticsChart, { type ChartDataItem } from '../../components/AnalyticsCh
 import { ProfileLayout } from '../../layouts/ProfileLayout/ProfileLayout';
 import style from './style.module.scss';
 import { skillAPI } from '../../api/skill';
-import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { setErrorWithTimeout } from '../../store/slices/appSlice';
 import type { ISkillStats } from '../../types/skill';
 
@@ -31,14 +31,17 @@ const toChartData = (stats: ISkillStats): ChartDataItem[] =>
 
 export const StatsPage = () => {
   const dispatch = useAppDispatch();
+  const profile = useAppSelector((state) => state.profile.profile);
   const [stats, setStats] = useState<ISkillStats | null>(null);
 
   useEffect(() => {
+    if (!profile) return;
+
     skillAPI
-      .getStats()
+      .getStats(profile.username)
       .then(setStats)
       .catch((error) => dispatch(setErrorWithTimeout(error)));
-  }, [dispatch]);
+  }, [dispatch, profile]);
 
   return (
     <ProfileLayout>
