@@ -7,20 +7,26 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  type TooltipContentProps,
+  type TooltipProps,
 } from 'recharts';
 import type { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 
-export interface ChartDataItem {
+interface ChartDataItem {
   name: string;
-  count: number;
+  sales: number;
+  uv: number;
 }
 
-interface AnalyticsChartProps {
-  data: ChartDataItem[];
-}
+const data: ChartDataItem[] = [
+  { name: 'Янв', sales: 4000, uv: 2400 },
+  { name: 'Фев', sales: 3000, uv: 1398 },
+  { name: 'Мар', sales: 5000, uv: 9800 },
+  { name: 'Апр', sales: 4780, uv: 3908 },
+  { name: 'Май', sales: 6890, uv: 4800 },
+  { name: 'Июн', sales: 7500, uv: 3800 },
+];
 
-const CustomTooltip = ({ active, payload, label }: TooltipContentProps<ValueType, NameType>) => {
+const CustomTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameType>) => {
   if (active && payload && payload.length) {
     return (
       <div
@@ -35,7 +41,7 @@ const CustomTooltip = ({ active, payload, label }: TooltipContentProps<ValueType
       >
         <p style={{ margin: 0, fontWeight: 'bold', fontSize: '12px' }}>{label}</p>
         <p style={{ margin: '5px 0 0', color: '#82ca9d', fontSize: '14px' }}>
-          Обменов: {payload[0].value}
+          Продажи: {payload[0].value} ₽
         </p>
       </div>
     );
@@ -43,7 +49,7 @@ const CustomTooltip = ({ active, payload, label }: TooltipContentProps<ValueType
   return null;
 };
 
-export default function AnalyticsChart({ data }: AnalyticsChartProps): React.JSX.Element {
+export default function AnalyticsChart(): React.JSX.Element {
   return (
     <div
       style={{
@@ -55,7 +61,7 @@ export default function AnalyticsChart({ data }: AnalyticsChartProps): React.JSX
       }}
     >
       <h3 style={{ color: '#fff', fontFamily: 'sans-serif', marginBottom: '20px' }}>
-        Опубликованные обмены
+        Статистика продаж
       </h3>
       <ResponsiveContainer width="100%" height="85%">
         <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -69,14 +75,14 @@ export default function AnalyticsChart({ data }: AnalyticsChartProps): React.JSX
           <CartesianGrid strokeDasharray="3 3" stroke="#252538" vertical={false} />
 
           <XAxis dataKey="name" stroke="#6c6c8c" tickLine={false} axisLine={false} />
-          <YAxis stroke="#6c6c8c" tickLine={false} axisLine={false} allowDecimals={false} />
+          <YAxis stroke="#6c6c8c" tickLine={false} axisLine={false} />
 
           {/* Передаем типизированный кастомный тултип */}
-          <Tooltip content={CustomTooltip} />
+          <Tooltip content={<CustomTooltip />} />
 
           <Area
             type="monotone"
-            dataKey="count"
+            dataKey="sales"
             stroke="#82ca9d"
             strokeWidth={3}
             fillOpacity={1}

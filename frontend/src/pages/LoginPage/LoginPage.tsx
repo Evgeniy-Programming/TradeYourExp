@@ -9,7 +9,6 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { authAPI } from '../../api/auth';
 import { setErrorWithTimeout } from '../../store/slices/appSlice';
 import { useNavigate } from 'react-router-dom';
-import { setProfile } from '../../store/slices/profileSlice';
 import type { LoginType } from '../../types/auth';
 
 export const LoginPage = () => {
@@ -35,7 +34,6 @@ export const LoginPage = () => {
         password: fieldPassword,
       });
 
-      dispatch(setProfile(await authAPI.getMe()));
       navigate('/');
     } catch (error) {
       dispatch(setErrorWithTimeout(error));

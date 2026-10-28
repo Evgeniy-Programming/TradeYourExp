@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"Trade-y-exp/internal/handler/raiting"
 	"Trade-y-exp/internal/handler/skills"
 	"Trade-y-exp/internal/handler/user"
 	"Trade-y-exp/internal/repository"
@@ -30,24 +29,16 @@ type UserHandler interface {
 	GetMyProfile(c *gin.Context)
 	GetProfile(c *gin.Context)
 	GetMyProfileStatic(c *gin.Context)
-	Logout(c *gin.Context)
-	RefreshToken(c *gin.Context)
-	UpdateMyProfile(c *gin.Context)
-	ChangePassword(c *gin.Context)
 }
 
-type RaitingHandler interface{}
-
 type Handler struct {
-	User    *user.Handler
-	Skills  *skills.Handler
-	Raiting *raiting.Handler
+	User   *user.Handler
+	Skills *skills.Handler
 }
 
 func NewHMainHandler(s repository.Repository, authClient authpb.AuthServiceClient) *Handler {
 	return &Handler{
-		User:    user.NewUserHandler(s, authClient),
-		Skills:  skills.NewSkillHandler(s),
-		Raiting: raiting.NewRaitingHandler(s),
+		User:   user.NewUserHandler(s, authClient),
+		Skills: skills.NewSkillHandler(s),
 	}
 }

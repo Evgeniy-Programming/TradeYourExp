@@ -15,8 +15,11 @@ import { initEditSkill, setEditSkillField } from '../../store/slices/skillSlice'
 import { skillAPI } from '../../api/skill';
 import { useNavigate } from 'react-router-dom';
 import { setErrorWithTimeout } from '../../store/slices/appSlice';
+import { useProfile } from '../../hooks/useProfile';
 
 export const CreatorPage = () => {
+  useProfile();
+
   const [isOpenViewModal, setOpenViewModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>(
     'Наука, бизнес и саморазвитие'
@@ -31,15 +34,14 @@ export const CreatorPage = () => {
   const navigate = useNavigate();
 
   const skill = useAppSelector((state) => state.skill.editSkill);
-  const profile = useAppSelector((state) => state.profile.profile);
   const dispatch = useAppDispatch();
 
   const sendSkill = async () => {
-    if (!skill || !profile) return;
+    if (!skill) return;
 
     try {
-      await skillAPI.sendSkill(skill, profile.username);
-      navigate('/profile/history');
+      await skillAPI.sendSkill(skill);
+      navigate('/profile');
     } catch (error) {
       dispatch(setErrorWithTimeout(error));
     }

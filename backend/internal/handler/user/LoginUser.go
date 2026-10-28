@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"Trade-y-exp/internal/contextkeys"
 	"Trade-y-exp/internal/models"
@@ -21,7 +20,7 @@ import (
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Param input body models.LoginRequest true "Данные для входа (в username можно передать email)"
+// @Param input body models.LoginRequest true "Данные для входа"
 // @Success      200    {object}  models.ResponseApi "Пользователь успешно вошел"
 // @Failure      400    {object}  models.ResponseApi "Неверный формат данных"
 // @Failure      401    {object}  models.ResponseApi "Неверные учетные данные"
@@ -43,25 +42,9 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
-	// auth-service логинит только по username — для email сначала находим username
-	username := req.Username
-	if strings.Contains(username, "@") {
-		name, err := h.repo.User.GetUsernameByEmail(username)
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, models.ResponseApi{
-				RequestID: fmt.Sprint(requestID),
-				Status:    false,
-				Error:     err.Error(),
-				Message:   "Invalid creds",
-			})
-			return
-		}
-		username = name
-	}
-
 	// Проксируем запрос в auth-service через gRPC
 	resp, err := h.authClient.Login(context.Background(), &authdb.LoginRequest{
-		Username: username,
+		Username: req.Username,
 		Password: req.Password,
 	})
 	if err != nil {
@@ -83,8 +66,16 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
-	// Устанавливаем HttpOnly cookie с JWT-токенами
-	setAuthCookies(c, resp)
+	// Устанавливаем HttpOnly cookie с JWT-токеном
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     "auth_token",
+		Value:    resp.AccessToken,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false, // "true" для HTTPS в продакшене
+		SameSite: http.SameSiteStrictMode,
+		MaxAge:   int(resp.ExpiresIn),
+	})
 
 	responseApi := models.ResponseApi{
 		RequestID: fmt.Sprint(requestID),

@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { MainPage } from '../pages/MainPage/MainPage';
-import { loadProfile, requireAuth, requireGuest } from './loaders/authLoader';
+import { requireAuth, requireGuest } from './loaders/authLoader';
 import { LoginPage } from '../pages/LoginPage/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage/RegisterPage';
 import { ProfilePage } from '../pages/ProfilePage/ProfilePage';
@@ -12,7 +12,6 @@ import { StatsPage } from '../pages/StatsPage/StatsPage';
 export const router = createBrowserRouter([
   {
     element: <RootLayout />,
-    loader: loadProfile,
     children: [
       {
         path: '/',

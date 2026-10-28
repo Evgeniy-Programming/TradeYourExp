@@ -4,7 +4,6 @@ import (
 	"Trade-y-exp/auth_service/internal/models"
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 )
 
@@ -16,7 +15,7 @@ func (r *UserRepository) GetUserByUsername(ctx context.Context, username string)
 
 	var u models.User
 	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.Password, &u.Role)
-	if errors.Is(err, sql.ErrNoRows) {
+	if err == sql.ErrNoRows {
 		return nil, ErrUserNotFound
 	}
 	if err != nil {
@@ -33,7 +32,7 @@ func (r *UserRepository) GetUserByID(ctx context.Context, id string) (*models.Us
 
 	var u models.User
 	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.Password, &u.Role)
-	if errors.Is(err, sql.ErrNoRows) {
+	if err == sql.ErrNoRows {
 		return nil, ErrUserNotFound
 	}
 	if err != nil {

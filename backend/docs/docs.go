@@ -30,7 +30,7 @@ const docTemplate = `{
                 "summary": "Авторизация пользователя",
                 "parameters": [
                     {
-                        "description": "Данные для входа (в username можно передать email)",
+                        "description": "Данные для входа",
                         "name": "input",
                         "in": "body",
                         "required": true,
@@ -54,58 +54,6 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Неверные учетные данные",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    }
-                }
-            }
-        },
-        "/logout": {
-            "post": {
-                "description": "Отзывает access-токен в auth-service и удаляет cookie с токенами.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Выход пользователя",
-                "responses": {
-                    "200": {
-                        "description": "Пользователь успешно вышел",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка auth-service",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    }
-                }
-            }
-        },
-        "/refresh": {
-            "post": {
-                "description": "Выдает новую пару токенов по refresh-токену из cookie.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Обновление токенов",
-                "responses": {
-                    "200": {
-                        "description": "Токены успешно обновлены",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "401": {
-                        "description": "Refresh-токен отсутствует или недействителен",
                         "schema": {
                             "$ref": "#/definitions/models.ResponseApi"
                         }
@@ -187,6 +135,56 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Пользователь не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Создание нового запроса с описанием",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "skills"
+                ],
+                "summary": "Добавление запроса с дополнительным описанием",
+                "parameters": [
+                    {
+                        "description": "Данные запроса навыка",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SkillFull"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Запрос навыка успешно создан",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный формат запроса",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "409": {
+                        "description": "Конфликт при создании запроса",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
                         "schema": {
                             "$ref": "#/definitions/models.ResponseApi"
                         }
@@ -317,58 +315,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/skills/with-desc": {
-            "post": {
-                "description": "Создание нового запроса с описанием",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "skills"
-                ],
-                "summary": "Добавление запроса с дополнительным описанием",
-                "parameters": [
-                    {
-                        "description": "Данные запроса навыка",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.SkillFull"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Запрос навыка успешно создан",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "400": {
-                        "description": "Неверный формат запроса",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "409": {
-                        "description": "Конфликт при создании запроса",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    }
-                }
-            }
-        },
         "/skills/{category}": {
             "get": {
                 "description": "Вывод полного списка скиллов по категории.",
@@ -485,90 +431,6 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Пользователь не найден",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Обновляет только переданные непустые поля профиля.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Обновить собственный профиль",
-                "parameters": [
-                    {
-                        "description": "Новые данные профиля",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.UpdateProfileRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Профиль успешно обновлен",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "400": {
-                        "description": "Неверный формат данных",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "409": {
-                        "description": "Username уже занят",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/me/password": {
-            "put": {
-                "description": "Проверяет текущий пароль и сохраняет новый.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Сменить пароль",
-                "parameters": [
-                    {
-                        "description": "Текущий и новый пароль",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.ChangePasswordRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Пароль успешно изменен",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "400": {
-                        "description": "Неверный формат данных или текущий пароль",
                         "schema": {
                             "$ref": "#/definitions/models.ResponseApi"
                         }
@@ -751,22 +613,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.ChangePasswordRequest": {
-            "type": "object",
-            "required": [
-                "currentPassword",
-                "newPassword"
-            ],
-            "properties": {
-                "currentPassword": {
-                    "type": "string"
-                },
-                "newPassword": {
-                    "type": "string",
-                    "minLength": 6
-                }
-            }
-        },
         "models.LoginRequest": {
             "type": "object",
             "properties": {
@@ -783,24 +629,24 @@ const docTemplate = `{
             "required": [
                 "email",
                 "password",
+                "role",
                 "username"
             ],
             "properties": {
                 "email": {
                     "type": "string"
                 },
-                "firstName": {
-                    "type": "string"
-                },
-                "lastName": {
-                    "type": "string"
-                },
                 "password": {
                     "type": "string",
                     "minLength": 6
                 },
-                "socialLink": {
-                    "type": "string"
+                "role": {
+                    "type": "string",
+                    "enum": [
+                        "manager",
+                        "admin",
+                        "viewer"
+                    ]
                 },
                 "username": {
                     "type": "string"
@@ -854,26 +700,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "skill": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.UpdateProfileRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "firstName": {
-                    "type": "string"
-                },
-                "lastName": {
-                    "type": "string"
-                },
-                "socialLink": {
                     "type": "string"
                 },
                 "username": {

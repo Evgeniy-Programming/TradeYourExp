@@ -2,13 +2,11 @@ package user
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"Trade-y-exp/auth_service/internal/models"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
 func (r *UserRepository) CreateUser(ctx context.Context, u *models.User) error {
@@ -23,8 +21,8 @@ func (r *UserRepository) CreateUser(ctx context.Context, u *models.User) error {
 	)
 	if err != nil {
 		// Проверка на unique constraint (username/email)
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+		if err.Error() == `pq: duplicate key value violates unique constraint "users_username_key"` ||
+			err.Error() == `pq: duplicate key value violates unique constraint "users_email_key"` {
 			return ErrUserExists
 		}
 		return fmt.Errorf("insert error: %w", err)

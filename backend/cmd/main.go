@@ -103,8 +103,6 @@ func main() {
 	{
 		v1.POST("/register", h.User.Register)
 		v1.POST("/login", h.User.Login)
-		v1.POST("/logout", h.User.Logout)
-		v1.POST("/refresh", h.User.RefreshToken)
 		v1.GET("/skills", h.Skills.GetSkills)
 		v1.GET("/skills/:category", h.Skills.GetSkillByCategory)
 		v1.GET("/skills/filter/:search", h.Skills.GetSkillByFilters)
@@ -119,8 +117,6 @@ func main() {
 			protected.POST("/skills/desc", h.Skills.CreateDescription)
 			protected.POST("/skills/with-desc", h.Skills.CreateSkillWithDesc)
 			protected.GET("users/me", h.User.GetMyProfile)
-			protected.PUT("users/me", h.User.UpdateMyProfile)
-			protected.PUT("users/me/password", h.User.ChangePassword)
 			protected.GET("users/me/static", h.User.GetMyProfileStatic)
 			protected.GET("users/profile/:username", h.User.GetProfile)
 		}

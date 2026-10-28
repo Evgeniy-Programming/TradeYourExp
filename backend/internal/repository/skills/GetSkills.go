@@ -10,48 +10,34 @@ import (
 	"strings"
 )
 
-func (r *Repository) GetAllSkills() ([]models.SkillFull, error) {
-	rows, err := r.db.Query(`
-		SELECT 
-			s.id, s.username, s.skill, s.exchange, s.category,
-			COALESCE(sd.description, '') as description,
-			COALESCE(sd.media, '') as media,
-			COALESCE(sd.created_at, s.created_at) as created_at
-		FROM skills s
-		LEFT JOIN skill_descriptions sd ON s.id = sd.skill_id
-		ORDER BY s.id DESC
-	`)
+func (r *Repository) GetAllSkills() ([]models.Skill, error) {
+	rows, err := r.db.Query("SELECT id, username, skill, exchange, category FROM skills ORDER BY id DESC")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var res []models.SkillFull
+	var res []models.Skill
 	for rows.Next() {
-		var s models.SkillFull
-		if err := rows.Scan(&s.ID, &s.Username, &s.Skill, &s.Exchange, &s.Category,
-			&s.Description, &s.Media, &s.CreatedAt); err == nil {
+		var s models.Skill
+		if err := rows.Scan(&s.ID, &s.Username, &s.Skill, &s.Exchange, &s.Category); err == nil {
 			res = append(res, s)
 		}
 	}
 	return res, nil
 }
 
-func (r *Repository) GetSkillsByCategory(ctx context.Context, category string) ([]models.SkillFull, error) {
+func (r *Repository) GetSkillsByCategory(ctx context.Context, category string) ([]models.Skill, error) {
 	if !repo.IsValidCategory(category) {
 		return nil, errors.New("category is invalid")
 	}
 
 	rows, err := r.db.QueryContext(ctx, `
         SELECT 
-            s.id, s.username, s.skill, s.exchange, s.category,
-            COALESCE(sd.description, '') as description,
-            COALESCE(sd.media, '') as media,
-            COALESCE(sd.created_at, s.created_at) as created_at
-        FROM skills s
-        LEFT JOIN skill_descriptions sd ON s.id = sd.skill_id
-        WHERE s.category = $1
-		ORDER BY s.id DESC
+            id, username, skill, exchange, category
+        FROM skills
+        WHERE category = $1
+		ORDER BY id DESC
 	`, category)
 
 	if err != nil {
@@ -59,11 +45,10 @@ func (r *Repository) GetSkillsByCategory(ctx context.Context, category string) (
 	}
 	defer rows.Close()
 
-	var skills []models.SkillFull
+	var skills []models.Skill
 	for rows.Next() {
-		var s models.SkillFull
-		if err := rows.Scan(&s.ID, &s.Username, &s.Skill, &s.Exchange, &s.Category,
-			&s.Description, &s.Media, &s.CreatedAt); err != nil {
+		var s models.Skill
+		if err := rows.Scan(&s.ID, &s.Username, &s.Skill, &s.Exchange, &s.Category); err != nil {
 			return nil, err
 		}
 		skills = append(skills, s)

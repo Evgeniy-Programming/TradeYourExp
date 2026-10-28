@@ -16,11 +16,8 @@ type User struct {
 }
 
 type ProfileRequest struct {
-	ID         string `json:"id"`
 	Username   string `json:"username"`
 	Email      string `json:"email"`
-	FirstName  string `json:"firstName"`
-	LastName   string `json:"lastName"`
 	SocialLink string `json:"socialLink"`
 	CreatedAt  string `json:"created_at"`
 }
@@ -30,25 +27,10 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 type RegisterRequest struct {
-	Username   string `json:"username" binding:"required"`
-	Email      string `json:"email" binding:"required,email"`
-	Password   string `json:"password" binding:"required,min=6"`
-	FirstName  string `json:"firstName"`
-	LastName   string `json:"lastName"`
-	SocialLink string `json:"socialLink"`
-}
-
-type UpdateProfileRequest struct {
-	Username   string `json:"username"`
-	Email      string `json:"email" binding:"omitempty,email"`
-	FirstName  string `json:"firstName"`
-	LastName   string `json:"lastName"`
-	SocialLink string `json:"socialLink"`
-}
-
-type ChangePasswordRequest struct {
-	CurrentPassword string `json:"currentPassword" binding:"required"`
-	NewPassword     string `json:"newPassword" binding:"required,min=6"`
+	Username string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=6"`
+	Role     string `json:"role" binding:"required,oneof=manager admin viewer"`
 }
 
 type AuthResponse struct {

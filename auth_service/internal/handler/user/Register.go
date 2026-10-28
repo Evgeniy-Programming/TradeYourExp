@@ -2,7 +2,6 @@ package user
 
 import (
 	"Trade-y-exp/auth_service/internal/models"
-	userrepo "Trade-y-exp/auth_service/internal/repository/user"
 	authpb "Trade-y-exp/auth_service/proto/auth"
 	"context"
 	"errors"
@@ -26,7 +25,7 @@ func (a *UserHandler) Register(ctx context.Context, req *authpb.RegisterRequest)
 	}
 
 	if err := a.repo.User.CreateUser(ctx, user); err != nil {
-		if errors.Is(err, userrepo.ErrUserExists) {
+		if errors.Is(err, ErrUserExists) {
 			return nil, status.Error(codes.AlreadyExists, "user already exists")
 		}
 		return nil, status.Error(codes.Internal, "failed to create user")
