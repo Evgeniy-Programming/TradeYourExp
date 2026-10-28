@@ -31,3 +31,16 @@ export type ContactType = 'site' | 'telegram' | 'vk' | 'wechat';
 export type SkillSearchType = 'Все' | 'Получить' | 'Обменять';
 export type SkillHistorySearchType = SkillStatusType | 'ALL';
 export type SkillStatusType = keyof typeof skillStatus;
+
+export interface ISkillQuery {
+  category?: CategoryViewType;
+  search?: string;
+  searchType?: SkillSearchType;
+}
+
+export interface ISkillStats {
+  total: number;
+  active: number;
+  closed: number;
+  byMonth: { month: string; count: number }[];
+}

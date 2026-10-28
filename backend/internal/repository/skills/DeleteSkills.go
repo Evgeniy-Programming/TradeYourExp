@@ -1,10 +1,13 @@
 package skills
 
-import "database/sql"
+import (
+	"context"
+	"database/sql"
+)
 
-func (r *Repository) DeleteSkill(id string) error {
-	q := `DELETE FROM skills WHERE id=$1`
-	result, err := r.db.Exec(q, id)
+// DeleteSkill удаляет обмен, только если он принадлежит username.
+func (r *Repository) DeleteSkill(ctx context.Context, id int, username string) error {
+	result, err := r.db.ExecContext(ctx, `DELETE FROM skills WHERE id = $1 AND username = $2`, id, username)
 	if err != nil {
 		return err
 	}

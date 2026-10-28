@@ -4,6 +4,9 @@ import Modal from '../../ui/Modal/Modal';
 import style from './ChangePasswordModal.module.scss';
 import Button from '../../ui/Button/Button';
 import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { setErrorWithTimeout } from '../../store/slices/appSlice';
+import { authAPI } from '../../api/auth';
 
 interface ChangePasswordModalProps {
   onClose: () => void;
@@ -14,8 +17,23 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ onClos
   const [fieldNewPassword, setFieldNewPassword] = useState('');
   const [fieldRepeatPassword, setFieldRepeatPassword] = useState('');
 
-  const editPassword = () => {
-    onClose();
+  const dispatch = useAppDispatch();
+
+  const editPassword = async () => {
+    if (fieldNewPassword !== fieldRepeatPassword) {
+      dispatch(setErrorWithTimeout(new Error('Новые пароли не совпадают')));
+      return;
+    }
+
+    try {
+      await authAPI.changePassword({
+        currentPassword: fieldCurrentPassword,
+        newPassword: fieldNewPassword,
+      });
+      onClose();
+    } catch (error) {
+      dispatch(setErrorWithTimeout(error));
+    }
   };
 
   return (

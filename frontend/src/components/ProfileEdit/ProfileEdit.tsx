@@ -13,7 +13,8 @@ import { ChangePasswordModal } from '../ChangePasswordModal/ChangePasswordModal'
 import classNames from 'classnames';
 import { setErrorWithTimeout } from '../../store/slices/appSlice';
 import { authAPI } from '../../api/auth';
-import { setProfile } from '../../store/slices/profileSlice';
+import { clearProfile, setProfile } from '../../store/slices/profileSlice';
+import { useNavigate } from 'react-router-dom';
 import type { IEditProfile } from '../../types/profile';
 
 interface ProfileEditProps {
@@ -23,6 +24,7 @@ interface ProfileEditProps {
 export const ProfileEdit: React.FC<ProfileEditProps> = ({ className }) => {
   const profile = useAppSelector((state) => state.profile.profile);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const [isEditProfile, setEditProfile] = useState(false);
   const [isOpenPasswordModal, setOpenPasswordModal] = useState(false);
@@ -46,14 +48,22 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ className }) => {
         if (fieldLink) updateObject.link = fieldLink;
         if (fieldUsername) updateObject.username = fieldUsername;
 
-        await authAPI.update(updateObject);
-
-        const response = await authAPI.getMe();
-        dispatch(setProfile(response.data.data));
+        const updatedProfile = await authAPI.update(updateObject);
+        dispatch(setProfile(updatedProfile));
       } catch (error) {
         dispatch(setErrorWithTimeout(error));
       }
     }
+  };
+
+  const logout = async () => {
+    try {
+      await authAPI.logout();
+    } catch (error) {
+      dispatch(setErrorWithTimeout(error));
+    }
+    dispatch(clearProfile());
+    navigate('/login');
   };
 
   return (
@@ -124,6 +134,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ className }) => {
             {isEditProfile && (
               <ButtonSecondary onClick={() => setEditProfile(false)}>Отменить</ButtonSecondary>
             )}
+            <ButtonSecondary onClick={logout}>Выйти</ButtonSecondary>
           </div>
         </div>
       )}

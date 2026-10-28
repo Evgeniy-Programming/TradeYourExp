@@ -15,11 +15,8 @@ import { initEditSkill, setEditSkillField } from '../../store/slices/skillSlice'
 import { skillAPI } from '../../api/skill';
 import { useNavigate } from 'react-router-dom';
 import { setErrorWithTimeout } from '../../store/slices/appSlice';
-import { useProfile } from '../../hooks/useProfile';
 
 export const CreatorPage = () => {
-  useProfile();
-
   const [isOpenViewModal, setOpenViewModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>(
     'Наука, бизнес и саморазвитие'
@@ -41,7 +38,7 @@ export const CreatorPage = () => {
 
     try {
       await skillAPI.sendSkill(skill);
-      navigate('/profile');
+      navigate('/profile/history');
     } catch (error) {
       dispatch(setErrorWithTimeout(error));
     }

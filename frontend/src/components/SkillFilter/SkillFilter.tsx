@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from '../../ui/Button/Button';
 import Input from '../../ui/Input/Input';
 import style from './style.module.scss';
@@ -8,14 +8,34 @@ import Dropdown from '../../ui/Dropdown/Dropdown';
 import { categoriesView as categories } from '../../constants/categories';
 import type { CategoryViewType, SkillSearchType } from '../../types/skill';
 import ArrowSVG from '../../ui/svg/ArrowSVG';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { fetchSkills } from '../../store/slices/skillSlice';
+import { setErrorWithTimeout } from '../../store/slices/appSlice';
 
 export const SkillFilter = () => {
   const [skill, setSkill] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryViewType>('Все категории');
   const [isOpenSelect, setOpenSelect] = useState(false);
   const [selectedSearchType, setSearchType] = useState<SkillSearchType>('Все');
+  // Поиск применяется по кнопке «Найти», категория и тип поиска — сразу
+  const [appliedSearch, setAppliedSearch] = useState('');
+  const dispatch = useAppDispatch();
 
-  const searchSkill = () => {};
+  useEffect(() => {
+    dispatch(
+      fetchSkills({
+        category: selectedCategory,
+        search: appliedSearch,
+        searchType: selectedSearchType,
+      })
+    )
+      .unwrap()
+      .catch((error) => dispatch(setErrorWithTimeout(error)));
+  }, [dispatch, selectedCategory, selectedSearchType, appliedSearch]);
+
+  const searchSkill = () => {
+    setAppliedSearch(skill.trim());
+  };
 
   const findByCategory = (category: CategoryViewType) => {
     setSelectedCategory(category);

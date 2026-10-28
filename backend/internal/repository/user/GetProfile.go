@@ -2,38 +2,31 @@ package user
 
 import (
 	"Trade-y-exp/internal/models"
+	"context"
 	"database/sql"
+	"errors"
 )
 
-func (r *Repository) GetMyProfile(userId string) (*models.ProfileRequest, error) {
-	u := &models.ProfileRequest{}
-	var socialLink sql.NullString
-	q := `SELECT username, email, social_link, created_at FROM users WHERE id = $1`
-	err := r.db.QueryRow(q, userId).Scan(&u.Username, &u.Email, &socialLink, &u.CreatedAt)
-	if socialLink.Valid {
-		u.SocialLink = socialLink.String
+const profileColumns = `id, username, email, first_name, last_name, social_link, created_at`
+
+func scanProfile(row *sql.Row) (*models.Profile, error) {
+	var p models.Profile
+	err := row.Scan(&p.ID, &p.Username, &p.Email, &p.FirstName, &p.LastName, &p.Link, &p.CreatedAt)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, ErrNotFound
 	}
-	return u, err
+	if err != nil {
+		return nil, err
+	}
+	return &p, nil
 }
 
-func (r *Repository) GetProfile(username string) (*models.ProfileRequest, error) {
-	u := &models.ProfileRequest{}
-	var socialLink sql.NullString
-	q := `SELECT username, email, social_link, created_at FROM users WHERE username = $1`
-	err := r.db.QueryRow(q, username).Scan(&u.Username, &u.Email, &socialLink, &u.CreatedAt)
-	if socialLink.Valid {
-		u.SocialLink = socialLink.String
-	}
-	return u, err
+func (r *Repository) GetProfileByID(ctx context.Context, userID string) (*models.Profile, error) {
+	return scanProfile(r.db.QueryRowContext(ctx,
+		`SELECT `+profileColumns+` FROM users WHERE id = $1`, userID))
 }
 
-func (r *Repository) GetMyProfileStatic(userId string) (*models.ProfileRequest, error) {
-	u := &models.ProfileRequest{}
-	var socialLink sql.NullString
-	q := `SELECT username, email, social_link, created_at FROM users WHERE id = $1`
-	err := r.db.QueryRow(q, userId).Scan(&u.Username, &u.Email, &socialLink, &u.CreatedAt)
-	if socialLink.Valid {
-		u.SocialLink = socialLink.String
-	}
-	return u, err
+func (r *Repository) GetProfileByUsername(ctx context.Context, username string) (*models.Profile, error) {
+	return scanProfile(r.db.QueryRowContext(ctx,
+		`SELECT `+profileColumns+` FROM users WHERE username = $1`, username))
 }
