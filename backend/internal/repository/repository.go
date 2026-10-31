@@ -18,6 +18,7 @@ type SkillRepository interface {
 	GetAllDescriptions(ctx context.Context) ([]models.SkillDescription, error)
 	GetDescriptionBySkillID(ctx context.Context, skillID int) (*models.SkillDescription, error)
 	UpsertDescription(ctx context.Context, skillID int, description, media string) error
+	ContributeSkill(ctx context.Context, skillId string, userId string) error
 }
 
 type UserRepository interface {
@@ -34,12 +35,15 @@ type UserRepository interface {
 	UpdatePassword(hash, id string) error
 }
 
-type RaitingRepository interface{}
+type RaitingRepository interface {
+	ChangeRait(ctx context.Context, request models.LogicRaitRequest) error
+	GetMyRait(userId string) (string, error)
+}
 
 type Repository struct {
-	Skills  *skills.Repository
+	Skills  *skills.SkillRepository
 	User    *user.Repository
-	Raiting *raiting.Repository
+	Raiting *raiting.RaitRepository
 	DB      *sql.DB
 }
 
@@ -47,6 +51,6 @@ func NewHMainRepository(DB *sql.DB) *Repository {
 	return &Repository{
 		User:    user.NewUserRepository(DB),
 		Skills:  skills.NewSkillRepository(DB),
-		Raiting: raiting.NewRaitingRepository(DB),
+		Raiting: raiting.NewRaitRepository(DB),
 	}
 }

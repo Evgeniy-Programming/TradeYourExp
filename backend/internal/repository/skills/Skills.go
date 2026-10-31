@@ -6,13 +6,13 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type Repository struct {
+type SkillRepository struct {
 	db *sql.DB
 }
 
-func NewSkillRepository(DB *sql.DB) *Repository {
+func NewSkillRepository(DB *sql.DB) *SkillRepository {
 	if DB == nil {
 		return nil
 	}
-	return &Repository{db: DB}
+	return &SkillRepository{db: DB}
 }

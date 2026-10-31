@@ -10,11 +10,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) CreateSkill(c *gin.Context) {
-	requestID, _ := c.Get(contextkeys.RequestIDKey)
+func (h *Handler) CreateSkill(ctx *gin.Context) {
+	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
 	var s models.Skill
-	if err := c.ShouldBindJSON(&s); err != nil {
-		c.JSON(http.StatusBadRequest, models.ResponseApi{
+	if err := ctx.ShouldBindJSON(&s); err != nil {
+		ctx.JSON(http.StatusBadRequest, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -24,9 +24,9 @@ func (h *Handler) CreateSkill(c *gin.Context) {
 	}
 
 	// Исправлено: передаём контекст и игнорируем возвращаемый ID (он не нужен для простого добавления)
-	id, err := h.repo.Skills.SaveSkill(c.Request.Context(), &s)
+	id, err := h.repo.Skills.SaveSkill(ctx.Request.Context(), &s)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -40,7 +40,7 @@ func (h *Handler) CreateSkill(c *gin.Context) {
 		Message:   "Skill succesfull created",
 		Result:    strconv.Itoa(id),
 	}
-	c.JSON(http.StatusCreated, responseApi)
+	ctx.JSON(http.StatusCreated, responseApi)
 }
 
 // @Summary Добавление запроса с дополнительным описанием
@@ -54,8 +54,8 @@ func (h *Handler) CreateSkill(c *gin.Context) {
 // @Failure 409 {object} models.ResponseApi "Конфликт при создании запроса"
 // @Failure 500 {object} models.ResponseApi "Внутренняя ошибка сервера"
 // @Router /skills/with-desc [post]
-func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
-	requestID, _ := c.Get(contextkeys.RequestIDKey)
+func (h *Handler) CreateSkillWithDesc(ctx *gin.Context) {
+	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
 	var req struct {
 		Username     string `json:"username"`
 		Skill        string `json:"skill"`
@@ -67,8 +67,8 @@ func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
 		ContactValue string `json:"contact_value"`
 	}
 
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, models.ResponseApi{
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -78,7 +78,7 @@ func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
 	}
 
 	if req.Username == "" || req.Skill == "" || req.Exchange == "" {
-		c.JSON(http.StatusBadRequest, models.ResponseApi{
+		ctx.JSON(http.StatusBadRequest, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Message:   "Username, skill and exchange are required",
@@ -91,9 +91,9 @@ func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
 		Exchange: req.Exchange,
 		Category: req.Category,
 	}
-	skillID, err := h.repo.Skills.SaveSkill(c.Request.Context(), skill)
+	skillID, err := h.repo.Skills.SaveSkill(ctx.Request.Context(), skill)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -110,8 +110,8 @@ func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
 			media = fmt.Sprintf("Тип связи: %s, Имя: %s", req.ContactType, req.ContactValue)
 		}
 		if fullDesc != "" || media != "" {
-			if err := h.repo.Skills.UpsertDescription(c.Request.Context(), skillID, fullDesc, media); err != nil {
-				c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			if err := h.repo.Skills.UpsertDescription(ctx.Request.Context(), skillID, fullDesc, media); err != nil {
+				ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 					RequestID: fmt.Sprint(requestID),
 					Status:    false,
 					Error:     err.Error(),
@@ -128,5 +128,5 @@ func (h *Handler) CreateSkillWithDesc(c *gin.Context) {
 		Message:   "Skill successfull added",
 		Result:    strconv.Itoa(skillID),
 	}
-	c.JSON(http.StatusCreated, responseApi)
+	ctx.JSON(http.StatusCreated, responseApi)
 }

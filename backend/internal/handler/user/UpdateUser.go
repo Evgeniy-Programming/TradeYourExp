@@ -19,16 +19,16 @@ import (
 // @Failure      400  {object}  map[string]interface{} "Неверный формат ID"
 // @Failure      404  {object}  map[string]interface{} "Пользователь не найден"
 // @Router       /users/{id} [put]
-func (h *Handler) UpdateUser(c *gin.Context) {
+func (h *Handler) UpdateUser(ctx *gin.Context) {
 	var u models.User
-	id := c.Param("id")
-	if err := c.ShouldBindJSON(&u); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
+	id := ctx.Param("id")
+	if err := ctx.ShouldBindJSON(&u); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
 		return
 	}
 	if err := h.repo.User.UpdateUser(&u, id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error" + err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "db error" + err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"status": "profile succesfull update"})
+	ctx.JSON(http.StatusCreated, gin.H{"status": "profile succesfull update"})
 }

@@ -6,13 +6,13 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type Repository struct {
+type RaitRepository struct {
 	db *sql.DB
 }
 
-func NewRaitingRepository(DB *sql.DB) *Repository {
+func NewRaitRepository(DB *sql.DB) *RaitRepository {
 	if DB == nil {
 		return nil
 	}
-	return &Repository{db: DB}
+	return &RaitRepository{db: DB}
 }

@@ -10,8 +10,8 @@ import (
 	"strings"
 )
 
-func (r *Repository) GetAllSkills() ([]models.SkillFull, error) {
-	rows, err := r.db.Query(`
+func (sr *SkillRepository) GetAllSkills() ([]models.SkillFull, error) {
+	rows, err := sr.db.Query(`
 		SELECT 
 			s.id, s.username, s.skill, s.exchange, s.category,
 			COALESCE(sd.description, '') as description,
@@ -37,12 +37,12 @@ func (r *Repository) GetAllSkills() ([]models.SkillFull, error) {
 	return res, nil
 }
 
-func (r *Repository) GetSkillsByCategory(ctx context.Context, category string) ([]models.SkillFull, error) {
+func (sr *SkillRepository) GetSkillsByCategory(ctx context.Context, category string) ([]models.SkillFull, error) {
 	if !repo.IsValidCategory(category) {
 		return nil, errors.New("category is invalid")
 	}
 
-	rows, err := r.db.QueryContext(ctx, `
+	rows, err := sr.db.QueryContext(ctx, `
         SELECT 
             s.id, s.username, s.skill, s.exchange, s.category,
             COALESCE(sd.description, '') as description,
@@ -75,12 +75,12 @@ func (r *Repository) GetSkillsByCategory(ctx context.Context, category string) (
 	return skills, nil
 }
 
-func (r *Repository) GetSkillByFilters(ctx context.Context, search string) (*[]models.SkillFull, error) {
+func (sr *SkillRepository) GetSkillByFilters(ctx context.Context, search string) (*[]models.SkillFull, error) {
 	var records []models.SkillFull
 
 	search = "%" + strings.ReplaceAll(strings.ReplaceAll(search, "%", "\\%"), "_", "\\_") + "%"
 
-	rows, err := r.db.QueryContext(ctx, `
+	rows, err := sr.db.QueryContext(ctx, `
 		SELECT 
 			s.id, 
 			COALESCE(sd.description, '') as description,
@@ -132,9 +132,9 @@ func (r *Repository) GetSkillByFilters(ctx context.Context, search string) (*[]m
 	return &records, nil
 }
 
-func (r *Repository) GetDescriptionBySkillID(ctx context.Context, skillID int) (*models.SkillDescription, error) {
+func (sr *SkillRepository) GetDescriptionBySkillID(ctx context.Context, skillID int) (*models.SkillDescription, error) {
 	var desc models.SkillDescription
-	err := r.db.QueryRowContext(ctx, `
+	err := sr.db.QueryRowContext(ctx, `
         SELECT 
             sd.id, sd.skill_id, sd.description, sd.media, sd.created_at,
             s.skill, s.exchange, s.username
@@ -152,8 +152,8 @@ func (r *Repository) GetDescriptionBySkillID(ctx context.Context, skillID int) (
 	return &desc, err
 }
 
-func (r *Repository) GetAllDescriptions(ctx context.Context) ([]models.SkillDescription, error) {
-	rows, err := r.db.QueryContext(ctx, `
+func (sr *SkillRepository) GetAllDescriptions(ctx context.Context) ([]models.SkillDescription, error) {
+	rows, err := sr.db.QueryContext(ctx, `
         SELECT sd.id, sd.skill_id, sd.description, sd.media, sd.created_at,
                s.skill, s.exchange, s.username
         FROM skill_descriptions sd

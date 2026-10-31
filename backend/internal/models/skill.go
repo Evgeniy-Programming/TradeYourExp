@@ -1,13 +1,19 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Skill struct {
-	ID       int    `json:"id"`
-	Username string `json:"username"`
-	Skill    string `json:"skill"`
-	Exchange string `json:"exchange"`
-	Category string `json:"category"`
+	ID          int       `json:"id"`
+	Username    string    `json:"username"`
+	Skill       string    `json:"skill"`
+	Exchange    string    `json:"exchange"`
+	Category    string    `json:"category"`
+	Status      string    `json:"status"`
+	Contributer uuid.UUID `json:"contributer"`
 }
 
 type SkillDescription struct {
@@ -27,13 +33,15 @@ type SkillFull struct {
 	Skill       string    `json:"skill"`
 	Exchange    string    `json:"exchange"`
 	Category    string    `json:"category"`
+	Status      string    `json:"status"`
+	Contributer uuid.UUID `json:"contributer"`
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 	Media       string    `json:"media,omitempty"`
 }
 
-type TestStruct struct {
-	UserID   string
-	Role     string
-	Username string
+type SkillContribute struct {
+	SkillID  string `json:"skill_id"`
+	ID       string `json:"id"`
+	Username string `json:"username"`
 }

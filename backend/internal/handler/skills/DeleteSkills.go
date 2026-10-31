@@ -20,11 +20,11 @@ import (
 // @Failure      404  {object}  models.ResponseApi  "Неверный формат ID"
 // @Failure      500  {object}  models.ResponseApi  "Запрос не найден"
 // @Router       /skills/{id} [delete]
-func (h *Handler) DeleteSkill(c *gin.Context) {
-	requestID, _ := c.Get(contextkeys.RequestIDKey)
-	id := c.Param("id")
+func (h *Handler) DeleteSkill(ctx *gin.Context) {
+	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
+	id := ctx.Param("id")
 	if id == "" {
-		c.JSON(http.StatusBadRequest, models.ResponseApi{
+		ctx.JSON(http.StatusBadRequest, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Message:   "Skill is required",
@@ -32,7 +32,7 @@ func (h *Handler) DeleteSkill(c *gin.Context) {
 		return
 	}
 	if err := h.repo.Skills.DeleteSkill(id); err != nil {
-		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -46,5 +46,5 @@ func (h *Handler) DeleteSkill(c *gin.Context) {
 		Message:   "Skill successfull deleted",
 		Result:    id,
 	}
-	c.JSON(http.StatusCreated, responseApi)
+	ctx.JSON(http.StatusCreated, responseApi)
 }

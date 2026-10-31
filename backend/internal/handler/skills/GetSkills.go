@@ -20,11 +20,11 @@ import (
 // @Failure      400  {object}  models.ResponseApi "Неверный формат"
 // @Failure      404  {object}  models.ResponseApi "Пользователь не найден"
 // @Router       /skills [get]
-func (h *Handler) GetSkills(c *gin.Context) {
-	requestID, _ := c.Get(contextkeys.RequestIDKey)
+func (h *Handler) GetSkills(ctx *gin.Context) {
+	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
 	list, err := h.repo.Skills.GetAllSkills()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			Status:  false,
 			Error:   err.Error(),
 			Message: "Failed to fetch",
@@ -39,7 +39,7 @@ func (h *Handler) GetSkills(c *gin.Context) {
 		Result:    list,
 	}
 
-	c.JSON(http.StatusOK, responseApi)
+	ctx.JSON(http.StatusOK, responseApi)
 }
 
 // GetSkillByCategory вывод списка скиллов по категории.
@@ -53,26 +53,26 @@ func (h *Handler) GetSkills(c *gin.Context) {
 // @Failure      400  {object}  models.ResponseApi "Неверный формат"
 // @Failure      404  {object}  models.ResponseApi "Категория не найдена"
 // @Router       /skills/{category} [get]
-func (h *Handler) GetSkillByCategory(c *gin.Context) {
-	requestID, _ := c.Get(contextkeys.RequestIDKey)
-	category := c.Param("category")
+func (h *Handler) GetSkillByCategory(ctx *gin.Context) {
+	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
+	category := ctx.Param("category")
 	if strings.TrimSpace(category) == "" {
 		skills, err := h.repo.Skills.GetAllSkills()
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 				Status:  false,
 				Error:   err.Error(),
 				Message: "DataBase Error",
 			})
 			return
 		}
-		c.JSON(http.StatusNotFound, skills)
+		ctx.JSON(http.StatusNotFound, skills)
 		return
 	}
 
-	skills, err := h.repo.Skills.GetSkillsByCategory(c.Request.Context(), strings.TrimSpace(category))
+	skills, err := h.repo.Skills.GetSkillsByCategory(ctx.Request.Context(), strings.TrimSpace(category))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			Status:  false,
 			Error:   err.Error(),
 			Message: "DataBase Error",
@@ -81,7 +81,7 @@ func (h *Handler) GetSkillByCategory(c *gin.Context) {
 	}
 
 	if len(skills) == 0 {
-		c.JSON(http.StatusNotFound, models.ResponseApi{
+		ctx.JSON(http.StatusNotFound, models.ResponseApi{
 			Status:  false,
 			Message: "No data availbable",
 		})
@@ -94,7 +94,7 @@ func (h *Handler) GetSkillByCategory(c *gin.Context) {
 		Result:    skills,
 	}
 
-	c.JSON(http.StatusOK, responseApi)
+	ctx.JSON(http.StatusOK, responseApi)
 }
 
 // GetSkillByFilters вывод списка скиллов по ключевой строке.
@@ -108,15 +108,15 @@ func (h *Handler) GetSkillByCategory(c *gin.Context) {
 // @Failure      400  {object}  models.ResponseApi "Неверный формат"
 // @Failure      404  {object}  models.ResponseApi "Категория не найдена"
 // @Router       /skills/filter/{search} [get]
-func (h *Handler) GetSkillByFilters(c *gin.Context) {
-	requestID, _ := c.Get(contextkeys.RequestIDKey)
-	search := c.Param("search")
+func (h *Handler) GetSkillByFilters(ctx *gin.Context) {
+	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
+	search := ctx.Param("search")
 
 	if strings.TrimSpace(search) == "" {
 		// Если строка пустая — возвращаем все записи
 		skills, err := h.repo.Skills.GetAllSkills()
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 				RequestID: fmt.Sprint(requestID),
 				Status:    false,
 				Error:     err.Error(),
@@ -124,7 +124,7 @@ func (h *Handler) GetSkillByFilters(c *gin.Context) {
 			})
 			return
 		}
-		c.JSON(http.StatusOK, models.ResponseApi{
+		ctx.JSON(http.StatusOK, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    true,
 			Message:   "All skills successfull received",
@@ -133,9 +133,9 @@ func (h *Handler) GetSkillByFilters(c *gin.Context) {
 		return
 	}
 
-	skills, err := h.repo.Skills.GetSkillByFilters(c.Request.Context(), strings.TrimSpace(search))
+	skills, err := h.repo.Skills.GetSkillByFilters(ctx.Request.Context(), strings.TrimSpace(search))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -145,7 +145,7 @@ func (h *Handler) GetSkillByFilters(c *gin.Context) {
 	}
 
 	if skills == nil || len(*skills) == 0 {
-		c.JSON(http.StatusNotFound, models.ResponseApi{
+		ctx.JSON(http.StatusNotFound, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Message:   "Parametres for search is not found",
@@ -159,5 +159,5 @@ func (h *Handler) GetSkillByFilters(c *gin.Context) {
 		Result:    skills,
 	}
 
-	c.JSON(http.StatusOK, responseApi)
+	ctx.JSON(http.StatusOK, responseApi)
 }

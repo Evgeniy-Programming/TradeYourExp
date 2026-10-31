@@ -22,11 +22,11 @@ import (
 // @Success      200    {object}  models.ResponseApi "Токены успешно обновлены"
 // @Failure      401    {object}  models.ResponseApi "Refresh-токен отсутствует или недействителен"
 // @Router       /refresh [post]
-func (h *Handler) RefreshToken(c *gin.Context) {
-	requestID, _ := c.Get(contextkeys.RequestIDKey)
-	refreshToken, err := c.Cookie(refreshCookie)
+func (h *Handler) RefreshToken(ctx *gin.Context) {
+	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
+	refreshToken, err := ctx.Cookie(refreshCookie)
 	if err != nil || refreshToken == "" {
-		c.JSON(http.StatusUnauthorized, models.ResponseApi{
+		ctx.JSON(http.StatusUnauthorized, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Message:   "Refresh token is required",
@@ -40,8 +40,8 @@ func (h *Handler) RefreshToken(c *gin.Context) {
 	})
 	if err != nil {
 		if code := status.Code(err); code == codes.Unauthenticated || code == codes.NotFound {
-			clearAuthCookies(c)
-			c.JSON(http.StatusUnauthorized, models.ResponseApi{
+			clearAuthCookies(ctx)
+			ctx.JSON(http.StatusUnauthorized, models.ResponseApi{
 				RequestID: fmt.Sprint(requestID),
 				Status:    false,
 				Error:     err.Error(),
@@ -49,7 +49,7 @@ func (h *Handler) RefreshToken(c *gin.Context) {
 			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -58,7 +58,7 @@ func (h *Handler) RefreshToken(c *gin.Context) {
 		return
 	}
 
-	setAuthCookies(c, resp)
+	setAuthCookies(ctx, resp)
 
 	responseApi := models.ResponseApi{
 		RequestID: fmt.Sprint(requestID),
@@ -66,5 +66,5 @@ func (h *Handler) RefreshToken(c *gin.Context) {
 		Message:   "Token successfull refreshed",
 	}
 
-	c.JSON(http.StatusOK, responseApi)
+	ctx.JSON(http.StatusOK, responseApi)
 }

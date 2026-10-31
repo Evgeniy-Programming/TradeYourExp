@@ -87,6 +87,87 @@ const docTemplate = `{
                 }
             }
         },
+        "/rait/me": {
+            "get": {
+                "description": "Вывод рейтинговой шкалы.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "raiting"
+                ],
+                "summary": "Вывести собственный рейтинг",
+                "responses": {
+                    "200": {
+                        "description": "Вывод рейтинга",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный формат",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/rait/{id}": {
+            "post": {
+                "description": "Выставляет рейтинг относительно новых данных",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "raiting"
+                ],
+                "summary": "Выставить свой рейтинг",
+                "parameters": [
+                    {
+                        "description": "Данные для выставления рейтинга",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RaitRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Рейтинг успешно поставлен",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "404": {
+                        "description": "Неверный формат ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "500": {
+                        "description": "Запрос не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
         "/refresh": {
             "post": {
                 "description": "Выдает новую пару токенов по refresh-токену из cookie.",
@@ -457,6 +538,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/skills/{skill_id}": {
+            "patch": {
+                "description": "Создает пару id + contribute user_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "skills"
+                ],
+                "summary": "Создание коммуникации",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID навыка",
+                        "name": "skill_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Синхронизация успешна",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "404": {
+                        "description": "Неверный формат ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "500": {
+                        "description": "Запрос не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
         "/users/me": {
             "get": {
                 "description": "Вывод полного профиля.",
@@ -778,6 +903,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.RaitRequest": {
+            "type": "object",
+            "properties": {
+                "mark": {
+                    "type": "integer"
+                },
+                "received_id": {
+                    "type": "string"
+                }
+            }
+        },
         "models.RegisterRequest": {
             "type": "object",
             "required": [
@@ -838,6 +974,9 @@ const docTemplate = `{
                 "category": {
                     "type": "string"
                 },
+                "contributer": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -854,6 +993,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "skill": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 },
                 "username": {
@@ -902,6 +1044,9 @@ const docTemplate = `{
                 "password": {
                     "description": "omitempty чтобы не светить в API",
                     "type": "string"
+                },
+                "raiting": {
+                    "type": "number"
                 },
                 "socialLink": {
                     "type": "string"

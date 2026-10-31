@@ -7,19 +7,19 @@ import (
 	"errors"
 )
 
-func (r *Repository) SaveSkill(ctx context.Context, s *models.Skill) (int, error) {
+func (sr *SkillRepository) SaveSkill(ctx context.Context, s *models.Skill) (int, error) {
 	var id int
 	if !repo.IsValidCategory(s.Category) {
 		return 0, errors.New("category is invalid")
 	}
-	err := r.db.QueryRowContext(ctx,
+	err := sr.db.QueryRowContext(ctx,
 		`INSERT INTO skills (username, skill, exchange, category) VALUES ($1, $2, $3, $4) RETURNING id`,
 		s.Username, s.Skill, s.Exchange, s.Category).Scan(&id)
 	return id, err
 }
 
-func (r *Repository) UpsertDescription(ctx context.Context, skillID int, description, media string) error {
-	_, err := r.db.ExecContext(ctx,
+func (sr *SkillRepository) UpsertDescription(ctx context.Context, skillID int, description, media string) error {
+	_, err := sr.db.ExecContext(ctx,
 		`INSERT INTO skill_descriptions (skill_id, description, media) 
          VALUES ($1, $2, $3) 
          ON CONFLICT (skill_id) 

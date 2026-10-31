@@ -20,18 +20,18 @@ import (
 // @Success      200    {object}  models.ResponseApi "Пользователь успешно вышел"
 // @Failure      500    {object}  models.ResponseApi "Ошибка auth-service"
 // @Router       /logout [post]
-func (h *Handler) Logout(c *gin.Context) {
-	requestID, _ := c.Get(contextkeys.RequestIDKey)
-	token, _ := c.Cookie(accessCookie)
+func (h *Handler) Logout(ctx *gin.Context) {
+	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
+	token, _ := ctx.Cookie(accessCookie)
 
 	// cookie удаляем в любом случае, чтобы пользователь вышел
-	clearAuthCookies(c)
+	clearAuthCookies(ctx)
 
 	if token != "" {
 		if _, err := h.authClient.Logout(context.Background(), &authdb.LogoutRequest{
 			Token: token,
 		}); err != nil {
-			c.JSON(http.StatusInternalServerError, models.ResponseApi{
+			ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 				RequestID: fmt.Sprint(requestID),
 				Status:    false,
 				Error:     err.Error(),
@@ -47,5 +47,5 @@ func (h *Handler) Logout(c *gin.Context) {
 		Message:   "User successfull logout",
 	}
 
-	c.JSON(http.StatusOK, responseApi)
+	ctx.JSON(http.StatusOK, responseApi)
 }

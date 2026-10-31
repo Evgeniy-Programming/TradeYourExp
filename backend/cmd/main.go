@@ -118,11 +118,17 @@ func main() {
 			protected.GET("/skills/desc", h.Skills.GetAllDescriptions)
 			protected.POST("/skills/desc", h.Skills.CreateDescription)
 			protected.POST("/skills/with-desc", h.Skills.CreateSkillWithDesc)
+			protected.PATCH("/skills/:skill_id", h.Skills.ContributeSkill)
 			protected.GET("users/me", h.User.GetMyProfile)
 			protected.PUT("users/me", h.User.UpdateMyProfile)
 			protected.PUT("users/me/password", h.User.ChangePassword)
 			protected.GET("users/me/static", h.User.GetMyProfileStatic)
 			protected.GET("users/profile/:username", h.User.GetProfile)
+			rait := protected.Group("/rait")
+			{
+				rait.POST("/:id", h.Raiting.ChangeRait)
+				rait.GET("/me", h.Raiting.GetMyRait)
+			}
 		}
 
 		admin := v1.Group("")

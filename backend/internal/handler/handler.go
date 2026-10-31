@@ -11,32 +11,35 @@ import (
 )
 
 type SkillsHandler interface {
-	GetSkills(c *gin.Context)
-	CreateSkill(c *gin.Context)
-	CreateDescription(c *gin.Context)
-	CreateSkillWithDesc(c *gin.Context)
-	GetDescriptionByID(c *gin.Context)
-	GetAllDescriptions(c *gin.Context)
-	GetSkillByCategory(c *gin.Context)
-	GetSkillByFilters(c *gin.Context)
-	DeleteSkill(c *gin.Context)
+	GetSkills(ctx *gin.Context)
+	CreateSkill(ctx *gin.Context)
+	CreateDescription(ctx *gin.Context)
+	CreateSkillWithDesc(ctx *gin.Context)
+	GetDescriptionByID(ctx *gin.Context)
+	GetAllDescriptions(ctx *gin.Context)
+	GetSkillByCategory(ctx *gin.Context)
+	GetSkillByFilters(ctx *gin.Context)
+	DeleteSkill(ctx *gin.Context)
+	ContributeSkill(ctx *gin.Context)
 }
 
 type UserHandler interface {
-	Login(c *gin.Context)
-	Register(c *gin.Context)
-	UpdateUser(c *gin.Context)
-	DeleteUser(c *gin.Context)
-	GetMyProfile(c *gin.Context)
-	GetProfile(c *gin.Context)
+	Login(ctx *gin.Context)
+	Register(ctx *gin.Context)
+	UpdateUser(ctx *gin.Context)
+	DeleteUser(ctx *gin.Context)
+	GetMyProfile(ctx *gin.Context)
+	GetProfile(ctx *gin.Context)
 	GetMyProfileStatic(c *gin.Context)
-	Logout(c *gin.Context)
-	RefreshToken(c *gin.Context)
-	UpdateMyProfile(c *gin.Context)
-	ChangePassword(c *gin.Context)
+	Logout(ctx *gin.Context)
+	RefreshToken(ctx *gin.Context)
+	UpdateMyProfile(ctx *gin.Context)
+	ChangePassword(ctx *gin.Context)
 }
 
-type RaitingHandler interface{}
+type RaitingHandler interface {
+	ChangeRait(ctx *gin.Context)
+}
 
 type Handler struct {
 	User    *user.Handler
