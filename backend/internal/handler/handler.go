@@ -39,6 +39,10 @@ type UserHandler interface {
 
 type RaitingHandler interface {
 	ChangeRait(ctx *gin.Context)
+	UpdateRait(ctx *gin.Context)
+	GetMyRait(ctx *gin.Context)
+	GetUserRait(ctx *gin.Context)
+	GetRaitHistory(ctx *gin.Context)
 }
 
 type Handler struct {

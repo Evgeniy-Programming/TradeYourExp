@@ -37,7 +37,10 @@ type UserRepository interface {
 
 type RaitingRepository interface {
 	ChangeRait(ctx context.Context, request models.LogicRaitRequest) error
+	UpdateRait(ctx context.Context, request models.LogicRaitRequest) error
 	GetMyRait(userId string) (string, error)
+	GetUserRait(username string) (string, error)
+	GetRaitHistory(id string) ([]models.Raiting, error)
 }
 
 type Repository struct {

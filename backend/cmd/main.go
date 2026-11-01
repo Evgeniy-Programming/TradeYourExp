@@ -112,22 +112,30 @@ func main() {
 		protected := v1.Group("")
 		protected.Use(handler.AuthMiddleware(authCfg))
 		{
-			protected.POST("/skills", h.Skills.CreateSkill)
-			protected.DELETE("/skills/:id", h.Skills.DeleteSkill)
-			protected.GET("/skills/desc/:id", h.Skills.GetDescriptionByID)
-			protected.GET("/skills/desc", h.Skills.GetAllDescriptions)
-			protected.POST("/skills/desc", h.Skills.CreateDescription)
-			protected.POST("/skills/with-desc", h.Skills.CreateSkillWithDesc)
-			protected.PATCH("/skills/:skill_id", h.Skills.ContributeSkill)
-			protected.GET("users/me", h.User.GetMyProfile)
-			protected.PUT("users/me", h.User.UpdateMyProfile)
-			protected.PUT("users/me/password", h.User.ChangePassword)
-			protected.GET("users/me/static", h.User.GetMyProfileStatic)
-			protected.GET("users/profile/:username", h.User.GetProfile)
+			skill := protected.Group("/skills")
+			{
+				skill.POST("/", h.Skills.CreateSkill)
+				skill.DELETE("/:id", h.Skills.DeleteSkill)
+				skill.GET("/desc/:id", h.Skills.GetDescriptionByID)
+				skill.GET("/desc", h.Skills.GetAllDescriptions)
+				skill.POST("/desc", h.Skills.CreateDescription)
+				skill.POST("/with-desc", h.Skills.CreateSkillWithDesc)
+				skill.PATCH("/:skill_id", h.Skills.ContributeSkill)
+			}
+			user := protected.Group("/users")
+			{
+				user.GET("/me", h.User.GetMyProfile)
+				user.PUT("/me", h.User.UpdateMyProfile)
+				user.PUT("/me/password", h.User.ChangePassword)
+				user.GET("/me/static", h.User.GetMyProfileStatic)
+				user.GET("/profile/:username", h.User.GetProfile)
+			}
 			rait := protected.Group("/rait")
 			{
-				rait.POST("/:id", h.Raiting.ChangeRait)
+				rait.POST("/", h.Raiting.ChangeRait)
 				rait.GET("/me", h.Raiting.GetMyRait)
+				rait.GET("/user/:username", h.Raiting.GetUserRait)
+				rait.GET("/history/:id", h.Raiting.GetRaitHistory)
 			}
 		}
 
@@ -139,6 +147,7 @@ func main() {
 		{
 			admin.PUT("/users/:id", h.User.UpdateUser)
 			admin.DELETE("/users/:id", h.User.DeleteUser)
+			admin.POST("/rait/new", h.Raiting.UpdateRait)
 		}
 	}
 

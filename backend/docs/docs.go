@@ -87,42 +87,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/rait/me": {
-            "get": {
-                "description": "Вывод рейтинговой шкалы.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "raiting"
-                ],
-                "summary": "Вывести собственный рейтинг",
-                "responses": {
-                    "200": {
-                        "description": "Вывод рейтинга",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "400": {
-                        "description": "Неверный формат",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "404": {
-                        "description": "Пользователь не найден",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    }
-                }
-            }
-        },
-        "/rait/{id}": {
+        "/rait/": {
             "post": {
                 "description": "Выставляет рейтинг относительно новых данных",
                 "consumes": [
@@ -161,6 +126,175 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Запрос не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/rait/history/{id}": {
+            "get": {
+                "description": "Вывод рейтинговой шкалы.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "raiting"
+                ],
+                "summary": "Вывести историю выставлению рейтинга пользователя",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Id пользователя",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Вывод рейтинга",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный формат",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/rait/me": {
+            "get": {
+                "description": "Вывод рейтинговой шкалы.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "raiting"
+                ],
+                "summary": "Вывести собственный рейтинг",
+                "responses": {
+                    "200": {
+                        "description": "Вывод рейтинга",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный формат",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/rait/new/": {
+            "post": {
+                "description": "Выставляет рейтинг по новому значению",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "raiting"
+                ],
+                "summary": "Принудительная установка рейтинга",
+                "parameters": [
+                    {
+                        "description": "Данные для выставления рейтинга",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RaitRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Рейтинг успешно поставлен",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "404": {
+                        "description": "Неверный формат ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "500": {
+                        "description": "Запрос не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/rait/user/{username}": {
+            "get": {
+                "description": "Вывод рейтинговой шкалы.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "raiting"
+                ],
+                "summary": "Вывести рейтинг другого пользователя",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Username пользователя",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Вывод рейтинга",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный формат",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь не найден",
                         "schema": {
                             "$ref": "#/definitions/models.ResponseApi"
                         }
