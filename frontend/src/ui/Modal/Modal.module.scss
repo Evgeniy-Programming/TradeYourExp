@@ -4,9 +4,16 @@
   min-width: 300px;
   max-width: 600px;
 
+  max-height: 90vh;
+  overflow-y: auto;
+
+  border: 1px solid var(--color-line);
+  box-shadow: 0 20px 48px rgb(31 51 39 / 22%);
+
   &__close {
     position: absolute;
-    top: 5px;
-    right: 5px;
+    z-index: 1;
+    top: 10px;
+    right: 10px;
   }
 }

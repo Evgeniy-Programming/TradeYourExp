@@ -5,6 +5,7 @@
   h2 {
     font-size: var(--font-size-accent);
     text-align: center;
+    color: var(--color-text-title);
   }
 }
 
@@ -32,24 +33,45 @@
     display: flex;
     gap: 10px;
     justify-content: flex-end;
+
+    > * {
+      flex: 1;
+    }
   }
 
   &__field {
     position: relative;
-    padding: 10px;
-    border: 1px solid var(--color-block-transparent);
+    padding: 12px;
+    border: 1px solid var(--color-line);
     border-radius: var(--border-radius-large);
+
+    background-color: var(--color-block-transparent);
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+
+      font-size: var(--font-size-small);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-transparent);
+    }
 
     textarea {
       resize: vertical;
-      height: 100px;
+      min-height: 100px;
       max-height: 200px;
+
+      border-color: var(--color-line);
+
+      &:focus {
+        border-color: var(--color-element);
+      }
     }
 
     &__tooltip {
       position: absolute;
-      top: 5px;
-      right: 5px;
+      top: 8px;
+      right: 8px;
     }
 
     &__category {

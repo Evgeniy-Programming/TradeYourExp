@@ -1,22 +1,31 @@
 .filter {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+
+  padding: 16px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--border-radius-large);
+
+  background-color: var(--color-block);
+  box-shadow: var(--shadow-block);
 
   &__category {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 6px;
 
     button {
-      padding: 5px;
+      padding: 6px 12px;
+      border-radius: 999px;
+
       font-size: var(--font-size-small);
     }
   }
 
   &__search {
     display: flex;
-    gap: 5px;
+    gap: 8px;
 
     input {
       width: 100%;
@@ -26,6 +35,11 @@
 
   &__select {
     position: relative;
+    flex-shrink: 0;
+
+    button {
+      min-width: 120px;
+    }
 
     button > p {
       width: 100%;
@@ -36,7 +50,7 @@
   @media (width <= 600px) {
     &__select {
       button {
-        min-width: none;
+        min-width: 0;
       }
 
       button > p {
@@ -48,6 +62,14 @@
   @media (width <= 500px) {
     &__search {
       flex-wrap: wrap;
+
+      input {
+        flex: 1 1 100%;
+      }
+
+      > button:last-child {
+        flex: 1 1 auto;
+      }
     }
   }
 }
@@ -55,13 +77,25 @@
 .select {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 
-  max-width: 150px;
-  padding: 10px;
+  min-width: 150px;
+  max-width: 180px;
+  padding: 8px;
 
   button {
     justify-content: flex-start;
+
+    font-size: var(--font-size-small);
+    background-color: transparent;
+    box-shadow: none;
+
+    color: var(--color-text-base);
+
+    &:hover {
+      color: var(--color-element);
+      background-color: var(--color-element-transparent);
+    }
   }
 }
 

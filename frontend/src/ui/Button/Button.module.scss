@@ -2,23 +2,30 @@
   display: inline-flex;
   justify-content: center;
 
-  padding: 5px 10px;
+  padding: 8px 16px;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--border-radius-small);
 
   color: #ffffff;
   text-decoration: none;
 
   background-color: var(--color-element);
+  box-shadow: 0 2px 0 rgb(31 92 58 / 25%);
   outline: none;
 
   &:hover {
     background-color: var(--color-element-hover);
   }
 
+  &:active {
+    box-shadow: none;
+    transform: translateY(1px);
+  }
+
   &_danger {
     color: #ffffff;
     background-color: var(--color-danger);
+    box-shadow: 0 2px 0 rgb(185 59 55 / 25%);
 
     &:hover {
       color: #ffffff;
@@ -27,19 +34,20 @@
   }
 
   &_circle {
-    width: 30px;
-    height: 30px;
-    padding: 5px;
+    width: 32px;
+    height: 32px;
+    padding: 6px;
     border-radius: 50%;
   }
 
   &_disabled {
     cursor: default;
     opacity: 0.5;
+    box-shadow: none;
   }
 
   &_mini {
-    padding: 3px 5px;
+    padding: 4px 8px;
     font-size: var(--font-size-small);
   }
 }

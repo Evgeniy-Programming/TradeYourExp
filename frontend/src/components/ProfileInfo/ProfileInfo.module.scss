@@ -6,37 +6,59 @@
   align-self: flex-start;
 
   width: 100%;
-  max-width: 300px;
+  max-width: 320px;
 
   &__auth {
     text-align: center;
 
     p {
+      margin-bottom: 6px;
       color: var(--color-text-transparent);
     }
   }
 
   &__button {
     margin-top: 20px;
+    width: 100%;
   }
 
   &__fields {
     display: flex;
     flex-direction: column;
+    gap: 12px;
+
     width: 100%;
 
     img {
       align-self: center;
+      margin-bottom: 8px;
+
       width: 100px;
       height: 100px;
+      border: 2px solid var(--color-element-transparent);
       border-radius: 50%;
+
+      object-fit: cover;
     }
   }
 
   &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
     p {
       font-size: var(--font-size-small);
+      font-weight: var(--font-weight-bold);
       color: var(--color-text-transparent);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    b {
+      font-size: var(--font-size-text);
+      color: var(--color-text-title);
+      word-break: break-word;
     }
   }
 }

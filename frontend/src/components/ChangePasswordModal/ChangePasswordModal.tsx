@@ -19,7 +19,9 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ onClos
 
   const dispatch = useAppDispatch();
 
-  const editPassword = async () => {
+  const editPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     if (fieldNewPassword !== fieldRepeatPassword) {
       dispatch(setErrorWithTimeout(new Error('Новые пароли не совпадают')));
       return;
@@ -40,7 +42,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ onClos
     <Modal className={style.modal} onClick={onClose}>
       <h2>Редактирование пароля</h2>
 
-      <form className={style.form}>
+      <form className={style.form} onSubmit={(e) => editPassword(e)}>
         <div className={style.form__field}>
           <label>Старый пароль</label>
           <InputPassword
@@ -63,7 +65,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ onClos
           />
         </div>
 
-        <Button onClick={editPassword}>Сохранить</Button>
+        <Button type="submit">Сохранить</Button>
         <ButtonSecondary onClick={onClose}>Отмена</ButtonSecondary>
       </form>
     </Modal>
