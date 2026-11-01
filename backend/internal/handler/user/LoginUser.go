@@ -26,15 +26,15 @@ import (
 // @Failure      400    {object}  models.ResponseApi "Неверный формат данных"
 // @Failure      401    {object}  models.ResponseApi "Неверные учетные данные"
 // @Router       /login [post]
-func (h *Handler) Login(c *gin.Context) {
-	requestID, _ := c.Get(contextkeys.RequestIDKey)
+func (h *Handler) Login(ctx *gin.Context) {
+	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
 	var req struct {
 		Username string `json:"username" binding:"required"`
 		Password string `json:"password" binding:"required"`
 	}
 
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, models.ResponseApi{
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -48,7 +48,7 @@ func (h *Handler) Login(c *gin.Context) {
 	if strings.Contains(username, "@") {
 		name, err := h.repo.User.GetUsernameByEmail(username)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, models.ResponseApi{
+			ctx.JSON(http.StatusUnauthorized, models.ResponseApi{
 				RequestID: fmt.Sprint(requestID),
 				Status:    false,
 				Error:     err.Error(),
@@ -66,7 +66,7 @@ func (h *Handler) Login(c *gin.Context) {
 	})
 	if err != nil {
 		if status.Code(err) == codes.Unauthenticated {
-			c.JSON(http.StatusUnauthorized, models.ResponseApi{
+			ctx.JSON(http.StatusUnauthorized, models.ResponseApi{
 				RequestID: fmt.Sprint(requestID),
 				Status:    false,
 				Error:     err.Error(),
@@ -74,7 +74,7 @@ func (h *Handler) Login(c *gin.Context) {
 			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -84,7 +84,7 @@ func (h *Handler) Login(c *gin.Context) {
 	}
 
 	// Устанавливаем HttpOnly cookie с JWT-токенами
-	setAuthCookies(c, resp)
+	setAuthCookies(ctx, resp)
 
 	responseApi := models.ResponseApi{
 		RequestID: fmt.Sprint(requestID),
@@ -97,5 +97,5 @@ func (h *Handler) Login(c *gin.Context) {
 		},
 	}
 
-	c.JSON(http.StatusOK, responseApi)
+	ctx.JSON(http.StatusOK, responseApi)
 }

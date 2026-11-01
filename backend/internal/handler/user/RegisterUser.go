@@ -25,8 +25,8 @@ import (
 // @Failure      400    {object}  models.ResponseApi "Неверный формат данных"
 // @Failure      409    {object}  models.ResponseApi "Пользователь уже существует"
 // @Router       /register [post]
-func (h *Handler) Register(c *gin.Context) {
-	requestID, _ := c.Get(contextkeys.RequestIDKey)
+func (h *Handler) Register(ctx *gin.Context) {
+	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
 	var req struct {
 		Username   string `json:"username" binding:"required"`
 		Email      string `json:"email" binding:"required,email"`
@@ -36,8 +36,8 @@ func (h *Handler) Register(c *gin.Context) {
 		SocialLink string `json:"socialLink"`
 	}
 
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, models.ResponseApi{
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -55,7 +55,7 @@ func (h *Handler) Register(c *gin.Context) {
 	})
 	if err != nil {
 		if status.Code(err) == codes.AlreadyExists {
-			c.JSON(http.StatusConflict, models.ResponseApi{
+			ctx.JSON(http.StatusConflict, models.ResponseApi{
 				RequestID: fmt.Sprint(requestID),
 				Status:    false,
 				Error:     err.Error(),
@@ -63,7 +63,7 @@ func (h *Handler) Register(c *gin.Context) {
 			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -78,7 +78,7 @@ func (h *Handler) Register(c *gin.Context) {
 		LastName:   req.LastName,
 		SocialLink: req.SocialLink,
 	}, resp.UserId); err != nil {
-		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -98,5 +98,5 @@ func (h *Handler) Register(c *gin.Context) {
 		},
 	}
 
-	c.JSON(http.StatusCreated, responseApi)
+	ctx.JSON(http.StatusCreated, responseApi)
 }

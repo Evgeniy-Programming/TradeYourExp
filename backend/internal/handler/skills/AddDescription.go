@@ -9,16 +9,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) CreateDescription(c *gin.Context) {
-	requestID, _ := c.Get(contextkeys.RequestIDKey)
+func (h *Handler) CreateDescription(ctx *gin.Context) {
+	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
 	var req struct {
 		SkillID     int    `json:"skill_id"`
 		Description string `json:"description"`
 		Media       string `json:"media"`
 	}
 
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, models.ResponseApi{
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -28,7 +28,7 @@ func (h *Handler) CreateDescription(c *gin.Context) {
 	}
 
 	if req.SkillID <= 0 || req.Description == "" {
-		c.JSON(http.StatusBadRequest, models.ResponseApi{
+		ctx.JSON(http.StatusBadRequest, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Message:   "Skill_id and description is required",
@@ -36,8 +36,8 @@ func (h *Handler) CreateDescription(c *gin.Context) {
 		return
 	}
 
-	if err := h.repo.Skills.UpsertDescription(c.Request.Context(), req.SkillID, req.Description, req.Media); err != nil {
-		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+	if err := h.repo.Skills.UpsertDescription(ctx.Request.Context(), req.SkillID, req.Description, req.Media); err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -53,5 +53,5 @@ func (h *Handler) CreateDescription(c *gin.Context) {
 		Result:    req.Description,
 	}
 
-	c.JSON(http.StatusCreated, responseApi)
+	ctx.JSON(http.StatusCreated, responseApi)
 }

@@ -2,9 +2,9 @@ package skills
 
 import "database/sql"
 
-func (r *Repository) DeleteSkill(id string) error {
+func (sr *SkillRepository) DeleteSkill(id string) error {
 	q := `DELETE FROM skills WHERE id=$1`
-	result, err := r.db.Exec(q, id)
+	result, err := sr.db.Exec(q, id)
 	if err != nil {
 		return err
 	}

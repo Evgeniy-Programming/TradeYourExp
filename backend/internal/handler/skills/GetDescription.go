@@ -21,12 +21,12 @@ import (
 // @Failure      400  {object}  models.ResponseApi "Неверный формат Skill ID"
 // @Failure      404  {object}  models.ResponseApi "Пользователь не найден"
 // @Router       /skills/desc/{id} [get]
-func (h *Handler) GetDescriptionByID(c *gin.Context) {
-	requestID, _ := c.Get(contextkeys.RequestIDKey)
-	idStr := c.Param("id")
+func (h *Handler) GetDescriptionByID(ctx *gin.Context) {
+	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
+	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil || id <= 0 {
-		c.JSON(http.StatusBadRequest, models.ResponseApi{
+		ctx.JSON(http.StatusBadRequest, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -35,9 +35,9 @@ func (h *Handler) GetDescriptionByID(c *gin.Context) {
 		return
 	}
 
-	desc, err := h.repo.Skills.GetDescriptionBySkillID(c.Request.Context(), id)
+	desc, err := h.repo.Skills.GetDescriptionBySkillID(ctx.Request.Context(), id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -47,7 +47,7 @@ func (h *Handler) GetDescriptionByID(c *gin.Context) {
 	}
 
 	if desc == nil {
-		c.JSON(http.StatusNotFound, models.ResponseApi{
+		ctx.JSON(http.StatusNotFound, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Message:   "Description not found",
@@ -62,7 +62,7 @@ func (h *Handler) GetDescriptionByID(c *gin.Context) {
 		Result:    desc,
 	}
 
-	c.JSON(http.StatusOK, responseApi)
+	ctx.JSON(http.StatusOK, responseApi)
 }
 
 // GetAllDescriptions вывод списка всех доп. описаний.
@@ -75,11 +75,11 @@ func (h *Handler) GetDescriptionByID(c *gin.Context) {
 // @Failure      400  {object}  models.ResponseApi "Неверный формат"
 // @Failure      404  {object}  models.ResponseApi "Пользователь не найден"
 // @Router       /skills/desc [get]
-func (h *Handler) GetAllDescriptions(c *gin.Context) {
-	requestID, _ := c.Get(contextkeys.RequestIDKey)
-	descs, err := h.repo.Skills.GetAllDescriptions(c.Request.Context())
+func (h *Handler) GetAllDescriptions(ctx *gin.Context) {
+	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
+	descs, err := h.repo.Skills.GetAllDescriptions(ctx.Request.Context())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -98,5 +98,5 @@ func (h *Handler) GetAllDescriptions(c *gin.Context) {
 		Message:   "Description list successfull received",
 		Result:    descs,
 	}
-	c.JSON(http.StatusOK, responseApi)
+	ctx.JSON(http.StatusOK, responseApi)
 }

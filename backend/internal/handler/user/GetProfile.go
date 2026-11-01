@@ -19,12 +19,12 @@ import (
 // @Failure      400  {object}  models.ResponseApi "Неверный формат"
 // @Failure      404  {object}  models.ResponseApi "Пользователь не найден"
 // @Router       /users/me [get]
-func (h *Handler) GetMyProfile(c *gin.Context) {
-	requestID, _ := c.Get(contextkeys.RequestIDKey)
-	userID, _ := c.Get(contextkeys.UserIDKey)
+func (h *Handler) GetMyProfile(ctx *gin.Context) {
+	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
+	userID, _ := ctx.Get(contextkeys.UserIDKey)
 	user, err := h.repo.User.GetMyProfile(userID.(string))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -40,7 +40,7 @@ func (h *Handler) GetMyProfile(c *gin.Context) {
 		Result:    user,
 	}
 
-	c.JSON(http.StatusOK, responseApi)
+	ctx.JSON(http.StatusOK, responseApi)
 }
 
 // GetProfile вывод профиля стороннего пользователя.
@@ -54,11 +54,11 @@ func (h *Handler) GetMyProfile(c *gin.Context) {
 // @Failure      400  {object}  models.ResponseApi "Неверный формат"
 // @Failure      404  {object}  models.ResponseApi "Пользователь не найден"
 // @Router       /users/profile/{username} [get]
-func (h *Handler) GetProfile(c *gin.Context) {
-	requestID, _ := c.Get(contextkeys.RequestIDKey)
-	username := c.Param("username")
+func (h *Handler) GetProfile(ctx *gin.Context) {
+	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
+	username := ctx.Param("username")
 	if username == "" {
-		c.JSON(http.StatusBadRequest, models.ResponseApi{
+		ctx.JSON(http.StatusBadRequest, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Message:   "Username is required",
@@ -67,7 +67,7 @@ func (h *Handler) GetProfile(c *gin.Context) {
 	}
 	user, err := h.repo.User.GetProfile(username)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -83,7 +83,7 @@ func (h *Handler) GetProfile(c *gin.Context) {
 		Result:    user,
 	}
 
-	c.JSON(http.StatusOK, responseApi)
+	ctx.JSON(http.StatusOK, responseApi)
 }
 
 // GetMyProfileStatic вывод собственной статистики.
@@ -96,12 +96,12 @@ func (h *Handler) GetProfile(c *gin.Context) {
 // @Failure      400  {object}  models.ResponseApi "Неверный формат"
 // @Failure      404  {object}  models.ResponseApi "Пользователь не найден"
 // @Router       /users/me/static [get]
-func (h *Handler) GetMyProfileStatic(c *gin.Context) {
-	requestID, _ := c.Get(contextkeys.RequestIDKey)
-	userID, _ := c.Get(contextkeys.UserIDKey)
+func (h *Handler) GetMyProfileStatic(ctx *gin.Context) {
+	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
+	userID, _ := ctx.Get(contextkeys.UserIDKey)
 	user, err := h.repo.User.GetMyProfileStatic(userID.(string))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -117,5 +117,5 @@ func (h *Handler) GetMyProfileStatic(c *gin.Context) {
 		Result:    user,
 	}
 
-	c.JSON(http.StatusOK, responseApi)
+	ctx.JSON(http.StatusOK, responseApi)
 }

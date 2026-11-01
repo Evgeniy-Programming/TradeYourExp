@@ -22,12 +22,12 @@ import (
 // @Failure      400  {object}  models.ResponseApi "Неверный формат данных"
 // @Failure      409  {object}  models.ResponseApi "Username уже занят"
 // @Router       /users/me [put]
-func (h *Handler) UpdateMyProfile(c *gin.Context) {
-	requestID, _ := c.Get(contextkeys.RequestIDKey)
-	userID, _ := c.Get(contextkeys.UserIDKey)
+func (h *Handler) UpdateMyProfile(ctx *gin.Context) {
+	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
+	userID, _ := ctx.Get(contextkeys.UserIDKey)
 	var req models.UpdateProfileRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, models.ResponseApi{
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -38,7 +38,7 @@ func (h *Handler) UpdateMyProfile(c *gin.Context) {
 
 	if err := h.repo.User.UpdateProfile(&req, fmt.Sprint(userID)); err != nil {
 		if errors.Is(err, user.ErrUsernameTaken) {
-			c.JSON(http.StatusConflict, models.ResponseApi{
+			ctx.JSON(http.StatusConflict, models.ResponseApi{
 				RequestID: fmt.Sprint(requestID),
 				Status:    false,
 				Error:     err.Error(),
@@ -46,7 +46,7 @@ func (h *Handler) UpdateMyProfile(c *gin.Context) {
 			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, models.ResponseApi{
+		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
 			Error:     err.Error(),
@@ -61,5 +61,5 @@ func (h *Handler) UpdateMyProfile(c *gin.Context) {
 		Message:   "Profile successfull updated",
 	}
 
-	c.JSON(http.StatusOK, responseApi)
+	ctx.JSON(http.StatusOK, responseApi)
 }

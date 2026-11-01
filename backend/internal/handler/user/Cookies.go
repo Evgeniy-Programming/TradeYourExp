@@ -18,8 +18,8 @@ const (
 )
 
 // setAuthCookies ставит HttpOnly cookie с access- и refresh-токеном
-func setAuthCookies(c *gin.Context, resp *authdb.AuthResponse) {
-	http.SetCookie(c.Writer, &http.Cookie{
+func setAuthCookies(ctx *gin.Context, resp *authdb.AuthResponse) {
+	http.SetCookie(ctx.Writer, &http.Cookie{
 		Name:     accessCookie,
 		Value:    resp.AccessToken,
 		Path:     "/",
@@ -29,7 +29,7 @@ func setAuthCookies(c *gin.Context, resp *authdb.AuthResponse) {
 		MaxAge:   int(resp.ExpiresIn),
 	})
 	// refresh-токен нужен только ручкам /refresh и /logout
-	http.SetCookie(c.Writer, &http.Cookie{
+	http.SetCookie(ctx.Writer, &http.Cookie{
 		Name:     refreshCookie,
 		Value:    resp.RefreshToken,
 		Path:     "/api/v1",

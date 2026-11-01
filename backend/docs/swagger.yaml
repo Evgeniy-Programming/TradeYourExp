@@ -18,6 +18,13 @@ definitions:
       username:
         type: string
     type: object
+  models.RaitRequest:
+    properties:
+      mark:
+        type: integer
+      received_id:
+        type: string
+    type: object
   models.RegisterRequest:
     properties:
       email:
@@ -60,6 +67,8 @@ definitions:
     properties:
       category:
         type: string
+      contributer:
+        type: string
       created_at:
         type: string
       description:
@@ -71,6 +80,8 @@ definitions:
       media:
         type: string
       skill:
+        type: string
+      status:
         type: string
       username:
         type: string
@@ -103,6 +114,8 @@ definitions:
       password:
         description: omitempty чтобы не светить в API
         type: string
+      raiting:
+        type: number
       socialLink:
         type: string
       username:
@@ -162,6 +175,147 @@ paths:
       summary: Выход пользователя
       tags:
       - users
+  /rait/:
+    post:
+      consumes:
+      - application/json
+      description: Выставляет рейтинг относительно новых данных
+      parameters:
+      - description: Данные для выставления рейтинга
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.RaitRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Рейтинг успешно поставлен
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "404":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "500":
+          description: Запрос не найден
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Выставить свой рейтинг
+      tags:
+      - raiting
+  /rait/history/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Вывод рейтинговой шкалы.
+      parameters:
+      - description: Id пользователя
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Вывод рейтинга
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "400":
+          description: Неверный формат
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "404":
+          description: Пользователь не найден
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Вывести историю выставлению рейтинга пользователя
+      tags:
+      - raiting
+  /rait/me:
+    get:
+      consumes:
+      - application/json
+      description: Вывод рейтинговой шкалы.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Вывод рейтинга
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "400":
+          description: Неверный формат
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "404":
+          description: Пользователь не найден
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Вывести собственный рейтинг
+      tags:
+      - raiting
+  /rait/new/:
+    post:
+      consumes:
+      - application/json
+      description: Выставляет рейтинг по новому значению
+      parameters:
+      - description: Данные для выставления рейтинга
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.RaitRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Рейтинг успешно поставлен
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "404":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "500":
+          description: Запрос не найден
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Принудительная установка рейтинга
+      tags:
+      - raiting
+  /rait/user/{username}:
+    get:
+      consumes:
+      - application/json
+      description: Вывод рейтинговой шкалы.
+      parameters:
+      - description: Username пользователя
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Вывод рейтинга
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "400":
+          description: Неверный формат
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "404":
+          description: Пользователь не найден
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Вывести рейтинг другого пользователя
+      tags:
+      - raiting
   /refresh:
     post:
       description: Выдает новую пару токенов по refresh-токену из cookie.
@@ -288,6 +442,35 @@ paths:
           schema:
             $ref: '#/definitions/models.ResponseApi'
       summary: Удалить запрос
+      tags:
+      - skills
+  /skills/{skill_id}:
+    patch:
+      consumes:
+      - application/json
+      description: Создает пару id + contribute user_id
+      parameters:
+      - description: ID навыка
+        in: path
+        name: skill_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Синхронизация успешна
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "404":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "500":
+          description: Запрос не найден
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Создание коммуникации
       tags:
       - skills
   /skills/desc:

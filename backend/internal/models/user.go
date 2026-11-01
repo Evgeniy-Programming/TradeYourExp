@@ -13,16 +13,18 @@ type User struct {
 	LastName   string    `json:"lastName"`
 	SocialLink string    `json:"socialLink"`
 	CreatedAt  string    `json:"created_at"`
+	Raiting    float32   `json:"raiting"`
 }
 
 type ProfileRequest struct {
-	ID         string `json:"id"`
-	Username   string `json:"username"`
-	Email      string `json:"email"`
-	FirstName  string `json:"firstName"`
-	LastName   string `json:"lastName"`
-	SocialLink string `json:"socialLink"`
-	CreatedAt  string `json:"created_at"`
+	ID         string  `json:"id"`
+	Username   string  `json:"username"`
+	Email      string  `json:"email"`
+	FirstName  string  `json:"firstName"`
+	LastName   string  `json:"lastName"`
+	SocialLink string  `json:"socialLink"`
+	CreatedAt  string  `json:"created_at"`
+	Raiting    float32 `json:"raiting"`
 }
 
 type LoginRequest struct {
