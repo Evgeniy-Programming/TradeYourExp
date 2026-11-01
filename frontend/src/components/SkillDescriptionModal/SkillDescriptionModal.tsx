@@ -12,11 +12,17 @@ import classNames from 'classnames';
 
 interface SkillDescriptionModalProps {
   onClose: () => void;
+  onAccept: () => void;
   skill: ISkill;
 }
 
-export const SkillDescriptionModal: React.FC<SkillDescriptionModalProps> = ({ onClose, skill }) => {
+export const SkillDescriptionModal: React.FC<SkillDescriptionModalProps> = ({
+  onClose,
+  onAccept,
+  skill,
+}) => {
   const acceptSkill = () => {
+    onAccept();
     onClose();
   };
 
