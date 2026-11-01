@@ -1,7 +1,7 @@
 import type { ISkillHistory } from '../../types/skill';
 import AvatarLink from '../../ui/AvatarLink/AvatarLink';
 import Modal from '../../ui/Modal/Modal';
-import style from './SkillHistoryDescriptionModal.module.scss';
+import style from './style.module.scss';
 import logoIMG from '../../assets/img/logo.png';
 import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
 import { formatTimestamp } from '../../utils/formatTimestamp';
@@ -42,7 +42,9 @@ export const SkillHistoryDescriptionModal: React.FC<SkillHistoryDescriptionModal
 
           <div className={style.skill__content__desc}>
             <p className={style.skill__subtitle}>Описание</p>
-            <p className={style.skill__content__desc__content}>{skill.description}</p>
+            <p className={style.skill__content__desc__content}>
+              {skill.description || 'Нет информации'}
+            </p>
           </div>
 
           <div className={style.skill__content__social}>

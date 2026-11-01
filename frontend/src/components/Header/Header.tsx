@@ -1,4 +1,4 @@
-import style from './Header.module.scss';
+import style from './style.module.scss';
 import A from './../../ui/A/A';
 import Line from './../../ui/Line/Line';
 import BurgerMenu from './../../ui/BurgerMenu/BurgerMenu';

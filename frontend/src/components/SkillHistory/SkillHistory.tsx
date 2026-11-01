@@ -1,4 +1,4 @@
-import style from './SkillHistory.module.scss';
+import style from './style.module.scss';
 import logoIMG from '../../assets/img/logo.png';
 import AvatarLink from '../../ui/AvatarLink/AvatarLink';
 import Button from '../../ui/Button/Button';

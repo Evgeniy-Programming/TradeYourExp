@@ -1,4 +1,4 @@
-import style from './AuthLayout.module.scss';
+import style from './style.module.scss';
 import Block from '../../ui/Block/Block';
 import IconLink from '../../ui/IconLink/IconLink';
 import ArrowSVG from '../../ui/svg/ArrowSVG';

@@ -1,7 +1,7 @@
 import AButton from '../../ui/AButton/AButton';
 import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
 import Modal from '../../ui/Modal/Modal';
-import style from './ToAuthModal.module.scss';
+import style from './style.module.scss';
 
 interface ToAuthModalProps {
   onClose: () => void;

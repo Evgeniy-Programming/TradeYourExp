@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { Header } from '../../components/Header/Header';
-import style from './ProfileLayout.module.scss';
+import style from './style.module.scss';
 import Block from '../../ui/Block/Block';
 import { ProfileEdit } from '../../components/ProfileEdit/ProfileEdit';
 

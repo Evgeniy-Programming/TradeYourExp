@@ -1,4 +1,4 @@
-import style from './ProfileEdit.module.scss';
+import style from './style.module.scss';
 import logoIMG from '../../assets/img/logo.png';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import Block from '../../ui/Block/Block';

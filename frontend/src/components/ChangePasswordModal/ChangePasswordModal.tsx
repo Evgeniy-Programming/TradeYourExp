@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import InputPassword from '../../ui/InputPassword/InputPassword';
 import Modal from '../../ui/Modal/Modal';
-import style from './ChangePasswordModal.module.scss';
+import style from './style.module.scss';
 import Button from '../../ui/Button/Button';
 import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
