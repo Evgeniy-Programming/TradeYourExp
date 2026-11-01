@@ -12,9 +12,8 @@
   &__image {
     width: 20px;
     height: 20px;
-
-    object-fit: cover;
     border-radius: var(--border-radius-small);
+    object-fit: cover;
   }
 }
 

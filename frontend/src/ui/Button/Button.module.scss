@@ -10,16 +10,16 @@
   text-decoration: none;
 
   background-color: var(--color-element);
-  box-shadow: 0 2px 0 rgb(31 92 58 / 25%);
   outline: none;
+  box-shadow: 0 2px 0 rgb(31 92 58 / 25%);
 
   &:hover {
     background-color: var(--color-element-hover);
   }
 
   &:active {
-    box-shadow: none;
     transform: translateY(1px);
+    box-shadow: none;
   }
 
   &_danger {

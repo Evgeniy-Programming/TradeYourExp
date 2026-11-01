@@ -48,9 +48,20 @@ export const StatsPage = () => {
       <div className={style.profile}>
         <h2>Ваша статистика</h2>
         {stats && (
-          <p>
-            Всего обменов: {stats.total} · Активных: {stats.active} · Завершённых: {stats.closed}
-          </p>
+          <ul className={style.profile__summary}>
+            <li>
+              <span>Всего обменов</span>
+              <b>{stats.total}</b>
+            </li>
+            <li>
+              <span>Активных</span>
+              <b>{stats.active}</b>
+            </li>
+            <li>
+              <span>Завершённых</span>
+              <b>{stats.closed}</b>
+            </li>
+          </ul>
         )}
         <div className={style.profile__skills}>
           <AnalyticsChart data={stats ? toChartData(stats) : []} />

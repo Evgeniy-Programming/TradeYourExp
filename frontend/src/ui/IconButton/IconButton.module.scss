@@ -18,9 +18,11 @@
 
   &__text {
     user-select: none;
+
     font-size: var(--font-size-small);
     color: var(--color-element-secondary);
     text-align: center;
+
     transition: var(--transition-duration);
   }
 

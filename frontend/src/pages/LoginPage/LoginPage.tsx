@@ -44,23 +44,31 @@ export const LoginPage = () => {
 
   return (
     <AuthLayout>
-      <form className={style.form}>
+      <form onSubmit={(e) => e.preventDefault()}>
         <h2>Вход в профиль</h2>
 
         <div className={style.form__fields}>
           <div className={style.form__field}>
             <label htmlFor="login">Никнейм или Email</label>
-            <Input value={fieldLogin} onChange={(e) => setFieldLogin(e.target.value)} id="login" />
+            <Input
+              value={fieldLogin}
+              autoComplete="username"
+              onChange={(e) => setFieldLogin(e.target.value)}
+              id="login"
+            />
           </div>
           <div className={style.form__field}>
             <label htmlFor="password">Пароль</label>
             <InputPassword
               value={fieldPassword}
+              autoComplete="current-password"
               onChange={(e) => setFieldPassword(e.target.value)}
               id="password"
             />
           </div>
-          <Button onClick={login}>Войти</Button>
+          <Button type="submit" onClick={login}>
+            Войти
+          </Button>
           <p>
             Нет профиля? <A to="/register">Зарегистрироваться</A>
           </p>

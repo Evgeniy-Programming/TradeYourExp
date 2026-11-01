@@ -102,9 +102,9 @@ export const CreatorPage = () => {
                 text="Напишите коротко чему вы сможете научить"
                 className={style.form__field__tooltip}
               />
-              <label htmlFor="fieldExchange">Чему хотите научить</label>
+              <label htmlFor="fieldSkill">Чему хотите научить?</label>
               <Input
-                id="fieldExchange"
+                id="fieldSkill"
                 value={fieldSkill}
                 onChange={(e) => setFieldSkill(e.target.value)}
               />
@@ -114,9 +114,9 @@ export const CreatorPage = () => {
                 text="Напишите коротко что хотите получить взамен на ваш навык"
                 className={style.form__field__tooltip}
               />
-              <label htmlFor="fieldSkill">Что хотите получить</label>
+              <label htmlFor="fieldExchange">Что хотите получить?</label>
               <Input
-                id="fieldSkill"
+                id="fieldExchange"
                 value={fieldExchange}
                 onChange={(e) => setFieldExchange(e.target.value)}
               />

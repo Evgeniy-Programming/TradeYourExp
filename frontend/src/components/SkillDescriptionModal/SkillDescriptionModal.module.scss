@@ -4,8 +4,8 @@
 
   h2 {
     font-size: var(--font-size-accent);
-    text-align: center;
     color: var(--color-text-title);
+    text-align: center;
   }
 }
 
@@ -58,16 +58,19 @@
 
     &__desc__content {
       overflow-y: auto;
-      max-height: 200px;
 
+      max-height: 200px;
       padding-right: 4px;
+
+      word-break: normal;
+      overflow-wrap: break-word;
       white-space: pre-wrap;
-      word-break: break-word;
     }
 
     &__desc,
     &__social {
       position: relative;
+
       padding: 12px;
       border: 1px solid var(--color-line);
       border-radius: var(--border-radius-large);

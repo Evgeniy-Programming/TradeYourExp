@@ -38,9 +38,8 @@
   }
 
   &__text {
-    flex: 1 1 auto;
-
     display: flex;
+    flex: 1 1 auto;
     flex-wrap: wrap;
     gap: 6px;
     align-items: center;
@@ -53,8 +52,8 @@
     }
 
     p {
-      color: var(--color-text-transparent);
       font-size: var(--font-size-small);
+      color: var(--color-text-transparent);
     }
   }
 }

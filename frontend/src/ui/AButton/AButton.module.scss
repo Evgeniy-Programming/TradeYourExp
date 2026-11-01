@@ -16,8 +16,8 @@
   }
 
   &:active {
-    box-shadow: none;
     transform: translateY(1px);
+    box-shadow: none;
   }
 
   &_danger {

@@ -29,14 +29,14 @@
   }
 
   &_danger {
+    border-color: rgb(217 83 79 / 25%);
     color: var(--color-danger);
     background-color: rgb(217 83 79 / 12%);
-    border-color: rgb(217 83 79 / 25%);
 
     &:hover {
+      border-color: var(--color-danger);
       color: var(--color-danger-hover);
       background-color: rgb(217 83 79 / 22%);
-      border-color: var(--color-danger);
     }
   }
 
@@ -46,9 +46,9 @@
   }
 
   &_gray {
+    border-color: rgb(155 184 166 / 30%);
     color: var(--color-text-transparent);
     background-color: rgb(155 184 166 / 18%);
-    border-color: rgb(155 184 166 / 30%);
 
     &:hover {
       border-color: var(--color-element-secondary);

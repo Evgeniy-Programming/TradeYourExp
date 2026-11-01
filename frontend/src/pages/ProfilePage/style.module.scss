@@ -1,1 +1,13 @@
-// ...
+.profile {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  min-height: 200px;
+  padding: 20px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--border-radius-large);
+
+  background-color: var(--color-block);
+  box-shadow: var(--shadow-block);
+}
