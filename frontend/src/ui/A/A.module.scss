@@ -1,4 +1,10 @@
 .a {
+  border-bottom: 1px solid transparent;
   color: var(--color-text-link);
   text-decoration: none;
+
+  &:hover {
+    border-bottom-color: var(--color-element-transparent);
+    color: var(--color-text-link-hover);
+  }
 }

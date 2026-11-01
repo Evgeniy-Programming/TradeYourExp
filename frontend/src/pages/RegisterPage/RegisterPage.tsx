@@ -40,7 +40,7 @@ export const RegisterPage = () => {
 
   return (
     <AuthLayout>
-      <form className={style.form}>
+      <form className={style.form} onSubmit={(e) => e.preventDefault()}>
         <h2>Регистрация</h2>
 
         <div className={style.form__fields}>
@@ -50,6 +50,7 @@ export const RegisterPage = () => {
             </label>
             <Input
               id="username"
+              autoComplete="username"
               value={fieldUsername}
               onChange={(e) => setFieldUsername(e.target.value)}
             />
@@ -58,7 +59,13 @@ export const RegisterPage = () => {
             <label htmlFor="email">
               Email <span className={style.form__field__req}>*</span>
             </label>
-            <Input id="email" value={fieldEmail} onChange={(e) => setFieldEmail(e.target.value)} />
+            <Input
+              id="email"
+              type="email"
+              autoComplete="email"
+              value={fieldEmail}
+              onChange={(e) => setFieldEmail(e.target.value)}
+            />
           </div>
           <div className={style.form__field}>
             <label htmlFor="password">
@@ -66,6 +73,7 @@ export const RegisterPage = () => {
             </label>
             <InputPassword
               id="password"
+              autoComplete="new-password"
               value={fieldPassword}
               onChange={(e) => setFieldPassword(e.target.value)}
             />
@@ -74,6 +82,7 @@ export const RegisterPage = () => {
             <label htmlFor="firstName">Имя</label>
             <Input
               id="firstName"
+              autoComplete="given-name"
               value={fieldFirstName}
               onChange={(e) => setFieldFirstName(e.target.value)}
             />
@@ -82,6 +91,7 @@ export const RegisterPage = () => {
             <label htmlFor="lastName">Фамилия</label>
             <Input
               id="lastName"
+              autoComplete="family-name"
               value={fieldLastName}
               onChange={(e) => setFieldLastName(e.target.value)}
             />
@@ -89,20 +99,27 @@ export const RegisterPage = () => {
           <div className={style.form__field}>
             <label htmlFor="social">Соц. сеть</label>
             <Input
-              placeholder="Введите ссылку"
               id="social"
+              type="url"
+              placeholder="Введите ссылку"
+              autoComplete="url"
               value={fieldLink}
               onChange={(e) => setFieldLink(e.target.value)}
             />
           </div>
-          <Button onClick={registration}>Зарегистрироваться</Button>
-          <p>
-            Уже есть профиль? <A to="/login">Войти</A>
-          </p>
-          <p className="label">
-            Поля с <span className={style.form__field__req}>*</span> обязательны к заполнению
-          </p>
         </div>
+
+        <Button type="submit" isMaxWidth onClick={registration}>
+          Зарегистрироваться
+        </Button>
+
+        <p className={style.form__footer}>
+          Уже есть профиль? <A to="/login">Войти</A>
+        </p>
+
+        <p className={style.form__hint}>
+          Поля с <span className={style.form__field__req}>*</span> обязательны к заполнению
+        </p>
       </form>
     </AuthLayout>
   );

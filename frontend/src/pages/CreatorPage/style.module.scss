@@ -1,13 +1,22 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
 .header {
   display: flex;
+  gap: 16px;
   align-items: center;
   justify-content: space-between;
+
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-line);
+
+  h2 {
+    font-size: var(--font-size-accent);
+    color: var(--color-text-title);
+  }
 
   &__controls {
     display: flex;
@@ -24,46 +33,66 @@
   &__editor {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px;
   }
 
   &__controls {
     display: flex;
     gap: 10px;
     justify-content: flex-end;
+
+    padding-top: 16px;
+    border-top: 1px solid var(--color-line);
   }
 
   &__field {
     position: relative;
-    padding: 10px;
-    border: 1px solid var(--color-block-transparent);
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    padding: 16px;
+    border: 1px solid var(--color-line);
     border-radius: var(--border-radius-large);
+
+    background-color: var(--color-block);
+    box-shadow: var(--shadow-block);
+
+    label {
+      font-size: var(--font-size-small);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-transparent);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
 
     textarea {
       resize: vertical;
-      height: 100px;
-      max-height: 200px;
+      min-height: 120px;
+      max-height: 260px;
     }
 
     &__tooltip {
       position: absolute;
-      top: 5px;
-      right: 5px;
+      top: 10px;
+      right: 10px;
     }
 
     &__category {
       display: flex;
       flex-wrap: wrap;
-      gap: 5px;
+      gap: 6px;
 
       button {
-        padding: 5px;
+        padding: 6px 12px;
+        border-radius: 999px;
         font-size: var(--font-size-small);
       }
     }
 
     &__contactValue {
-      margin-top: 10px;
+      margin-top: 4px;
     }
   }
 }

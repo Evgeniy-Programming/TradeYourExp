@@ -2,21 +2,28 @@
   display: inline-flex;
   justify-content: center;
 
-  padding: 5px 10px;
-  border-radius: 5px;
+  padding: 8px 16px;
+  border-radius: var(--border-radius-small);
 
   color: #ffffff;
   text-decoration: none;
 
   background-color: var(--color-element);
+  box-shadow: 0 2px 0 rgb(31 92 58 / 25%);
 
   &:hover {
     background-color: var(--color-element-hover);
   }
 
+  &:active {
+    transform: translateY(1px);
+    box-shadow: none;
+  }
+
   &_danger {
     color: #ffffff;
     background-color: var(--color-danger);
+    box-shadow: 0 2px 0 rgb(185 59 55 / 25%);
 
     &:hover {
       color: #ffffff;

@@ -7,7 +7,6 @@ import style from './style.module.scss';
 
 export const MainPage = () => {
   const skills = useAppSelector((state) => state.skill.skills);
-  const isLoading = useAppSelector((state) => state.skill.isLoading);
 
   return (
     <GeneralLayout>
@@ -18,7 +17,6 @@ export const MainPage = () => {
         {skills.map((skill) => (
           <Skill key={skill.id} skill={skill} />
         ))}
-        {!isLoading && skills.length === 0 && <p>Обменов не найдено</p>}
       </div>
     </GeneralLayout>
   );

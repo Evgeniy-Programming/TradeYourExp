@@ -1,14 +1,38 @@
-.skills {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 10px 0;
-}
-
 .title {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  font-size: var(--font-size-title);
+  color: var(--color-text-title);
+  text-align: center;
 }
 
 .label {
-  margin-top: 10px;
+  margin-top: 20px;
+  margin-bottom: 4px;
+
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-transparent);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.skills {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0 0 20px;
+
+  &:empty::after {
+    content: 'Обменов не найдено';
+
+    display: block;
+
+    padding: 40px 20px;
+    border: 1px dashed var(--color-line);
+    border-radius: var(--border-radius-large);
+
+    font-size: var(--font-size-text);
+    color: var(--color-text-transparent);
+    text-align: center;
+  }
 }

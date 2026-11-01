@@ -55,7 +55,7 @@ export const Header = () => {
         </div>
       </header>
       {isOpenBurger && (
-        <nav className={style.header__burger}>
+        <nav className={style.header__burger} aria-label="Мобильная навигация">
           <A to="/">Обмены</A>
           {profile && (
             <>

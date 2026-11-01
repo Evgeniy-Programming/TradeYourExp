@@ -64,7 +64,6 @@ export const HistoryPage = () => {
           {filteredSkills.map((skill) => (
             <SkillHistory key={skill.id} skill={skill} />
           ))}
-          {filteredSkills.length === 0 && <p>Сделок пока нет</p>}
         </div>
       </div>
     </ProfileLayout>

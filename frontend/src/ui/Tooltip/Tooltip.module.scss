@@ -10,12 +10,14 @@
 
     width: 200px;
     max-width: 200px;
-    padding: 5px;
+    padding: 8px 10px;
     border: 1px solid var(--color-element-transparent);
     border-radius: var(--border-radius-small);
 
     font-size: var(--font-size-small);
+    color: var(--color-text-base);
 
     background-color: var(--color-block);
+    box-shadow: 0 6px 18px rgb(31 51 39 / 12%);
   }
 }

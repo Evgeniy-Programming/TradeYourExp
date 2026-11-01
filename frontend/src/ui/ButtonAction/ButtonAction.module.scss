@@ -4,15 +4,17 @@
   align-items: center;
 
   min-width: 150px;
-  padding: 5px 10px;
-  border: 1px solid var(--color-element);
-  border-radius: 5px;
+  padding: 8px 14px;
+  border: 1px solid var(--color-element-transparent);
+  border-radius: var(--border-radius-small);
 
   color: var(--color-element);
   text-align: left;
   text-decoration: none;
 
-  background-color: rgb(var(--color-element-rgb), 0.2);
+  background-color: var(--color-element-transparent);
+
+  transition: var(--transition-duration);
 
   &__icon {
     display: flex;
@@ -22,17 +24,19 @@
   }
 
   &:hover {
-    border-color: var(--color-element-hover);
-    background-color: rgb(var(--color-element-rgb), 0.3);
+    border-color: var(--color-element);
+    background-color: rgb(46 125 82 / 28%);
   }
 
   &_danger {
+    border-color: rgb(217 83 79 / 25%);
     color: var(--color-danger);
-    background-color: rgb(var(--color-danger-rgb), 0.2);
+    background-color: rgb(217 83 79 / 12%);
 
     &:hover {
-      color: var(--color-danger);
-      background-color: rgb(var(--color-danger-rgb), 0.3);
+      border-color: var(--color-danger);
+      color: var(--color-danger-hover);
+      background-color: rgb(217 83 79 / 22%);
     }
   }
 
@@ -42,12 +46,13 @@
   }
 
   &_gray {
+    border-color: rgb(155 184 166 / 30%);
     color: var(--color-text-transparent);
-    background-color: rgb(var(--color-element-secondary-rgb), 0.2);
+    background-color: rgb(155 184 166 / 18%);
 
     &:hover {
-      border-color: var(--color-element-hover);
-      background-color: rgb(var(--color-element-secondary-rgb), 0.4);
+      border-color: var(--color-element-secondary);
+      background-color: rgb(155 184 166 / 30%);
     }
   }
 }

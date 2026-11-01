@@ -1,11 +1,26 @@
 .iconLink {
   display: flex;
   flex-direction: column;
+  gap: 2px;
   align-items: center;
+
   height: 100%;
+
+  color: var(--color-element-secondary);
+
+  transition: var(--transition-duration);
 
   &__text {
     font-size: var(--font-size-small);
     text-align: center;
+    transition: var(--transition-duration);
+  }
+
+  &:hover {
+    color: var(--color-element);
+  }
+
+  &:hover &__text {
+    color: var(--color-element);
   }
 }

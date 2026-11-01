@@ -7,6 +7,7 @@ import { SkillDescriptionModal } from '../SkillDescriptionModal/SkillDescription
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { ToAuthModal } from '../ToAuthModal/ToAuthModal';
 import type { ISkill } from '../../types/skill';
+import { SkillOfferModal } from '../SkillOfferModal/SkillOfferModal';
 
 interface SkillProps {
   skill: ISkill;
@@ -14,6 +15,7 @@ interface SkillProps {
 
 export const Skill: React.FC<SkillProps> = ({ skill }) => {
   const [isOpenDescModal, setOpenDescModal] = useState(false);
+  const [isOpenOfferModal, setOpenOfferModal] = useState(false);
   const [isOpenAuthModal, setOpenAuthModal] = useState(false);
   const profile = useAppSelector((state) => state.profile.profile);
 
@@ -25,10 +27,21 @@ export const Skill: React.FC<SkillProps> = ({ skill }) => {
     }
   };
 
+  const acceptSkill = (addition: string) => {
+    console.log(addition);
+  };
+
   return (
     <>
       {isOpenDescModal && (
-        <SkillDescriptionModal skill={skill} onClose={() => setOpenDescModal(false)} />
+        <SkillDescriptionModal
+          skill={skill}
+          onClose={() => setOpenDescModal(false)}
+          onAccept={() => setOpenOfferModal(true)}
+        />
+      )}
+      {isOpenOfferModal && (
+        <SkillOfferModal onClose={() => setOpenOfferModal(false)} onAccept={acceptSkill} />
       )}
       {isOpenAuthModal && <ToAuthModal onClose={() => setOpenAuthModal(false)} />}
       <div className={style.skill}>

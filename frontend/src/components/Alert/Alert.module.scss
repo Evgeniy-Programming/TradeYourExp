@@ -5,13 +5,22 @@
   gap: 10px;
   align-items: center;
 
-  padding: 20px;
-  border-radius: 10px;
+  width: 100%;
+  max-width: 560px;
+  padding: 16px 48px 16px 20px;
+  border-radius: var(--border-radius-large);
+
+  box-shadow: var(--shadow-block);
 
   animation: alert-animation 0.2s ease;
 
   img {
+    flex-shrink: 0;
     width: 40px;
+  }
+
+  p {
+    color: inherit;
   }
 
   &_block {
@@ -23,12 +32,13 @@
     justify-content: center;
 
     width: 100vw;
+    padding: 0 20px;
   }
 
   &__close {
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: 6px;
+    right: 6px;
   }
 
   &__error {
@@ -55,13 +65,19 @@
     background-color: var(--color-alert-success-background);
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+
   @keyframes alert-animation {
     0% {
-      bottom: -200px;
+      transform: translateY(40px);
+      opacity: 0;
     }
 
     100% {
-      bottom: 0;
+      transform: translateY(0);
+      opacity: 1;
     }
   }
 }

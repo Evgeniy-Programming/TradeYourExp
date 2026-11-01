@@ -1,16 +1,32 @@
 .iconButton {
   display: flex;
   flex-direction: column;
+  gap: 2px;
   align-items: center;
 
+  padding: 2px;
   border: none;
+  border-radius: var(--border-radius-small);
 
   background-color: transparent;
 
+  transition: var(--transition-duration);
+
+  &:hover {
+    background-color: var(--color-element-transparent);
+  }
+
   &__text {
     user-select: none;
+
     font-size: var(--font-size-small);
     color: var(--color-element-secondary);
     text-align: center;
+
+    transition: var(--transition-duration);
+  }
+
+  &:hover &__text {
+    color: var(--color-element);
   }
 }

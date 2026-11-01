@@ -1,18 +1,29 @@
 .skill {
-  padding: 10px;
-  border-left: 2px solid var(--color-element);
+  position: relative;
+
+  padding: 14px 16px;
+  border-left: 3px solid var(--color-element);
   border-radius: var(--border-radius-large);
+
   background-color: var(--color-element-transparent);
+
+  transition: var(--transition-duration);
+
+  &:hover {
+    background-color: rgb(var(--color-element-rgb) / 26%);
+  }
 
   &__content {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
+    align-items: center;
     justify-content: space-between;
 
     &__info {
       display: flex;
       flex-direction: column;
+      gap: 10px;
       justify-content: space-between;
     }
 
@@ -21,8 +32,29 @@
     }
   }
 
+  &__contact {
+    display: flex;
+    justify-content: flex-start;
+  }
+
   &__text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+
     text-align: center;
+
+    b {
+      color: var(--color-text-title);
+    }
+
+    p {
+      font-size: var(--font-size-small);
+      color: var(--color-text-transparent);
+    }
   }
 }
 

@@ -1,26 +1,56 @@
 .form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
   width: 100%;
   min-width: 300px;
-  max-width: 500px;
+  max-width: 460px;
 
   h2 {
     font-size: var(--font-size-accent);
+    color: var(--color-text-title);
     text-align: center;
   }
 
   &__fields {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 14px;
   }
 
   &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    label {
+      font-size: var(--font-size-small);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-transparent);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
     &__req {
+      font-weight: var(--font-weight-bold);
       color: var(--color-danger);
     }
   }
 
-  p {
+  &__footer {
+    font-size: var(--font-size-small);
+    color: var(--color-text-transparent);
     text-align: center;
+  }
+
+  &__hint {
+    margin-top: -8px;
+
+    font-size: var(--font-size-small);
+    color: var(--color-text-transparent);
+    text-align: center;
+
+    opacity: 0.8;
   }
 }

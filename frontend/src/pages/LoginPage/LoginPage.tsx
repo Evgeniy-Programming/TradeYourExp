@@ -44,27 +44,37 @@ export const LoginPage = () => {
 
   return (
     <AuthLayout>
-      <form className={style.form}>
+      <form className={style.form} onSubmit={(e) => e.preventDefault()}>
         <h2>Вход в профиль</h2>
 
         <div className={style.form__fields}>
           <div className={style.form__field}>
             <label htmlFor="login">Никнейм или Email</label>
-            <Input value={fieldLogin} onChange={(e) => setFieldLogin(e.target.value)} id="login" />
+            <Input
+              id="login"
+              value={fieldLogin}
+              autoComplete="username"
+              onChange={(e) => setFieldLogin(e.target.value)}
+            />
           </div>
           <div className={style.form__field}>
             <label htmlFor="password">Пароль</label>
             <InputPassword
-              value={fieldPassword}
-              onChange={(e) => setFieldPassword(e.target.value)}
               id="password"
+              value={fieldPassword}
+              autoComplete="current-password"
+              onChange={(e) => setFieldPassword(e.target.value)}
             />
           </div>
-          <Button onClick={login}>Войти</Button>
-          <p>
-            Нет профиля? <A to="/register">Зарегистрироваться</A>
-          </p>
         </div>
+
+        <Button type="submit" isMaxWidth onClick={login}>
+          Войти
+        </Button>
+
+        <p className={style.form__footer}>
+          Нет профиля? <A to="/register">Зарегистрироваться</A>
+        </p>
       </form>
     </AuthLayout>
   );

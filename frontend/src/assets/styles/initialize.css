@@ -1,3 +1,7 @@
+/* ════════════════════════════════════════════════════════════
+   ШРИФТЫ
+   ════════════════════════════════════════════════════════════ */
+
 @font-face {
   font-family: Moderustic;
   font-weight: 300;
@@ -34,37 +38,75 @@
   src: url('./../fonts/MontserratAlternates-Bold.woff2') format('woff2');
 }
 
+/* ════════════════════════════════════════════════════════════
+   СВЕТЛАЯ ТЕМА (по умолчанию)
+   ════════════════════════════════════════════════════════════ */
+
 :root {
-  --color-text-title: #000000;
-  --color-text-base: #000000;
-  --color-text-transparent: rgb(0 0 0 / 50%);
+  /* ── Текст ─────────────────────────────────────────── */
+  --color-text-title: #14281d;
+  --color-text-base: #1f3327;
+  --color-text-transparent: rgb(31 51 39 / 55%);
   --color-text-light: #ffffff;
-  --color-text-link: #2b4a4a;
-  --color-text-link-hover: #223838;
-  --color-danger: #dc3545;
-  --color-danger-hover: #c82333;
-  --color-background: #e7e6e6;
+  --color-text-on-element: #ffffff;
+  --color-text-link: #2e7d52;
+  --color-text-link-hover: #1f5c3a;
+
+  /* ── Опасность ─────────────────────────────────────── */
+  --color-danger: #d9534f;
+  --color-danger-hover: #b93b37;
+  --color-danger-rgb: 217 83 79;
+
+  /* ── Фон / блоки ───────────────────────────────────── */
+  --color-background: #eef4ef;
   --color-block: #ffffff;
-  --color-block-transparent: rgb(0 0 0 / 5%);
-  --color-block-gray: gray;
-  --color-element: #28a745;
-  --color-element-hover: #218838;
-  --color-element-transparent: rgb(106 164 162 / 20%);
-  --color-line: #e7e6e6;
-  --color-line-hover: #dddddd;
-  --color-element-secondary: #a4a4a4;
-  --color-alert-error-border: #f5c2c7;
-  --color-alert-error-background: #f8d7da;
-  --color-alert-error-text: #842029;
+  --color-block-transparent: rgb(46 125 82 / 6%);
+  --color-block-gray: #7d8c82;
+
+  /* ── Элементы (основной зелёный) ───────────────────── */
+  --color-element: #2e7d52;
+  --color-element-hover: #1f5c3a;
+  --color-element-transparent: rgb(46 125 82 / 18%);
+  --color-element-secondary: #9bb8a6;
+  --color-element-rgb: 46 125 82;
+  --color-element-secondary-rgb: 155 184 166;
+
+  /* ── Линии ─────────────────────────────────────────── */
+  --color-line: #dce7df;
+  --color-line-hover: #c9d9ce;
+
+  /* ── Алерты ────────────────────────────────────────── */
+  --color-alert-error-border: #f2c2c0;
+  --color-alert-error-background: #f9dedd;
+  --color-alert-error-text: #7a2321;
   --color-alert-info-border: #b6d4fe;
   --color-alert-info-background: #cfe2ff;
   --color-alert-info-text: #084298;
   --color-alert-warning-border: #ffecb5;
   --color-alert-warning-background: #fff3cd;
   --color-alert-warning-text: #664d03;
-  --color-alert-success-border: #badbcc;
-  --color-alert-success-background: #d1e7dd;
-  --color-alert-success-text: #0f5132;
+  --color-alert-success-border: #b7dcc4;
+  --color-alert-success-background: #d4edda;
+  --color-alert-success-text: #145c2e;
+
+  /* ── Тени / оверлеи ────────────────────────────────── */
+  --shadow-color: 31 51 39;
+  --shadow-block: 0 4px 16px rgb(var(--shadow-color) / 6%);
+  --shadow-dropdown: 0 10px 24px rgb(var(--shadow-color) / 14%);
+  --shadow-modal: 0 20px 48px rgb(var(--shadow-color) / 22%);
+  --shadow-button: 0 2px 0 rgb(var(--shadow-color) / 25%);
+  --overlay-color: 15 26 20;
+  --overlay-alpha: 72%;
+  --overlay-avatar-color: 31 92 58;
+  --overlay-avatar-alpha: 65%;
+
+  /* ── Семантические алиасы (роли поверх значений) ───── */
+  --color-surface: var(--color-block);
+  --color-surface-hover: #f5faf6;
+  --color-border-input: var(--color-line);
+  --color-border-input-focus: var(--color-element);
+
+  /* ── Типографика ───────────────────────────────────── */
   --font-family-base: 'Moderustic', sans-serif;
   --font-family-accent: 'MontserratAlternates', sans-serif;
   --font-size-title: clamp(24px, 2.3rem, 48px);
@@ -75,12 +117,92 @@
   --font-weight-base: 400;
   --font-weight-bold: 600;
   --font-weight-title: 700;
+
+  /* ── Прочее ────────────────────────────────────────── */
   --container-width: 1300px;
   --transition-duration: 0.2s;
-  --border-radius-large: 10px;
-  --border-radius-small: 5px;
+  --border-radius-large: 14px;
+  --border-radius-small: 8px;
   --media-width-phone: 700px;
+
+  color-scheme: light;
 }
+
+/* ════════════════════════════════════════════════════════════
+   ТЁМНАЯ ТЕМА
+   Переключение: document.documentElement.dataset.theme = 'dark'
+   ════════════════════════════════════════════════════════════ */
+
+[data-theme='dark'] {
+  /* ── Текст ─────────────────────────────────────────── */
+  --color-text-title: #f1f7f3;
+  --color-text-base: #d7e5db;
+  --color-text-transparent: rgb(215 229 219 / 55%);
+  --color-text-light: #ffffff;
+  --color-text-on-element: #0f1a14;
+  --color-text-link: #7fce9f;
+  --color-text-link-hover: #a3e0bb;
+
+  /* ── Опасность ─────────────────────────────────────── */
+  --color-danger: #e06460;
+  --color-danger-hover: #ec7d79;
+  --color-danger-rgb: 224 100 96;
+
+  /* ── Фон / блоки ───────────────────────────────────── */
+  --color-background: #14201a;
+  --color-block: #1c2b22;
+  --color-block-transparent: rgb(127 206 159 / 8%);
+  --color-block-gray: #5c7a68;
+
+  /* ── Элементы (основной зелёный) ───────────────────── */
+  --color-element: #3f9e6a;
+  --color-element-hover: #56b97f;
+  --color-element-transparent: rgb(63 158 106 / 22%);
+  --color-element-secondary: #5c7a68;
+  --color-element-rgb: 63 158 106;
+  --color-element-secondary-rgb: 92 122 104;
+
+  /* ── Линии ─────────────────────────────────────────── */
+  --color-line: #2b3d32;
+  --color-line-hover: #3a5244;
+
+  /* ── Алерты (приглушённые, чтобы не «резали» на тёмном) */
+  --color-alert-error-border: #6b2e2c;
+  --color-alert-error-background: #3a1f1e;
+  --color-alert-error-text: #f2b8b5;
+  --color-alert-info-border: #2a4a6b;
+  --color-alert-info-background: #1a2f44;
+  --color-alert-info-text: #a8c8f0;
+  --color-alert-warning-border: #6b5a2a;
+  --color-alert-warning-background: #3a321a;
+  --color-alert-warning-text: #f0dca8;
+  --color-alert-success-border: #2a5c3e;
+  --color-alert-success-background: #1a3a26;
+  --color-alert-success-text: #a8e0bc;
+
+  /* ── Тени / оверлеи ────────────────────────────────── */
+  --shadow-color: 0 0 0;
+  --shadow-block: 0 4px 16px rgb(var(--shadow-color) / 35%);
+  --shadow-dropdown: 0 10px 24px rgb(var(--shadow-color) / 45%);
+  --shadow-modal: 0 20px 48px rgb(var(--shadow-color) / 55%);
+  --shadow-button: 0 2px 0 rgb(var(--shadow-color) / 40%);
+  --overlay-color: 0 0 0;
+  --overlay-alpha: 65%;
+  --overlay-avatar-color: 0 0 0;
+  --overlay-avatar-alpha: 55%;
+
+  /* ── Семантические алиасы ──────────────────────────── */
+  --color-surface: var(--color-block);
+  --color-surface-hover: #22332a;
+  --color-border-input: var(--color-line);
+  --color-border-input-focus: var(--color-element);
+
+  color-scheme: dark;
+}
+
+/* ════════════════════════════════════════════════════════════
+   БАЗА
+   ════════════════════════════════════════════════════════════ */
 
 body {
   font-family: var(--font-family-base);
@@ -90,7 +212,9 @@ body {
 
   background-color: var(--color-background);
 
-  transition: var(--transition-duration);
+  transition:
+    background-color var(--transition-duration),
+    color var(--transition-duration);
 }
 
 h1,
@@ -101,7 +225,8 @@ h5,
 h6 {
   margin: 0;
   font-size: var(--font-size-title);
-  font-weight: 700;
+  font-weight: var(--font-weight-title);
+  color: var(--color-text-title);
 }
 
 p {
@@ -111,7 +236,8 @@ p {
 a,
 button,
 input,
-textarea {
+textarea,
+select {
   transition: var(--transition-duration);
 }
 
@@ -119,6 +245,10 @@ a {
   color: var(--color-text-link);
   text-decoration: none;
 }
+
+/* ════════════════════════════════════════════════════════════
+   УТИЛИТЫ
+   ════════════════════════════════════════════════════════════ */
 
 .container {
   max-width: var(--container-width);
@@ -148,6 +278,15 @@ a {
   opacity: 0.5;
 }
 
+.label {
+  font-size: var(--font-size-small);
+  color: var(--color-text-transparent);
+}
+
+/* ════════════════════════════════════════════════════════════
+   СКРОЛЛБАР
+   ════════════════════════════════════════════════════════════ */
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -163,7 +302,6 @@ a {
   background: var(--color-element-secondary);
 }
 
-.label {
-  font-size: var(--font-size-small);
-  color: var(--color-text-transparent);
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-element);
 }
