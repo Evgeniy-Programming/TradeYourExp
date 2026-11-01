@@ -38,18 +38,19 @@
     }
   }
 
-  &__fields > button {
-    margin-top: 6px;
+  &__footer {
+    font-size: var(--font-size-small);
+    color: var(--color-text-transparent);
+    text-align: center;
   }
 
-  p {
+  &__hint {
+    margin-top: -8px;
+
     font-size: var(--font-size-small);
     color: var(--color-text-transparent);
     text-align: center;
 
-    &.label {
-      margin-top: 4px;
-      font-size: var(--font-size-small);
-    }
+    opacity: 0.8;
   }
 }

@@ -40,7 +40,7 @@ export const RegisterPage = () => {
 
   return (
     <AuthLayout>
-      <form onSubmit={(e) => e.preventDefault()}>
+      <form className={style.form} onSubmit={(e) => e.preventDefault()}>
         <h2>Регистрация</h2>
 
         <div className={style.form__fields}>
@@ -60,6 +60,7 @@ export const RegisterPage = () => {
               Email <span className={style.form__field__req}>*</span>
             </label>
             <Input
+              id="email"
               type="email"
               autoComplete="email"
               value={fieldEmail}
@@ -72,6 +73,7 @@ export const RegisterPage = () => {
             </label>
             <InputPassword
               id="password"
+              autoComplete="new-password"
               value={fieldPassword}
               onChange={(e) => setFieldPassword(e.target.value)}
             />
@@ -97,24 +99,27 @@ export const RegisterPage = () => {
           <div className={style.form__field}>
             <label htmlFor="social">Соц. сеть</label>
             <Input
+              id="social"
               type="url"
               placeholder="Введите ссылку"
               autoComplete="url"
-              id="social"
               value={fieldLink}
               onChange={(e) => setFieldLink(e.target.value)}
             />
           </div>
-          <Button type="submit" onClick={registration}>
-            Зарегистрироваться
-          </Button>
-          <p>
-            Уже есть профиль? <A to="/login">Войти</A>
-          </p>
-          <p className="label">
-            Поля с <span className={style.form__field__req}>*</span> обязательны к заполнению
-          </p>
         </div>
+
+        <Button type="submit" isMaxWidth onClick={registration}>
+          Зарегистрироваться
+        </Button>
+
+        <p className={style.form__footer}>
+          Уже есть профиль? <A to="/login">Войти</A>
+        </p>
+
+        <p className={style.form__hint}>
+          Поля с <span className={style.form__field__req}>*</span> обязательны к заполнению
+        </p>
       </form>
     </AuthLayout>
   );

@@ -33,12 +33,7 @@
     }
   }
 
-  > button,
-  &__fields > button {
-    margin-top: 6px;
-  }
-
-  p {
+  &__footer {
     font-size: var(--font-size-small);
     color: var(--color-text-transparent);
     text-align: center;
