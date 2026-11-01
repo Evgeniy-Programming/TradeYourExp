@@ -1,0 +1,22 @@
+.modal {
+  width: 100%;
+  max-width: 420px;
+
+  h2 {
+    margin-bottom: 4px;
+    font-size: var(--font-size-accent);
+    color: var(--color-text-title);
+    text-align: center;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.switch {
+  padding: 8px 4px;
+}

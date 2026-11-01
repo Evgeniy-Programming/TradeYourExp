@@ -8,6 +8,7 @@ import { useAppSelector } from '../../hooks/useAppDispatch';
 import ArrowSVG from '../../ui/svg/ArrowSVG';
 import Avatar from '../../ui/Avatar/Avatar';
 import classNames from 'classnames';
+import PlusSVG from '../../ui/svg/PlusSVG';
 
 export const Header = () => {
   const [isOpenBurger, setOpenBurger] = useState(false);
@@ -23,7 +24,10 @@ export const Header = () => {
             </A>
 
             <div className={style.header__nav__links}>
-              <A to="/create">Предложить обмен</A>
+              <A to="/create" className={style.header__cta}>
+                <PlusSVG size={16} />
+                Предложить обмен
+              </A>
               <Line type="vertical" />
               <A to="/profile/stats">Статистика</A>
               <Line type="vertical" />
@@ -59,7 +63,10 @@ export const Header = () => {
           <A to="/">Обмены</A>
           {profile && (
             <>
-              <A to="/create">Предложить обмен</A>
+              <A to="/create" className={style.header__burger_cta}>
+                <PlusSVG size={18} />
+                Предложить обмен
+              </A>
               <A to="/profile/stats">Статистика</A>
               <A to="/profile/history">История</A>
               <A to="/profile">Профиль</A>

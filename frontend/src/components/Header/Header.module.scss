@@ -55,6 +55,42 @@
     }
   }
 
+  &__cta {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+
+    padding: 8px 16px;
+    border-radius: 999px;
+
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-on-element);
+
+    background-color: var(--color-element);
+    box-shadow: 0 2px 0 rgb(var(--shadow-color) / 25%);
+
+    transition: var(--transition-duration);
+
+    &:hover {
+      color: var(--color-text-on-element) !important;
+      background-color: var(--color-element-hover);
+    }
+
+    &:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
+
+  &__cta,
+  &__cta:visited {
+    color: var(--color-text-on-element);
+  }
+
   &__profile {
     display: flex;
     gap: 10px;
@@ -97,6 +133,31 @@
       &:active {
         color: var(--color-element);
         background-color: var(--color-element-transparent);
+      }
+    }
+
+    &_cta {
+      gap: 10px;
+
+      width: calc(100% - 20px) !important;
+      height: 56px;
+      margin: 10px;
+      border: none;
+      border-radius: var(--border-radius-small);
+
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-on-element) !important;
+
+      background-color: var(--color-element) !important;
+
+      &:hover,
+      &:active {
+        color: var(--color-text-on-element) !important;
+        background-color: var(--color-element-hover) !important;
+      }
+
+      svg {
+        flex-shrink: 0;
       }
     }
   }

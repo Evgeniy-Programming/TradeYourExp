@@ -3,7 +3,7 @@ interface SettingsSVGProps {
   color?: string;
 }
 
-const SettingsSVG: React.FC<SettingsSVGProps> = ({ size = 30, color = '#69a4a2' }) => {
+const SettingsSVG: React.FC<SettingsSVGProps> = ({ size = 30, color = 'var(--color-element)' }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

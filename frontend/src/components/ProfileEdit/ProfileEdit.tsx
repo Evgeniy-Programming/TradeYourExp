@@ -2,142 +2,74 @@ import style from './ProfileEdit.module.scss';
 import logoIMG from '../../assets/img/logo.png';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import Block from '../../ui/Block/Block';
-import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
+import { useAppSelector } from '../../hooks/useAppDispatch';
 import A from '../../ui/A/A';
-import Input from '../../ui/Input/Input';
-import Button from '../../ui/Button/Button';
+import IconButton from '../../ui/IconButton/IconButton';
+import SettingsSVG from '../../ui/svg/SettingsSVG';
 import { useState } from 'react';
-import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
-import AvatarEdit from '../../ui/AvatarEdit/AvatarEdit';
-import { ChangePasswordModal } from '../ChangePasswordModal/ChangePasswordModal';
+import { SettingsModal } from '../SettingsModal/SettingsModal';
 import classNames from 'classnames';
-import { setErrorWithTimeout } from '../../store/slices/appSlice';
-import { authAPI } from '../../api/auth';
-import { clearProfile, setProfile } from '../../store/slices/profileSlice';
-import { useNavigate } from 'react-router-dom';
-import type { IEditProfile } from '../../types/profile';
 
 interface ProfileEditProps {
-  className: string;
+  className?: string;
 }
 
 export const ProfileEdit: React.FC<ProfileEditProps> = ({ className }) => {
   const profile = useAppSelector((state) => state.profile.profile);
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-
-  const [isEditProfile, setEditProfile] = useState(false);
-  const [isOpenPasswordModal, setOpenPasswordModal] = useState(false);
-
-  const [fieldUsername, setFieldUsername] = useState(profile?.username || '');
-  const [fieldEmail, setFieldEmail] = useState(profile?.email || '');
-  const [fieldFirstName, setFieldFirstName] = useState(profile?.firstName || '');
-  const [fieldLastName, setFieldLastName] = useState(profile?.lastName || '');
-  const [fieldLink, setFieldLink] = useState(profile?.link || '');
-
-  const editProfile = async () => {
-    setEditProfile((prev) => !prev);
-
-    if (isEditProfile) {
-      try {
-        const updateObject: IEditProfile = {};
-
-        if (fieldEmail) updateObject.email = fieldEmail;
-        if (fieldFirstName) updateObject.firstName = fieldFirstName;
-        if (fieldLastName) updateObject.lastName = fieldLastName;
-        if (fieldLink) updateObject.link = fieldLink;
-        if (fieldUsername) updateObject.username = fieldUsername;
-
-        await authAPI.update(updateObject);
-        dispatch(setProfile(await authAPI.getMe()));
-      } catch (error) {
-        dispatch(setErrorWithTimeout(error));
-      }
-    }
-  };
-
-  const logout = async () => {
-    try {
-      await authAPI.logout();
-    } catch (error) {
-      dispatch(setErrorWithTimeout(error));
-    }
-    dispatch(clearProfile());
-    navigate('/login');
-  };
+  const [isOpenSettings, setOpenSettings] = useState(false);
 
   return (
     <Block className={classNames(style.profile, className)}>
-      {isOpenPasswordModal && <ChangePasswordModal onClose={() => setOpenPasswordModal(false)} />}
+      {isOpenSettings && <SettingsModal onClose={() => setOpenSettings(false)} />}
+
+      {profile && (
+        <div className={style.profile__header}>
+          <IconButton
+            icon={<SettingsSVG size={30} />}
+            onClick={() => setOpenSettings(true)}
+            title="Настройки"
+          />
+        </div>
+      )}
+
       {!profile && (
         <div className={style.profile__auth}>
           <p>Вы не вошли в профиль.</p>
           <A to="/login">Сделайте это!</A>
         </div>
       )}
+
       {profile && (
         <div className={style.profile__fields}>
-          <AvatarEdit className={style.profile__field__avatar} profileAvatar={logoIMG} />
+          <img className={style.profile__avatar} src={logoIMG} alt="Изображение профиля" />
           <div className={style.profile__field}>
             <p>Никнейм</p>
-            <Input
-              value={fieldUsername}
-              onChange={(e) => setFieldUsername(e.target.value)}
-              disabled={!isEditProfile}
-            />
+            <b>{profile.username}</b>
           </div>
           <div className={style.profile__field}>
             <p>Email</p>
-            <Input
-              type="email"
-              value={fieldEmail}
-              onChange={(e) => setFieldEmail(e.target.value)}
-              disabled={!isEditProfile}
-            />
+            <b>{profile.email}</b>
           </div>
-          <div className={style.profile__field}>
-            <p>Фамилия</p>
-            <Input
-              placeholder="Не обязательно"
-              value={fieldLastName}
-              onChange={(e) => setFieldLastName(e.target.value)}
-              disabled={!isEditProfile}
-            />
-          </div>
-          <div className={style.profile__field}>
-            <p>Имя</p>
-            <Input
-              placeholder="Не обязательно"
-              value={fieldFirstName}
-              onChange={(e) => setFieldFirstName(e.target.value)}
-              disabled={!isEditProfile}
-            />
-          </div>
-          <div className={style.profile__field}>
-            <p>Соц. сеть</p>
-            <Input
-              placeholder="Не обязательно"
-              value={fieldLink}
-              onChange={(e) => setFieldLink(e.target.value)}
-              disabled={!isEditProfile}
-            />
-          </div>
+          {profile.lastName && (
+            <div className={style.profile__field}>
+              <p>Фамилия</p>
+              <b>{profile.lastName}</b>
+            </div>
+          )}
+          {profile.firstName && (
+            <div className={style.profile__field}>
+              <p>Имя</p>
+              <b>{profile.firstName}</b>
+            </div>
+          )}
           <div className={style.profile__field}>
             <p>Зарегистрирован</p>
             <b>{formatTimestamp(profile.createdAt)}</b>
-          </div>
-          <div className={style.profile__buttons}>
-            <Button onClick={editProfile}>{isEditProfile ? 'Сохранить' : 'Редактировать'}</Button>
-            <ButtonSecondary onClick={() => setOpenPasswordModal(true)}>
-              Изменить пароль
-            </ButtonSecondary>
-            {isEditProfile && (
-              <ButtonSecondary onClick={() => setEditProfile(false)}>Отменить</ButtonSecondary>
-            )}
-            <ButtonSecondary onClick={logout}>Выйти</ButtonSecondary>
           </div>
         </div>
       )}
     </Block>
   );
 };
+
+export default ProfileEdit;

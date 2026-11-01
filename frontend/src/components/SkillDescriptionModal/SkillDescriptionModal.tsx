@@ -49,7 +49,9 @@ export const SkillDescriptionModal: React.FC<SkillDescriptionModalProps> = ({
 
           <div className={style.skill__content__desc}>
             <p className={style.skill__subtitle}>Описание</p>
-            <p className={style.skill__content__desc__content}>{skill.description}</p>
+            <p className={style.skill__content__desc__content}>
+              {skill.description || 'Нет информации'}
+            </p>
           </div>
 
           <div className={style.skill__content__social}>
