@@ -1,279 +1,410 @@
-# Trade Your Experience (TYE)
+# Trade Your Experience — техническая документация
 
-Платформа для обмена навыками по бартеру: пользователь предлагает то, чему может научить, и указывает, что хочет получить взамен.
+Платформа обмена навыками: пользователь публикует, чему готов научить, и указывает, что хочет получить взамен. Проект включает React SPA, HTTP API, отдельный gRPC-сервис авторизации и общую PostgreSQL.
 
-## Краткое описание
+Документ описывает исходный код репозитория на **2 ноября 2026 года**, ревизия `3117eea`. Источники истины: [HTTP-маршруты](backend/cmd/main.go), [SQL-миграции](backend/migrations), [gRPC-контракт](proto/auth.proto), [клиент API](frontend/src/api) и [Docker Compose](docker-compose.yml). Примеры ниже соответствуют этим файлам. Ограничения реализации выделены явно: наличие функции в API не означает, что она подключена в интерфейсе или готова к публичной эксплуатации.
 
-В условиях растущей коммерциализации индивидуального обучения и усиления цифрового неравенства платформа предлагает альтернативную модель peer-to-peer образования, основанную на взаимовыгодном бартере экспертизы. Инновационный потенциал проекта заключается в смещении фокуса с монетизированной передачи знаний на создание децентрализованных сообществ взаимного развития. Платформа устраняет ключевое ограничение традиционных EdTech-решений, где ценность создаётся односторонне и привязана к платежеспособности аудитории. Вместо этого система формирует среду, в которой каждый участник одновременно выступает наставником и учеником, а валютой взаимодействия становится экспертиза, время и готовность делиться опытом.
+## Содержание
 
-Созданный прототип доказывает технологическую и социальную жизнеспособность концепции цифрового бартера знаний и закладывает фундамент для развития доступных, человеко-ориентированных образовательных платформ нового поколения, способных трансформировать традиционные модели обучения в открытые, самоподдерживающиеся сети взаимного развития.
+- [Возможности и границы реализации](#возможности-и-границы-реализации)
+- [Архитектура](#архитектура)
+- [Технологии и зависимости](#технологии-и-зависимости)
+- [Структура репозитория](#структура-репозитория)
+- [Запуск через Docker Compose](#запуск-через-docker-compose)
+- [Конфигурация](#конфигурация)
+- [Локальная разработка](#локальная-разработка)
+- [HTTP API](#http-api)
+- [Авторизация и жизненный цикл сессии](#авторизация-и-жизненный-цикл-сессии)
+- [Навыки и обмены](#навыки-и-обмены)
+- [Рейтинг](#рейтинг)
+- [База данных и миграции](#база-данных-и-миграции)
+- [Frontend](#frontend)
+- [Эксплуатация и диагностика](#эксплуатация-и-диагностика)
+- [Проверки и генерация контрактов](#проверки-и-генерация-контрактов)
+- [Условия подготовки к production](#условия-подготовки-к-production)
 
-Технически проект состоит из трёх сервисов:
+## Возможности и границы реализации
 
-- **auth_service** — gRPC-сервис авторизации: регистрация, вход, выпуск и проверка JWT, отзыв токенов;
-- **backend** — REST API на Gin: обмены навыками, их описания, профили. Запросы авторизации проксирует в auth_service по gRPC;
-- **frontend** — SPA на React + TypeScript.
-
-Оба Go-сервиса работают с общей базой PostgreSQL. Схему создают миграции бэкенда при его запуске.
-
-## Архитектура и стек технологий
-
-```
-                 REST /api/v1                    gRPC
- frontend  ───────────────────►  backend  ──────────────────►  auth_service
- (React, :5173)                  (Gin, :8080)                  (gRPC, :50051)
-                                      │                              │
-                                      └──────────► PostgreSQL ◄──────┘
-                                                   (:5432)
-```
-
-### Сервисы
-
-**auth_service** — сервис авторизации (gRPC-сервер):
-
-- контракт описан в [`proto/auth.proto`](proto/auth.proto): `Register`, `Login`, `ValidateToken`, `RefreshToken`, `Logout`;
-- пароли хешируются bcrypt;
-- JWT подписываются HS256: access-токен живёт 15 минут, refresh-токен — 7 дней, у каждого свой секрет;
-- отозванные при `Logout` токены хранятся в памяти процесса (blacklist).
-
-**backend** — основной REST API (gRPC-клиент auth_service):
-
-- регистрацию и вход проксирует в auth_service и кладёт access-токен в HttpOnly-cookie `auth_token`;
-- `AuthMiddleware` сначала проверяет JWT локально, без сетевого запроса, а при неудаче спрашивает auth_service (`ValidateToken`);
-- `RequireRole` ограничивает доступ по роли;
-- `RequestIDMiddleware` присваивает каждому запросу `X-Request-ID`, который возвращается в ответе и в поле `request_id`;
-- при старте применяет миграции из `backend/migrations`;
-- отдаёт Swagger UI и старую HTML-страницу (`backend/sheets`, `backend/func`).
-
-**frontend** — SPA на React: лента обменов с фильтрами, создание обмена с предпросмотром, профиль, история и статистика.
-
-### Слои Go-сервисов
-
-Оба сервиса построены по одной схеме: транспорт → данные.
-
-| Слой | backend | auth_service |
+| Область | Реализовано | Текущие границы |
 |---|---|---|
-| Точка входа и DI | `cmd/main.go` | `cmd/server/main.go` |
-| Транспорт | `internal/handler` — HTTP-обработчики Gin и middleware | `internal/handler` — реализация gRPC-сервера |
-| Данные | `internal/repository` — SQL-запросы к PostgreSQL | `internal/repository` — SQL-запросы к PostgreSQL |
-| Модели | `internal/models` | `internal/models` |
-| Общие пакеты | `pkg/db` (миграции), `pkg/repo` (список категорий) | `pkg/jwt` (выпуск и проверка токенов) |
+| Учётные записи | Регистрация, вход по username/email, профиль, смена пароля, logout и refresh | Нет подтверждения email, восстановления пароля и хранилища сессий |
+| Объявления об обмене | Создание, описание, категории, поиск, удаление | Нет проверки владельца для удаления и изменения описания; автор передаётся клиентом |
+| Отклик на обмен | API переводит объявление в `freeze`, записывает участника | Кнопка предложения обмена в SPA выводит текст в консоль и API не вызывает |
+| Рейтинг | Изменение на целое значение, административная установка, чтение и история | Нет связи оценки с завершённой сделкой, ограничения частоты и запрета самооценки |
+| История и статистика SPA | Список собственных объявлений, месячный график | Статистика считается в браузере; все объявления отображаются как `ACTIVE` |
+| Коммуникация | Контакт Telegram/VK/WeChat в описании | Полноценного чата и серверной доставки сообщений нет |
+| Администрирование | HTTP-маршруты с требованием роли `admin` | Проверка роли содержит несовпадение типов ключей контекста; нет административного интерфейса и штатного процесса выдачи роли |
 
-Внутри `handler` и `repository` код разбит по сущностям (`user`, `skills`), по одному файлу на операцию.
+Репозиторий содержит работающие части приложения и незавершённые сценарии. Текущая Compose-конфигурация предназначена прежде всего для разработки: frontend запускается через Vite dev server, секреты и сетевые настройки требуют подготовки перед внешним размещением.
 
-### Стек
+## Архитектура
 
-**Backend и auth_service**
+```mermaid
+flowchart LR
+    Browser[Браузер] -->|HTTP :5173| Frontend[React / Vite]
+    Frontend -->|Прокси /api| API[Gin API :8080]
+    API -->|gRPC :50051| Auth[Auth service]
+    API -->|database/sql + lib/pq| DB[(PostgreSQL 15)]
+    Auth -->|database/sql + pgx| DB
+    API --> Migrations[Миграции при старте]
+    Migrations --> DB
+```
 
-- Язык: Go 1.25
-- База данных: PostgreSQL 15
-- Межсервисное взаимодействие: gRPC + Protocol Buffers
-- Контейнеризация: Docker, Docker Compose
+Прокси выполняется сервером Vite: браузер отправляет запрос на тот же origin, с которого получил SPA. В Docker адрес API для Vite — `http://app:8080`, при локальной разработке — `http://localhost:8080`.
 
-**Ключевые Go-библиотеки**
+### Ответственность сервисов
 
-- `gin-gonic/gin` — HTTP-роутинг и middleware (backend)
-- `google.golang.org/grpc`, `google.golang.org/protobuf` — gRPC-сервер и клиент
-- `golang-jwt/jwt/v5` — JWT
-- `golang.org/x/crypto/bcrypt` — хеширование паролей (auth_service)
-- `lib/pq` — драйвер PostgreSQL (backend)
-- `jackc/pgx/v5` — драйвер PostgreSQL (auth_service)
-- `golang-migrate/migrate/v4` — миграции схемы БД
-- `swaggo/swag`, `swaggo/gin-swagger` — генерация и отдача Swagger-документации
-- `google/uuid` — идентификаторы пользователей и `X-Request-ID`
+**backend** владеет схемой БД и HTTP API: применяет миграции, обрабатывает навыки, профили и рейтинг, устанавливает cookie. Регистрацию, вход, refresh и logout делегирует auth service. Защищённые маршруты сначала проверяют JWT локально; gRPC-валидация вызывается при неудаче локальной проверки.
 
-**Frontend**
+**auth_service** хранит и читает пользователей в общей таблице `users`, хеширует пароли, выпускает JWT, проверяет токены и ведёт blacklist access-токенов в памяти. Самостоятельных миграций у сервиса нет.
 
-- React 19, TypeScript 6, Vite 8
-- Redux Toolkit + React Redux — состояние приложения
-- React Router 7 — маршрутизация, лоадеры для защищённых страниц
-- Axios — HTTP-клиент
-- Recharts — графики на странице статистики
-- SCSS Modules — стили
-- ESLint, Stylelint, Prettier — линтинг и форматирование
+**frontend** отвечает за маршрутизацию, формы, адаптацию API-моделей, фильтрацию и клиентскую статистику. Cookie с токенами недоступны JavaScript; Axios отправляет их с `withCredentials: true`.
 
-## Ключевые реализованные фичи
+### Организация Go-кода
 
-- Выделенный сервис авторизации, с которым бэкенд общается по gRPC.
-- JWT с раздельными access- и refresh-токенами и раздельными секретами.
-- Access-токен хранится в HttpOnly-cookie (`SameSite=Strict`), поэтому недоступен JavaScript.
-- Двухступенчатая проверка токена: быстрая локальная проверка JWT и при необходимости запрос в auth_service.
-- Ролевой доступ (`manager`, `admin`, `viewer`) через middleware `RequireRole`.
-- Сквозной `X-Request-ID` для трассировки запросов.
-- Единый формат ответа API (`ResponseApi`).
-- Обмены навыками по пяти категориям, поиск по вхождению строки, подробные описания с upsert.
-- Версионирование схемы БД миграциями, которые применяются автоматически при старте бэкенда.
-- Swagger-документация API.
-- Запуск всего проекта одной командой через Docker Compose (с healthcheck базы).
+Основной поток: точка входа → HTTP/gRPC handler → repository → SQL. Отдельного слоя доменных сервисов нет, поэтому часть бизнес-правил находится в обработчиках, часть — в SQL-репозиториях.
 
-## Инструкция по установке и запуску
+Зависимости создаются вручную в `cmd`. Агрегаторы `Repository` и `Handler` используют конкретные указатели. Объявленные рядом интерфейсы не являются полной гарантией соответствия реализаций: например, в интерфейсе навыков остались имена `FetchSkills` и `GetSkilllByCategory`, тогда как вызываются `GetAllSkills` и `GetSkillsByCategory`. Поле `Repository.DB` конструктор не заполняет.
 
-### Требования
+Оба сервиса используют одну БД и общую модель пользователя. Это упрощает интеграцию, но означает совместную эволюцию схемы: изменение `users` затрагивает оба Go-модуля.
 
-- Docker и Docker Compose — для запуска всего проекта;
-- для локальной разработки без Docker: Go 1.25+, Node.js 22+, PostgreSQL 15;
-- для перегенерации кода: `swag`, `protoc`, `protoc-gen-go`, `protoc-gen-go-grpc`.
+## Технологии и зависимости
 
-### Быстрый старт с Docker Compose
+| Компонент | Версия/реализация в репозитории |
+|---|---|
+| Go | `go 1.25.0` в обоих модулях |
+| PostgreSQL | `postgres:15-alpine` в Compose |
+| HTTP | Gin `v1.12.0` |
+| SQL backend | `database/sql`, `lib/pq v1.10.9` |
+| SQL auth | `database/sql`, `pgx/v5 v5.5.4` |
+| gRPC | `v1.83.2`; контракт Protocol Buffers |
+| JWT | `golang-jwt/jwt/v5`: backend `v5.3.1`, auth `v5.2.0` |
+| Миграции | `golang-migrate/migrate/v4 v4.18.2` |
+| Пароли | bcrypt, `bcrypt.DefaultCost` |
+| Документация API | Swag `v1.16.6`, gin-swagger `v1.6.1` |
+| SPA | React `^19.2.8`, React Router DOM `^7.18.2` |
+| Состояние | Redux Toolkit `^2.12.0`, React Redux `^9.3.0` |
+| HTTP-клиент | Axios `^1.19.0` |
+| Сборка SPA | TypeScript `~6.0.2`, Vite `^8.2.0` |
+| UI | SCSS Modules, Recharts `^3.10.1`, собственные компоненты и SVG |
+| Node в контейнере | `node:22-alpine` |
 
-1. Создайте `.env` в корне проекта на основе `.env.example` и задайте секреты JWT (не короче 32 случайных символов):
+Версии с `^`/`~` — диапазоны из `package.json`; конкретное разрешение зависимостей хранится в `package-lock.json`. В Go есть блоки `replace`: например, заявленный `golang.org/x/crypto v0.55.0` заменён на `v0.44.0`. При аудите зависимостей нужно учитывать итоговое разрешение модулей, а не только `require`.
+
+Образы `golang:alpine` и `alpine:latest` не закреплены по digest. Повторная сборка в другое время может использовать другой базовый образ и toolchain.
+
+## Структура репозитория
+
+```text
+.
+├── docker-compose.yml        # db, auth, app, frontend; сеть project; том pgdata
+├── .env.example              # шаблон переменных; реальные секреты в .env
+├── README.md                 # исходное описание
+├── README1.md                # подробная техническая документация
+├── Makefile                  # пока пустой
+├── proto/auth.proto          # общий gRPC-контракт
+├── auth_service/
+│   ├── cmd/server/main.go    # PostgreSQL, JWT manager, gRPC server
+│   ├── internal/handler/user/
+│   ├── internal/repository/user/
+│   ├── internal/models/
+│   ├── pkg/jwt/token.go      # claims, секреты и сроки токенов
+│   └── proto/auth/           # сгенерированный Go-код
+├── backend/
+│   ├── cmd/main.go           # запуск, DI, маршруты, CORS
+│   ├── internal/handler/    # middleware, user, skills, raiting
+│   ├── internal/repository/ # SQL для user, skills, raiting
+│   ├── internal/models/     # структуры запросов и ответов
+│   ├── internal/contextkeys/
+│   ├── pkg/db/migrations.go
+│   ├── pkg/repo/categoryList.go
+│   ├── migrations/          # версии 000001–000010, только up
+│   ├── docs/                # сгенерированный Swagger
+│   ├── proto/auth/          # сгенерированный Go-код
+│   ├── sheets/              # старые HTML-шаблоны
+│   └── func/                # старые JS/CSS
+└── frontend/
+    ├── src/api/             # Axios, адаптеры auth и skills
+    ├── src/router/          # маршруты и auth loaders
+    ├── src/store/slices/    # app, profile, skill
+    ├── src/pages/           # лента, auth, профиль, создание, история, статистика
+    ├── src/components/      # формы, модальные окна, график
+    ├── src/ui/              # базовые компоненты
+    ├── src/types/           # клиентские модели
+    ├── src/constants/       # URL API, категории, статусы
+    └── vite.config.ts       # /api proxy и alias @ → src
+```
+
+## Запуск через Docker Compose
+
+Команды выполняются из корня репозитория. Требуются работающий Docker Engine/Docker Desktop с Compose v2, доступ к реестрам образов и зависимостей при первой сборке, свободные порты `5173`, `8080`, `50051`, `5432`.
+
+### Первый запуск
+
+1. Создайте `.env` из шаблона, если файла ещё нет:
 
    ```bash
    cp .env.example .env
    ```
 
-   ```env
-   JWT_ACCESS_SECRET=<случайная строка>
-   JWT_REFRESH_SECRET=<другая случайная строка>
-   ```
-
-   Docker Compose читает из `.env` только эти две переменные. Параметры базы сейчас заданы прямо в `docker-compose.yml` (`user` / `pass` / `trade_db`).
-
-2. Соберите и запустите контейнеры:
+2. Задайте **разные случайные** `JWT_ACCESS_SECRET` и `JWT_REFRESH_SECRET`. Для локальной конфигурации можно сгенерировать каждый секрет командой `openssl rand -hex 32` и записать значения в `.env`. Не публикуйте этот файл.
+3. Запустите сервисы:
 
    ```bash
-   docker compose up --build
+   docker compose up -d --build
+   docker compose ps
+   docker compose logs --tail=100 app auth
    ```
 
-3. После запуска доступны:
+База проходит `pg_isready`, затем запускается auth; backend ждёт здоровую БД и факт старта auth, применяет миграции и открывает HTTP. Условие `service_started` не проверяет готовность gRPC: сразу после запуска возможна кратковременная недоступность авторизации.
 
-   | Что | Адрес |
-   |---|---|
-   | Frontend (React) | http://localhost:5173 |
-   | Backend REST API | http://localhost:8080/api/v1 |
-   | Swagger UI | http://localhost:8080/swagger/index.html |
-   | Старая HTML-страница | http://localhost:8080/ |
-   | auth_service (gRPC) | localhost:50051 |
-   | PostgreSQL | localhost:5432, база `trade_db`, пользователь `user` / `pass` |
+| Ресурс | Локальный адрес |
+|---|---|
+| React SPA | `http://localhost:5173` |
+| HTTP API | `http://localhost:8080/api/v1` |
+| Swagger UI | `http://localhost:8080/swagger/index.html` |
+| Старый HTML-интерфейс | `http://localhost:8080/` |
+| gRPC auth | `localhost:50051` |
+| PostgreSQL | `localhost:5432`, БД `trade_db`, пользователь `user`, пароль `pass` |
 
-Остановить контейнеры можно командой `docker compose down`. Если нужно ещё и удалить данные базы, добавьте флаг `-v`.
+Проверка чтения API:
 
-### Локальный запуск без Docker
+```bash
+curl -i http://localhost:8080/api/v1/skills
+```
 
-Каждую команду запускайте в отдельном терминале. Сначала нужна PostgreSQL с базой `trade_db`.
+Это проверка HTTP и чтения БД, а не специализированный readiness endpoint: `/health` и `/ready` в приложении отсутствуют.
 
-**auth_service**
+### Обновление кода
+
+```bash
+docker compose up -d --build app auth frontend
+```
+
+Исходники и миграции включаются в образ через `COPY`; bind mounts для разработки не настроены. `docker compose restart app` перезапускает прежний образ и **не добавляет новые SQL-файлы**. Данные PostgreSQL сохраняются в томе `pgdata`.
+
+### Остановка
+
+```bash
+docker compose stop
+```
+
+`docker compose down` удаляет контейнеры и сеть, сохраняя именованный том. Флаг `down -v` дополнительно удаляет данные БД; его нельзя использовать как способ исправления миграций на базе с нужными данными.
+
+## Конфигурация
+
+Приложения читают переменные окружения через `os.Getenv`/Vite. Go-код самостоятельно `.env` не загружает. Compose использует корневой `.env` для подстановки значений, но передаёт контейнерам только указанные в `environment` переменные.
+
+| Переменная | Потребитель | Поведение |
+|---|---|---|
+| `DATABASE_URL` | backend | По умолчанию `postgres://user:pass@localhost:5432/trade_db?sslmode=disable` |
+| `DATABASE_URL` | auth | По умолчанию `postgres://user:pass@db:5432/trade_db?sslmode=disable`; для запуска вне Docker нужен `localhost` |
+| `JWT_ACCESS_SECRET` | auth | Обязательна: при пустом значении JWT manager вызывает panic |
+| `JWT_REFRESH_SECRET` | auth | Обязательна; должна отличаться от access secret |
+| `JWT_SECRET` | backend | Секрет локальной проверки access JWT; Compose подставляет сюда `JWT_ACCESS_SECRET` |
+| `AUTH_SERVICE_ADDR` | backend | По умолчанию `auth:50051`; локально `localhost:50051` |
+| `GRPC_PORT` | auth | По умолчанию `50051` |
+| `API_PROXY_TARGET` | Vite server | По умолчанию `http://localhost:8080`; Compose задаёт `http://app:8080` |
+| `VITE_API_URL` | frontend | По умолчанию `/api/v1/`; читается через `import.meta.env`, значение встраивается при сборке |
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` | PostgreSQL image | В Compose заданы буквально: `user`, `pass`, `trade_db` |
+
+**Особенности текущего Compose:** поля `POSTGRES_*`, `DATABASE_URL`, `AUTH_SERVICE_ADDR` и `GRPC_PORT` из корневого `.env` не переопределяют одноимённые литералы в YAML. Для другой БД/порта измените Compose или используйте согласованный override. `VITE_API_URL` в `frontend.environment` не передаётся; для отдельного API origin нужно изменить способ передачи конфигурации/сборку.
+
+Изменение пароля PostgreSQL в конфигурации не переинициализирует существующий том: учётные данные существующей БД меняются отдельно. Имя `trade_db`, переданное в `RunMigrations`, не переключает подключение: фактическую БД определяет DSN.
+
+## Локальная разработка
+
+Требуются Go toolchain, совместимый с модулями, PostgreSQL 15 и Node/npm, совместимые с зависимостями frontend. Контейнер frontend использует Node 22; дополнительные ограничения проверяйте по `engines` установленных пакетов. Два каталога Go — независимые модули, общего `go.work` нет.
+
+Базу можно поднять отдельно:
+
+```bash
+docker compose up -d db
+```
+
+В терминале auth, предварительно задав JWT-секреты:
 
 ```bash
 cd auth_service
-export DATABASE_URL="postgres://user:pass@localhost:5432/trade_db?sslmode=disable"
-export JWT_ACCESS_SECRET=<секрет> JWT_REFRESH_SECRET=<секрет>
+export DATABASE_URL='postgres://user:pass@localhost:5432/trade_db?sslmode=disable'
+export GRPC_PORT=50051
 go run ./cmd/server
 ```
 
-**backend** — запускайте из каталога `backend`: миграции, шаблоны и статика ищутся по относительным путям.
+В другом терминале backend:
 
 ```bash
 cd backend
-export DATABASE_URL="postgres://user:pass@localhost:5432/trade_db?sslmode=disable"
+export DATABASE_URL='postgres://user:pass@localhost:5432/trade_db?sslmode=disable'
 export AUTH_SERVICE_ADDR=localhost:50051
-export JWT_SECRET=<тот же секрет, что JWT_ACCESS_SECRET>
+# JWT_SECRET должен совпадать с JWT_ACCESS_SECRET запущенного auth.
+export JWT_SECRET="$JWT_ACCESS_SECRET"
 go run ./cmd
 ```
 
-**frontend**
+Переменные должны быть доступны в каждом соответствующем терминале. При пустом `$JWT_ACCESS_SECRET` последняя команда `export` установит пустой секрет backend. Экспорт значений в одном терминале не переносит их в другой автоматически.
+
+Backend запускайте **из `backend/`**: `file://migrations`, `sheets/*` и `./func` разрешаются относительно рабочего каталога. Схему создаёт backend; auth можно запустить до него, но регистрацию/вход проверять после завершения миграций.
+
+Frontend в третьем терминале:
 
 ```bash
 cd frontend
-npm install
-npm run dev
+npm ci
+npm run dev -- --host 127.0.0.1
 ```
 
-> auth_service не применяет миграции сам: таблицу `users` создаёт бэкенд при первом запуске. Поэтому после создания пустой базы бэкенд нужно запустить хотя бы один раз.
+Для одинакового поведения cookie открывайте приложение через `http://localhost:5173` и не смешивайте `localhost` и `127.0.0.1` в адресах браузера. Vite proxy возьмёт API на `localhost:8080` по умолчанию. Локальные frontend-переменные можно разместить в `frontend/.env.local`; `API_PROXY_TARGET` для `process.env` надёжно задавать в окружении команды запуска.
 
-### Переменные окружения
+## HTTP API
 
-| Переменная | Сервис | По умолчанию | Назначение |
-|---|---|---|---|
-| `DATABASE_URL` | backend, auth_service | `postgres://user:pass@localhost:5432/trade_db?sslmode=disable` (backend), `...@db:5432/...` (auth_service) | Подключение к PostgreSQL |
-| `JWT_ACCESS_SECRET` | auth_service | — (обязательна, иначе сервис не стартует) | Секрет подписи access-токенов |
-| `JWT_REFRESH_SECRET` | auth_service | — (обязательна) | Секрет подписи refresh-токенов |
-| `GRPC_PORT` | auth_service | `50051` | Порт gRPC-сервера |
-| `AUTH_SERVICE_ADDR` | backend | `auth:50051` | Адрес auth_service |
-| `JWT_SECRET` | backend | — | Должен совпадать с `JWT_ACCESS_SECRET`; нужен для локальной проверки токенов в middleware |
-| `VITE_API_URL` | frontend | `http://localhost:5000/api/v1/` | Базовый URL API |
+Базовый префикс — `/api/v1`. В таблицах пути указаны относительно него. «Сессия» означает cookie `auth_token`; заголовок `Authorization: Bearer …` middleware не читает. Запросы с JSON должны иметь `Content-Type: application/json`.
 
-### Полезные команды
+### Формат ответа
 
-```bash
-# Перегенерировать Swagger после изменения аннотаций обработчиков
-cd backend && swag init -d ./cmd,internal -o ./docs
-
-# Перегенерировать gRPC-код после изменения proto/auth.proto (для обоих сервисов)
-protoc -I proto \
-  --go_out=backend/proto/auth --go_opt=paths=source_relative \
-  --go-grpc_out=backend/proto/auth --go-grpc_opt=paths=source_relative \
-  auth.proto
-protoc -I proto \
-  --go_out=auth_service/proto/auth --go_opt=paths=source_relative \
-  --go-grpc_out=auth_service/proto/auth --go-grpc_opt=paths=source_relative \
-  auth.proto
-
-# Проверки Go-кода
-(cd backend && go build ./... && go vet ./...)
-(cd auth_service && go build ./... && go vet ./...)
-
-# Сборка и линтинг фронтенда
-cd frontend
-npm run build        # tsc -b && vite build
-npm run lint:all     # ESLint + Stylelint
-npm run lint:all:fix # то же с автоисправлением
-```
-
-## API
-
-Базовый путь: `/api/v1`. Полное описание с примерами есть в Swagger UI.
-
-Все ответы приходят в едином формате:
+Большинство обработчиков возвращает [ResponseApi](backend/internal/models/response.go):
 
 ```json
 {
   "request_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "status": true,
-  "message": "Информационное сообщение",
-  "error": "текст ошибки (только при status=false)",
+  "message": "Information message",
   "result": {}
 }
 ```
 
-Защищённые маршруты требуют cookie `auth_token`, которую выставляет `POST /login`.
+`error`, `code`, `message` и `result` имеют `omitempty`; поле `code` пока не заполняется системно. `result` зависит от операции: профиль, массив, строка ID или строка рейтинга. Отсутствующие результаты не всегда представлены пустым массивом: некоторые списки возвращают `null`.
 
-### Публичные
+Middleware возвращает ошибки в сокращённом виде `{"error":"Unauthorized: missing token"}`/`{"error":"Forbidden: ..."}`. Административный `UpdateUser` также использует собственный формат. Клиенту нельзя рассчитывать на единую оболочку для каждого ответа.
 
-| Метод | Путь | Описание |
-|---|---|---|
-| `POST` | `/register` | Регистрация: `{username, email, password, role}`, где `role` — одно из `manager`, `admin`, `viewer` |
-| `POST` | `/login` | Вход по `{username, password}`, ставит cookie `auth_token` |
-| `GET` | `/skills` | Все обмены |
-| `GET` | `/skills/:category` | Обмены категории |
-| `GET` | `/skills/filter/:search` | Поиск по вхождению строки в навык, обмен, описание, автора и категорию |
+`X-Request-ID` принимается от клиента либо генерируется как UUID и возвращается заголовком. Большинство обработчиков включает его в JSON; есть ветки, где `request_id` не заполнен. Это корреляционный ID, а не полноценная распределённая трассировка.
 
-### Для авторизованных пользователей
+### Учётные записи и профили
 
-| Метод | Путь | Описание |
-|---|---|---|
-| `POST` | `/skills` | Создать обмен: `{username, skill, exchange, category}` |
-| `POST` | `/skills/with-desc` | Создать обмен сразу с описанием и контактом |
-| `DELETE` | `/skills/:id` | Удалить обмен |
-| `GET` | `/skills/desc` | Все описания обменов |
-| `GET` | `/skills/desc/:id` | Описание обмена по `skill_id` |
-| `POST` | `/skills/desc` | Создать или обновить описание: `{skill_id, description, media}` |
-| `GET` | `/users/me` | Свой профиль |
-| `GET` | `/users/me/static` | Своя статистика |
-| `GET` | `/users/profile/:username` | Профиль пользователя по никнейму |
+| Метод | Путь | Доступ | Данные/результат |
+|---|---|---|---|
+| POST | `/register` | Публичный | `username`, `email`, `password`; опционально `firstName`, `lastName`, `socialLink`; успех `201` |
+| POST | `/login` | Публичный | `username` (также email), `password`; cookie; успех `200` |
+| POST | `/logout` | Публичный | Удаление cookie, попытка отзыва текущего access; `200` |
+| POST | `/refresh` | Refresh cookie | Новая пара cookie; `200`, без валидного refresh `401` |
+| GET | `/users/me` | Сессия | Собственный профиль; `200` |
+| PUT | `/users/me` | Сессия | Непустые `username`, `email`, `firstName`, `lastName`, `socialLink`; `200` |
+| PUT | `/users/me/password` | Сессия | `currentPassword`, `newPassword`; `200` |
+| GET | `/users/me/static` | Сессия | `username`, `email`, контакт, дата, рейтинг в структуре профиля; `200` |
+| GET | `/users/profile/:username` | Сессия | Профиль другого пользователя, включая email и рейтинг; `200` |
+| PUT | `/users/:id` | admin | Обновляет `username`, `email`, `password`; `201` |
+| DELETE | `/users/:id` | admin | Удаляет пользователя; `201` |
 
-### Только для роли `admin`
+Пароль регистрации и новый пароль — минимум 6 символов по binding. Email проверяется при регистрации и непустом обновлении профиля. Отсутствующий пользователь в ряде методов приводит к `500`, а не к `404`. Конфликт email/username не во всех операциях преобразуется в `409`.
 
-| Метод | Путь | Описание |
-|---|---|---|
-| `PUT` | `/users/:id` | Изменить пользователя |
-| `DELETE` | `/users/:id` | Удалить пользователя |
+Регистрация создаёт пользователя через gRPC, затем отдельно записывает дополнительные поля профиля. Это две операции без общей транзакции: ошибка второго этапа может вернуть `500`, хотя учётная запись уже создана. Cookie регистрация не устанавливает; требуется отдельный login. В ответах регистрации и входа поле `firstName` сейчас заполняется **ролью**, а не именем; правильный профиль нужно получать через `/users/me`.
 
-### Категории обменов
+Обновление собственного профиля сохраняет старые значения вместо пустых строк (`COALESCE(NULLIF(...))`): очистить имя или ссылку пустой строкой нельзя. При смене username объявления переносятся на новое имя в одной SQL-транзакции. Административный `UpdateUser` этот перенос не выполняет и записывает `password` напрямую, без bcrypt; передача обычного пароля нарушит последующий вход. Его нельзя использовать как штатную замену `/users/me/password`.
 
-Коды категорий заданы в [`backend/pkg/repo/categoryList.go`](backend/pkg/repo/categoryList.go):
+### Навыки и описания
 
-| Код | Категория на фронтенде |
+| Метод | Путь | Доступ | Поведение |
+|---|---|---|---|
+| GET | `/skills` | Публичный | Все объявления с LEFT JOIN описаний; ID по убыванию |
+| GET | `/skills/:category` | Публичный | Точная категория; пустая выборка `404` |
+| GET | `/skills/filter/:search` | Публичный | Поиск по объединению полей; пустая выборка `404` |
+| POST | `/skills/` | Сессия | Создать объявление; результат — строковый ID, `201` |
+| POST | `/skills/with-desc` | Сессия | Создать объявление и опциональное описание/контакт, `201` |
+| DELETE | `/skills/:id` | Сессия | Удалить объявление и каскадно описание, `201` |
+| GET | `/skills/desc` | Сессия | Список описаний; пустой список `[]` |
+| GET | `/skills/desc/:id` | Сессия | Описание по **ID объявления**, не ID описания; `404` при отсутствии |
+| POST | `/skills/desc` | Сессия | Upsert по `skill_id`; `description` обязателен, `201` |
+| PATCH | `/skills/:skill_id` | Сессия | Установить `status='freeze'`, `contributor` из JWT; `201` |
+
+`POST /skills/` и `POST /rait/` зарегистрированы с завершающим `/`. Административная установка рейтинга — `/rait/new` **без** завершающего `/`. Используйте точные пути; при несовпадении Gin может отвечать редиректом. Swagger-аннотации местами отличаются от регистрации маршрутов, например `/rait/new/`.
+
+### Рейтинг
+
+| Метод | Путь | Доступ | Поведение |
+|---|---|---|---|
+| POST | `/rait/` | Сессия | `received_id`, `mark`; прибавляет оценку; `201` |
+| GET | `/rait/me` | Сессия | Текущий рейтинг отправителя запроса в виде строки |
+| GET | `/rait/user/:username` | Сессия | Рейтинг по username в виде строки |
+| GET | `/rait/history/:id` | Сессия | Записи, где пользователь получатель **или отправитель** |
+| POST | `/rait/new` | admin | `received_id`, `mark`; устанавливает абсолютный рейтинг; `201` |
+
+### Пример работы с cookie через curl
+
+Примеры изменяют локальную БД. Используйте тестовую учётную запись и храните файл cookie вне репозитория.
+
+```bash
+curl -i -H 'Content-Type: application/json' \
+  -d '{"username":"demo_reader","email":"demo_reader@example.com","password":"demo-password-123","firstName":"Demo"}' \
+  http://localhost:8080/api/v1/register
+
+curl -i -c /tmp/tye-cookies.txt -H 'Content-Type: application/json' \
+  -d '{"username":"demo_reader","password":"demo-password-123"}' \
+  http://localhost:8080/api/v1/login
+
+curl -b /tmp/tye-cookies.txt http://localhost:8080/api/v1/users/me
+
+curl -i -b /tmp/tye-cookies.txt -H 'Content-Type: application/json' \
+  -d '{"username":"demo_reader","skill":"Go","exchange":"Английский","category":"it","description":"Практика HTTP API","contact_type":"telegram","contact_value":"demo_reader"}' \
+  http://localhost:8080/api/v1/skills/with-desc
+
+curl -i -b /tmp/tye-cookies.txt -c /tmp/tye-cookies.txt \
+  -X POST http://localhost:8080/api/v1/refresh
+
+curl -i -b /tmp/tye-cookies.txt -c /tmp/tye-cookies.txt \
+  -X POST http://localhost:8080/api/v1/logout
+```
+
+`curl` не выполняет автоматический refresh, который есть в Axios. Для оценки другого пользователя тело запроса к `/rait/` имеет вид `{"received_id":"<UUID получателя>","mark":1}`; отправитель берётся из JWT и в JSON не передаётся.
+
+## Авторизация и жизненный цикл сессии
+
+### JWT и cookie
+
+Auth подписывает токены HS256 разными секретами. Access живёт **15 минут**, refresh — **7 дней**. Access содержит `user_id`, `username`, `role`, `iat`, `exp`; refresh — `user_id`, `iat`, `exp`. `iss`, `aud`, `jti` и отдельный признак типа токена не задаются.
+
+| Cookie | Path | HttpOnly | SameSite | Secure | MaxAge |
+|---|---|---|---|---|---|
+| `auth_token` | `/` | Да | Strict | **false** | `expires_in`, обычно 900 секунд |
+| `refresh_token` | `/api/v1` | Да | Strict | **false** | 604800 секунд |
+
+Cookie устанавливает backend после login и refresh. Domain не задан. Для HTTPS-публикации нужно изменить `Secure`; для другого доменного расположения — согласовать SameSite, CORS, proxy и защиту от CSRF. В коде нет отдельного CSRF-токена.
+
+### Проверка доступа
+
+1. Middleware читает только `auth_token`.
+2. Если подпись и срок JWT проходят локальную проверку с `JWT_SECRET`, claims сразу передаются обработчику.
+3. При ошибке вызывается gRPC `ValidateToken`.
+4. Для admin-маршрутов `RequireRole` должен дополнительно проверить роль `admin`, но в текущем коде эта проверка блокируется ошибкой ключа контекста, описанной ниже.
+
+**Ошибка доступа admin в текущей версии:** middleware сохраняет роль под ключом `contextkeys.RoleKey` типа `ContextKey`, а `RequireRole` читает её под обычной строкой `ContextRole = "role"`. В Gin `v1.12.0` методы `Set/Get` принимают `any`, и ключи разного динамического типа различаются даже при одинаковом тексте. Поэтому после успешной аутентификации admin-маршруты возвращают `403 Forbidden: role not found`. Таблицы API выше показывают назначение этих маршрутов; для фактической работы необходимо унифицировать ключи. Аналогичное несовпадение есть в вспомогательном `GetRequestID`, который преобразует типизированный ключ в `string`; основные handlers читают типизированный ключ напрямую.
+
+Публичность определяется фактическими группами маршрутов. `PublicPaths` сравнивает строки буквально; запись `/swagger/*any` в этом списке сама по себе не является wildcard-проверкой. Swagger в текущей конфигурации и так зарегистрирован вне защищённой группы.
+
+Новые пользователи через HTTP получают роль `manager`. Значение `viewer` упомянуто в proto, но специальных ограничений для него нет: обычные защищённые операции требуют только сессию. Штатного endpoint выдачи admin нет; изменение роли в БД не обновляет уже выпущенный JWT до нового login/refresh.
+
+### Refresh, logout и отзыв
+
+Axios перехватывает `401`, один раз обновляет токены и повторяет исходный запрос. Одновременные `401` используют общий Promise refresh. Для `login`, `register`, `refresh`, `logout` автоповтор отключён. Серверная смена пароля отвечает `400` при неверном текущем пароле, чтобы не запускать refresh.
+
+**Ограничения сессий:**
+
+- Blacklist существует только в памяти одного auth-процесса и теряется при рестарте. Очистка просроченных записей вызывается при следующем отзыве.
+- Успешная локальная проверка JWT в backend **обходит blacklist**. Скопированный access-токен после logout может оставаться рабочим до истечения срока.
+- Logout очищает обе cookie, но в auth отзывает только access. Refresh-токен не отзывается и не имеет хранилища использованных значений.
+- Refresh выдаёт новую пару, но не делает старый refresh одноразовым. Смена пароля не завершает существующие сессии.
+- Разные секреты обязательны для разделения access и refresh: отдельной проверки типа токена нет. Backend не проверяет наличие/тип всех пользовательских claims перед передачей в handlers, где встречаются прямые приведения к `string`.
+- Удаление пользователя, смена username или роли не инвалидирует локально валидный access. Старый username из JWT может сохраняться до обновления токена.
+- Большинство gRPC-вызовов используют `context.Background()` без deadline; отмена HTTP-запроса не всегда прекращает межсервисную операцию.
+
+Прямой gRPC `Register` принимает роль из запроса и не повторяет HTTP-валидацию полей. Поэтому доступ к порту auth должен считаться привилегированным, а не публичным клиентским API.
+
+## Навыки и обмены
+
+### Категории
+
+Серверный список хранится в [categoryList.go](backend/pkg/repo/categoryList.go), клиентское соответствие — в [categories.ts](frontend/src/constants/categories.ts).
+
+| Код | Отображение в SPA |
 |---|---|
 | `communicate` | Языки и коммуникация |
 | `it` | Технологии и IT |
@@ -281,105 +412,284 @@ npm run lint:all:fix # то же с автоисправлением
 | `knowledge` | Наука, бизнес и саморазвитие |
 | `hobby` | Хобби, здоровье и образ жизни |
 
-## База данных
+Категория проверяется при сохранении и чтении по категории. Неизвестная категория сейчас проходит до ошибки репозитория и возвращается как `500`. Ограничения `CHECK` в БД нет; добавление категории требует синхронного изменения server/client.
 
-Миграции лежат в [`backend/migrations`](backend/migrations) и применяются по порядку при старте бэкенда:
+### Создание и описание
 
-| Миграция | Что делает |
-|---|---|
-| `000001_init_schema` | Таблицы `users` и `skills` |
-| `000002_init_schema` | Таблица `skill_descriptions` |
-| `000003_init_schema` | Пересоздаёт `skill_descriptions` с уникальным `skill_id` (одно описание на обмен) |
-| `000004_init_schema` | Колонка `skill_descriptions.media` |
-| `000005_added_column_skills` | Колонка `skills.category` |
-| `000006_added_column_users` | Колонка `users.role` (по умолчанию `manager`) и индексы по `username` и `email` |
+`SaveSkill` сохраняет `username`, `skill`, `exchange`, `category`; статус берётся из default БД. Автор — username из JSON, привязки к текущему пользователю нет. `CreateSkillWithDesc` дополнительно требует непустые username/skill/exchange.
 
-Основные таблицы:
+Объявление и описание создаются последовательными запросами **без общей транзакции**. Если запись описания не удалась, объявление уже может существовать. Повтор HTTP-запроса способен создать дубликат: idempotency key не предусмотрен.
 
-- `users` — `id` (UUID), `username`, `email` (уникальный), `password` (bcrypt-хеш), `first_name`, `last_name`, `social_link`, `role`, `created_at`;
-- `skills` — `id`, `username` (автор), `skill` (чему научит), `exchange` (что хочет взамен), `category`, `created_at`;
-- `skill_descriptions` — `id`, `skill_id` (FK на `skills`, `ON DELETE CASCADE`), `description`, `media`, `created_at`.
+Описание хранится отдельно, одно на объявление: `UNIQUE(skill_id)` и upsert. Повторная запись обновляет `description`, `media` и `created_at`. Поэтому дата, возвращаемая в ленте через `COALESCE(sd.created_at, s.created_at)`, может отражать изменение описания, а не момент создания объявления.
 
-## Структура проекта
+Контакт в `/skills/with-desc` формируется как строка `Тип связи: <contact_type>, Имя: <contact_value>` в поле `media`. Это не файловое хранилище и не нормализованная контактная модель. Поле `media` из JSON этого обработчика напрямую не сохраняется; для типа `site` отдельная контактная строка не создаётся. SPA распознаёт строку регулярным выражением; неизвестный формат становится контактом `site`.
 
-```
-Trade-y-exp/
-├── docker-compose.yml           # db (PostgreSQL) + auth + app (backend) + frontend
-├── .env.example                 # Шаблон переменных окружения
-├── proto/
-│   └── auth.proto               # Общий gRPC-контракт AuthService
-│
-├── auth_service/                # Сервис авторизации (gRPC-сервер)
-│   ├── cmd/server/main.go       # Точка входа: подключение к БД, запуск gRPC
-│   ├── internal/
-│   │   ├── handler/
-│   │   │   ├── handler.go       # Сборка обработчиков
-│   │   │   └── user/            # Register, Login, Logout, RefreshToken, ValidateToken
-│   │   ├── repository/
-│   │   │   ├── repository.go
-│   │   │   └── user/            # CreateUser, GetUserByUsername, GetUserByID
-│   │   └── models/user.go       # User, TokenClaims
-│   ├── pkg/jwt/token.go         # Выпуск и проверка JWT (HS256)
-│   ├── proto/auth/              # Сгенерированный gRPC-код
-│   └── Dockerfile
-│
-├── backend/                     # Основной REST API (Gin + gRPC-клиент)
-│   ├── cmd/main.go              # Точка входа: БД, миграции, gRPC-клиент, маршруты
-│   ├── internal/
-│   │   ├── contextkeys/         # Ключи контекста запроса
-│   │   ├── handler/
-│   │   │   ├── handler.go       # Сборка обработчиков User + Skills
-│   │   │   ├── middleware.go    # AuthMiddleware, RequireRole, RequestIDMiddleware
-│   │   │   ├── user/            # Регистрация, вход, профили, админские операции
-│   │   │   └── skills/          # Обмены и их описания
-│   │   ├── repository/
-│   │   │   ├── repository.go
-│   │   │   ├── user/            # SQL-запросы по пользователям
-│   │   │   └── skills/          # SQL-запросы по обменам и описаниям
-│   │   └── models/              # User, Skill, SkillDescription, ResponseApi
-│   ├── pkg/
-│   │   ├── db/migrations.go     # Применение миграций golang-migrate
-│   │   └── repo/categoryList.go # Допустимые категории обменов
-│   ├── migrations/              # SQL-миграции
-│   ├── docs/                    # Сгенерированная Swagger-документация
-│   ├── proto/auth/              # Сгенерированный gRPC-код
-│   ├── sheets/, func/           # Старая HTML-страница (шаблоны, JS, CSS)
-│   └── Dockerfile
-│
-└── frontend/                    # React + TypeScript + Vite
-    ├── src/
-    │   ├── api/                 # Axios-клиент и методы API
-    │   ├── pages/               # Main, Login, Register, Profile, Creator, History, Stats
-    │   ├── components/          # Карточки обменов, фильтр, модалки, шапка, график
-    │   ├── layouts/             # Root, General, Profile, Auth
-    │   ├── ui/                  # Базовые UI-компоненты и SVG-иконки
-    │   ├── store/               # Redux Toolkit: app, profile, skill
-    │   ├── router/              # Маршруты и лоадеры доступа
-    │   ├── constants/, types/, utils/, hooks/
-    │   ├── mock/                # Тестовые данные обменов
-    │   └── assets/              # Шрифты, стили, изображения
-    ├── vite.config.ts           # Алиас @ и прокси /api → :8080
-    └── Dockerfile
-```
+### Поиск, чтение и состояние
 
-### Страницы фронтенда
+Поиск — параметризованный `LIKE LOWER($1)` по объединению описания, навыка, обмена, username и категории. `%` и `_` во входе экранируются. Полнотекстового индекса, пагинации и лимитов выдачи нет. При росте объёма данных общая лента и поиск требуют отдельной оптимизации.
 
-| Путь | Страница | Доступ |
+В БД предусмотрены `status='active'` и nullable `contributor UUID`. `PATCH` без проверки прежнего статуса перезаписывает их на `freeze` и текущий user ID. Проверки владельца, запрета собственного отклика, конкурентного захвата и `RowsAffected` нет; запрос к отсутствующему ID может вернуть успех.
+
+Публичные SELECT ленты, категории и поиска **не читают status/contributor**, хотя поля объявлены в Go-модели; в JSON появляются нулевые значения. Клиент дополнительно устанавливает `ACTIVE` для каждой записи. Операции завершения, отмены и подтверждения сделки отсутствуют; фильтрации замороженных объявлений из публичной ленты нет.
+
+Удаление и upsert описания доступны любому авторизованному пользователю без проверки авторства. Привязка объявления к username не защищена внешним ключом; удаление пользователя оставляет его объявления.
+
+## Рейтинг
+
+Название `raiting` сохранено в таблице, моделях и JSON ради соответствия текущему коду. HTTP-префикс — `/rait`.
+
+Обычная оценка выполняется в SQL-транзакции:
+
+1. `SELECT raiting FROM users WHERE id = $1 FOR UPDATE` блокирует строку получателя.
+2. Вычисляется `new = last + mark`.
+3. Создаётся строка истории с новым UUID, отправителем, получателем, старым и новым значениями.
+4. Обновляется `users.raiting`, затем выполняется commit.
+
+Административная установка использует тот же механизм, но `new = mark`. Блокировка получателя сериализует одновременные изменения его рейтинга. `ON CONFLICT (id)` формально допустим благодаря PK, но при новом UUID на каждый запрос нормальный сценарий — добавление новой записи истории, а не обновление существующей.
+
+### Существенные ограничения
+
+- `mark` — целое число с `binding:"required"`: **0 отклоняется**, отрицательные и большие значения специальной проверкой не ограничены. Для admin это означает невозможность штатно установить 0.
+- В БД `users.raiting`, `last_raiting`, `new_raiting` имеют `DECIMAL(2,1)`: диапазон **от −9.9 до 9.9**, а не произвольный счётчик. Переполнение приводит к ошибке SQL и откату транзакции. Расширять тип нужно новой миграцией во всех трёх колонках.
+- В Go арифметика выполняется через `float32`; это не отдельная формула среднего рейтинга. Положительная оценка увеличивает сумму, отрицательная уменьшает её.
+- Нет запрета оценивать себя, повторять оценку и оценивать без совершённого обмена. Нет бизнес-диапазона `mark`, ограничения частоты и уникальности пары участников.
+- `received_id`/`sent_id` не имеют FK. Получатель проверяется косвенно чтением `users`, отправитель приходит из JWT.
+- Ошибка `UPDATE users` присваивается `err`, но не проверяется до `Commit`. Обычно PostgreSQL откатит ошибочную транзакцию, однако исходная причина может потеряться за ошибкой commit.
+- История выбирается через `SELECT *`, без сортировки, пагинации и проверки принадлежности запрашиваемого ID. Любой авторизованный пользователь может запросить чужую историю. Ошибки Scan пропускаются, финальный `rows.Err()` не проверяется.
+- GET рейтинга возвращает строку; профильные модели используют число. `/users/me` рейтинг не выбирает из БД, поэтому поле модели остаётся `0`, тогда как `/users/profile/:username` и `/users/me/static` его читают.
+
+## База данных и миграции
+
+### Схема после применения всех SQL-файлов
+
+| Таблица | Основные поля | Ограничения и связи |
 |---|---|---|
-| `/` | Лента обменов с фильтром по категориям и поиском | все |
-| `/login`, `/register` | Вход и регистрация | только гости |
-| `/profile` | Профиль с редактированием | авторизованные |
-| `/profile/history` | История своих обменов (активные и завершённые) | авторизованные |
-| `/profile/stats` | Статистика | авторизованные |
-| `/create` | Создание обмена с предпросмотром | авторизованные |
-| `/profile/view/:profileId` | Чужой профиль | авторизованные |
+| `users` | UUID `id`; username, email, password; first_name, last_name, social_link; created_at; role; raiting | PK id; UNIQUE email; username NOT NULL, **без UNIQUE**; role NOT NULL default `manager`; raiting nullable default `0.0` |
+| `skills` | SERIAL `id`; username, skill, exchange, created_at; category; status; contributor | PK id; status NOT NULL default `active`; contributor nullable UUID, без FK; username без FK |
+| `skill_descriptions` | SERIAL `id`; skill_id, description, media, created_at | PK id; UNIQUE skill_id; FK → skills(id), ON DELETE CASCADE |
+| `raiting` | UUID id, received_id, sent_id; last_raiting, new_raiting; created_at | PK id; обязательные UUID участников и numeric значения; внешних ключей нет |
+| `schema_migrations` | version, dirty | Состояние migrator, не журнал всех выполненных файлов |
 
-## Текущее состояние и известные ограничения
+`users.created_at`, `skills.created_at`, `raiting.created_at` — `TIMESTAMP WITH TIME ZONE`; дата описания — `TIMESTAMP` без timezone. Нормализацию времени нужно учитывать при API-выдаче и клиентских группировках по месяцу.
 
-Проект — прототип, часть функций ещё в работе:
+Индексы: `idx_users_username`, `idx_users_email`, `idx_skill_desc_created(created_at DESC)`; также индексы PK/UNIQUE. Email уже имеет индекс от UNIQUE, дополнительный индекс может дублировать его назначение. Индекс на `skill_descriptions.skill_id`, созданный миграцией 2, исчезает вместе с таблицей в миграции 3 и заменяется индексом UNIQUE. Индексов истории по участникам нет.
 
-- **Фронтенд пока не подключён к бэкенду.** Лента и история берутся из `frontend/src/mock/skills.ts`, профиль в store захардкожен. Пути, формат ответа и способ авторизации у фронта (`auth/*`, `response.data.data`, `Bearer` из `localStorage`) не совпадают с API бэкенда. Связка ведётся в отдельной ветке.
-- Страницы `/profile` и `/profile/view/:profileId`, а также кнопка «Принять обмен» — заглушки. Статистика на графике демонстрационная.
-- Blacklist отозванных токенов хранится в памяти auth_service и очищается при перезапуске.
-- Автотестов пока нет.
-- Учётные данные PostgreSQL заданы прямо в `docker-compose.yml`. Для продакшена их нужно вынести в `.env`, а cookie ставить с флагом `Secure` (сейчас `Secure: false`).
+### Последовательность миграций
+
+| Версия | Файл | Эффект |
+|---|---|---|
+| 1 | `000001_init_schema.up.sql` | users, skills |
+| 2 | `000002_init_schema.up.sql` | skill_descriptions и индекс skill_id |
+| 3 | `000003_init_schema.up.sql` | **Удаляет и пересоздаёт** skill_descriptions с UNIQUE skill_id; старые описания теряются |
+| 4 | `000004_init_schema.up.sql` | media в описании |
+| 5 | `000005_added_column_skills.up.sql` | category в skills |
+| 6 | `000006_added_column_users.up.sql` | role в users, индексы username/email |
+| 7 | `000007_added_table_raiting.up.sql` | Таблица истории рейтинга |
+| 8 | `000008_alter_table_skills.up.sql` | status и contributor |
+| 9 | `000009_alter_table_users.up.sql` | users.raiting |
+| 10 | `000010_restore_raiting.up.sql` | Повторный CREATE TABLE IF NOT EXISTS raiting для восстановления отсутствующей таблицы |
+
+Backend вызывает `m.Up()` до запуска HTTP. Ошибка миграции завершает процесс через `log.Fatal`. `ErrNoChange` считается нормальным, и сообщение `Migrations applied successfully!` выводится также при отсутствии новых миграций.
+
+Миграции запускаются только в сторону увеличения версии; `.down.sql` отсутствуют. Сохранённая версия не подтверждает наличие каждой таблицы: migrator не сверяет текущую схему с содержимым старых файлов. Исправление уже применённого файла не запускает его снова.
+
+Миграция 10 исправляет ситуацию «версия 9, таблицы raiting нет». На новой БД она ничего не меняет после миграции 7. `IF NOT EXISTS` не сверяет структуру уже существующей таблицы. Если таблица будет удалена после версии 10, очередной старт её не восстановит: нужна новая миграция или управляемое восстановление.
+
+### Проверка состояния
+
+```bash
+docker compose exec -T db psql -U user -d trade_db -c \
+  'SELECT version, dirty FROM public.schema_migrations;'
+
+docker compose exec -T db psql -U user -d trade_db -c \
+  "SELECT to_regclass('public.raiting');"
+
+docker compose exec -T db psql -U user -d trade_db -c '\d public.raiting'
+```
+
+Для схемы из текущего репозитория ожидается версия `10`, `dirty=false` и наличие таблицы. Это ожидаемое состояние после запуска текущего кода, а не утверждение о любой внешней БД.
+
+Если `dirty=true`, сначала установите причину по логам и фактической схеме, исправьте или завершите неудавшееся изменение, затем согласуйте версию migrator. Слепой `force` только меняет метаданные и не исполняет пропущенный SQL. Для дальнейших изменений добавляйте новый уникальный номер, не редактируя историю применённых миграций.
+
+## Frontend
+
+### Маршруты SPA
+
+| Путь | Доступ | Состояние |
+|---|---|---|
+| `/` | Все | Лента и фильтры |
+| `/login`, `/register` | Гость | Формы входа и регистрации; авторизованный перенаправляется на `/` |
+| `/create` | Сессия | Создание объявления и предпросмотр |
+| `/profile` | Сессия | Layout с редактированием профиля; центральная страница содержит `Hello world` |
+| `/profile/history` | Сессия | Собственные объявления, фильтры статуса |
+| `/profile/stats` | Сессия | Клиентские агрегаты и Recharts |
+| `/profile/view/:profileId` | Сессия | Заглушка `Profile View page` |
+
+Auth loaders используют общий Promise загрузки профиля, чтобы параллельные загрузчики маршрутов не дублировали запрос. После первой попытки состояние помечается `isInitialized`. `fetchProfile` превращает **любую** ошибку, включая недоступность API, в `null`; поэтому сбой сервера может выглядеть как отсутствие сессии.
+
+### Адаптация данных
+
+- `authAPI` преобразует `socialLink → link`, `created_at → createdAt`, пустые поля имени/ссылки — в `null`. Рейтинг в клиентскую модель профиля не переносится.
+- `skillAPI` преобразует числовой ID в строку, код категории — в русское название, media — в контакт. Неизвестная категория отображается как «Все категории».
+- Обёртка `unwrap` берёт `response.data.result`, не проверяя `status` в теле: обработка ошибок опирается на HTTP-статусы.
+- Категории и поиск запрашиваются с сервера; сочетание категории с поиском и режимы «Получить»/«Обменять» дополнительно фильтруются в браузере. Изменение категории/режима применяется сразу, текст — по кнопке поиска.
+- `404` списочных методов превращается в `[]`. Отдельного endpoint «мои объявления» нет: клиент загружает общую ленту и фильтрует её по username.
+- Статистика строится из собственных объявлений за последние 12 календарных месяцев по строковому префиксу `createdAt`. Она не использует `/users/me/static` и не отражает завершённые сделки: клиент всем записям назначает `ACTIVE`, поэтому `closed` всегда 0.
+
+### Пока не подключено
+
+API рейтинга и `PATCH` участия не вызываются frontend-адаптерами. В `Skill.tsx` предложение обмена обрабатывается через `console.log(addition)`. Выбор аватара имеет file input, но загрузки на сервер и сохранения изображения нет. Отдельного API чата, сообщений, завершения сделки, upload и административной панели нет.
+
+UI использует SCSS Modules, собственные SVG-компоненты, локальные шрифты Moderustic/MontserratAlternates. Общие ошибки отображаются через Redux alert. В `parseError.ts` первая ветка содержит противоречивые проверки типа `error.message` и фактически не распознаёт пользовательский объект ошибки; ветка Axios остаётся отдельной.
+
+### Старый интерфейс backend
+
+`GET /` на порту 8080 рендерит `backend/sheets/index.html`, `/func` отдаёт JS/CSS. Это отдельный интерфейс, а не сборка React. `chats.html` присутствует среди шаблонов, но отдельного HTTP-маршрута для него нет.
+
+Legacy JS использует sessionStorage для состояния интерфейса, локальный logout не вызывает серверный отзыв, а некоторые запросы ориентированы на старый контракт. Данные вставляются через `innerHTML`, включая значения из API. Этот интерфейс нужно отдельно проверить на совместимость и XSS либо отключить перед публичным размещением.
+
+## Эксплуатация и диагностика
+
+### Логи и состояние
+
+```bash
+docker compose ps -a
+docker compose logs --tail=100 app auth db frontend
+docker compose logs -f app auth
+```
+
+Имена контейнеров фиксированы (`trade_db_container`, `trade_auth_container`, `trade_app_container`, `trade_frontend_container`), поэтому параллельный Compose-проект с теми же именами создаст конфликт даже при другом имени проекта.
+
+Auth делает `db.Ping()` на старте. Backend открывает соединение, затем обращается к БД при инициализации migrator. `restart: unless-stopped` настроен для app/auth/frontend, но не для db. Healthcheck есть только у БД; состояние контейнера `Up` само по себе не подтверждает исправность API.
+
+Gin включает logger и recovery. Request ID возвращается, но нет настроенной централизованной системы логов, метрик и трассировки; gRPC-контекст не получает ID автоматически. SQL/gRPC-ошибки во многих ответах передаются клиенту через `err.Error()`.
+
+### Резервное копирование
+
+Пример логического backup текущей Compose-БД из корня проекта:
+
+```bash
+docker compose exec -T db pg_dump -U user -d trade_db -Fc > /tmp/tye-trade-db.dump
+```
+
+Команда сохраняет данные и схему; код возврата и пригодность файла необходимо проверять. `/tmp` подходит только для разовой локальной операции: эксплуатационные копии должны храниться отдельно от Docker-тома с ограниченным доступом и сроками хранения.
+
+Проверяйте восстановление в отдельную тестовую БД через `pg_restore`, не поверх рабочей базы. В копию входят хеши паролей, email и контакты пользователей. Blacklist auth в SQL-backup не входит, поскольку хранится в памяти. Доступность backup без проверенного восстановления не гарантирует восстановимость приложения.
+
+### Типовые проблемы
+
+| Симптом | Что проверить |
+|---|---|
+| `migration init error` | Рабочий каталог backend, наличие `migrations` в образе, корректность DSN |
+| `Dirty database version` | Логи предыдущего запуска, `schema_migrations`, фактический результат неудавшегося DDL |
+| `raiting` нет, но migrations successful | Версию БД и содержимое образа; уже применённые миграции повторно не исполняются |
+| `INSERT has more target columns than expressions` | Соответствие списка колонок VALUES; в текущем рейтинговом INSERT 5 колонок и 5 параметров, created_at задаётся default; при старой ошибке пересобрать app |
+| Ошибка `ON CONFLICT` | Ограничение на выбранную колонку; текущий код рейтинга использует PK `id`, не `received_id` |
+| `numeric field overflow` | Сумму рейтинга и `DECIMAL(2,1)` во всех рейтинговых колонках |
+| `mark: 0` возвращает 400 | `binding:"required"` для int отвергает ноль |
+| 401 после входа | Cookie, host/path/SameSite, совпадение JWT-секретов, срок токена |
+| Admin получает `Forbidden: role not found` | Несовпадение `contextkeys.RoleKey` и строкового `ContextRole` в `RequireRole`; это разные ключи для Gin 1.12 |
+| Вход по email не работает | Соответствие email → username в backend и доступность auth |
+| `rpc error: Unavailable` | Адрес auth из текущей среды, его логи и готовность; отсутствие readiness/deadline |
+| Изменения не видны | Сборку образа: restart не пересобирает код; frontend также работает из COPY |
+| Замороженный обмен выглядит активным | SELECT backend не читает статус, frontend назначает ACTIVE |
+| Рейтинг в `/users/me` равен 0 | Этот SELECT не читает raiting; сравнить с `/rait/me` |
+| CORS при PATCH | В Allow-Methods отсутствует PATCH; same-origin proxy обходит необходимость CORS, отдельный origin требует правки |
+| Создание пользователя вернуло 500, повтор — конфликт | Возможный частичный успех: auth создал учётную запись, сохранение профиля не завершилось |
+
+## Проверки и генерация контрактов
+
+### Доступные команды
+
+В каждом Go-модуле отдельно:
+
+```bash
+go test ./...
+go vet ./...
+```
+
+Frontend из `frontend/`:
+
+```bash
+npm ci
+npm run build
+npm run lint:all
+```
+
+`build` выполняет `tsc -b && vite build`. Доступны `lint`, `lint:fix`, `lint:css`, `lint:css:fix`, `lint:all:fix`. Frontend-тестовый runner и тестовые scripts не настроены. В репозитории не обнаружены Go-файлы `_test.go`, настроенный CI pipeline и команды Makefile. Успешный `go test` без тестов проверяет сборку пакетов, но не корректность SQL и бизнес-сценариев.
+
+При подготовке этого README выполнена проверка Go-пакетов; результаты и ограничения проверки приведены в конце документа. Полноценная приёмка требует тестовой БД и проверки регистрации → login → профиль → создание → поиск → участие → рейтинг → refresh → logout, включая права доступа и конкурентные запросы.
+
+### Swagger
+
+Исходные аннотации находятся в handlers; сгенерированные артефакты — `backend/docs/docs.go`, `swagger.json`, `swagger.yaml`. Для установленной версии CLI, соответствующей модулю Swag:
+
+```bash
+cd backend
+swag init -g cmd/main.go -o docs
+```
+
+CLI не устанавливается этой командой. После генерации сравните реальные маршруты и модели: простая генерация не исправляет неполные аннотации и различия завершающих `/`. В частности, базовый POST навыка и POST описания не имеют полной отдельной Swagger-аннотации. Служебные title/description пока шаблонные, host задан как `localhost:8080`, scheme — HTTP.
+
+### Protocol Buffers
+
+Источник — `proto/auth.proto`. Сгенерированные копии размещены в `backend/proto/auth` и `auth_service/proto/auth`; обе нужно обновлять при изменении контракта. В Dockerfile auth установлен пакет protobuf, но команды `protoc` нет: сборка использует уже сохранённые Go-файлы, несмотря на комментарий о генерации.
+
+Для заранее установленных `protoc`, `protoc-gen-go` и `protoc-gen-go-grpc` пример обновления обеих копий из корня:
+
+```bash
+protoc -I proto \
+  --go_out=backend/proto/auth --go_opt=paths=source_relative \
+  --go-grpc_out=backend/proto/auth --go-grpc_opt=paths=source_relative \
+  proto/auth.proto
+
+protoc -I proto \
+  --go_out=auth_service/proto/auth --go_opt=paths=source_relative \
+  --go-grpc_out=auth_service/proto/auth --go-grpc_opt=paths=source_relative \
+  proto/auth.proto
+```
+
+Версии генераторов следует закрепить отдельно и проверить сборку обоих модулей. В proto есть неиспользуемый import `google/protobuf/timestamp.proto`; генератор может выдавать предупреждение. Сгенерированный код не следует редактировать вручную.
+
+### Учёт документации в Git
+
+Корневой `.gitignore` содержит `*.md`. Уже отслеживаемый `README.md` остаётся в Git, но новый `README1.md` игнорируется. Для включения этого файла в коммит требуется явное добавление:
+
+```bash
+git add -f README1.md
+```
+
+Либо команда проекта может пересмотреть правило игнорирования документации. Сам README не меняет `.gitignore` и не добавляет файлы в индекс.
+
+## Условия подготовки к production
+
+Следующие пункты — выявленные по текущему коду задачи подготовки, а не уже реализованные гарантии.
+
+### Контроль доступа и целостность
+
+- Привязать автора объявления к user ID из проверенной сессии; проверять владельца перед delete/upsert описания.
+- Унифицировать типизированные ключи контекста в `AuthMiddleware`, `RequireRole` и `GetRequestID`; сейчас это препятствует работе admin-маршрутов.
+- Ограничить прямой gRPC-доступ: сейчас Register принимает произвольную роль. Убрать публикацию auth/DB портов наружу или ограничить их доверенной сетью; добавить межсервисную аутентификацию и шифрование по модели размещения.
+- Согласовать локальную проверку JWT и отзыв, ввести управляемые refresh-сессии, отзыв при смене пароля и изменениях учётной записи. Проверять тип токена, алгоритм и обязательные claims.
+- Обеспечить UNIQUE username на уровне БД после проверки существующих дубликатов: текущие проверки перед обновлением не исключают гонки, а регистрация username не защищена уникальным индексом.
+- Согласовать авторство при переименовании, действия admin и устаревшие claims. Определить политику удаления/архивации связанных объявлений и рейтингов.
+- Ограничить оценки бизнес-правилами и реальными сделками; согласовать допустимый диапазон и тип numeric. Добавить инварианты и внешние ключи там, где они соответствуют модели.
+
+### Сетевой и прикладной контур
+
+- Раздавать сборку `frontend/dist` обычным HTTP-сервером/CDN с SPA fallback на `index.html`. Текущий Dockerfile запускает Vite dev server, а не production-сборку. `vite preview` также не является настроенным эксплуатационным контуром проекта.
+- Проксировать `/api` к backend под согласованным origin, включить HTTPS и Secure cookie. Пересмотреть CORS: сейчас разрешён только `http://localhost:5173`, отсутствует PATCH и дополнительные request headers.
+- Настроить trusted proxies, HTTP read/write/idle timeouts, graceful shutdown, gRPC deadlines и передачу request context. Сейчас используется `app.Run` и обычный gRPC server без этих настроек.
+- Установить лимиты тела/полей, частоты запросов и защиты login/registration/rating от злоупотреблений. Добавить безопасную нормализацию ошибок вместо выдачи внутренних SQL/gRPC сообщений.
+- Отдельно убрать или защитить legacy HTML/JS, использующий `innerHTML` с пользовательскими данными.
+
+### Данные и надёжность
+
+- Выделить управляемый этап миграций и отдельные права DDL вместо постоянного использования одной учётной записи приложения. Все миграции сейчас выполняются при каждом старте backend.
+- Сделать создание объявления с описанием атомарным; определить обработку частичного успеха регистрации. Добавить проверки `RowsAffected`, `rows.Err()` и ошибок Scan/UPDATE.
+- Настроить SQL pool, ограничения соединений, observability и индексы по результатам измерений. Сейчас параметры `SetMaxOpenConns`, `SetMaxIdleConns`, `SetConnMaxLifetime` явно не задаются.
+- Добавить пагинацию, индексы и серверные выборки собственных объявлений/статистики; не загружать всю ленту для каждого профиля.
+- Настроить резервное копирование, проверенное восстановление, readiness/liveness и оповещения. Общая БД — критическая зависимость обоих Go-сервисов.
+- Закрепить базовые образы, toolchain и генераторы; заменить frontend `npm install --force` в Dockerfile на проверенный воспроизводимый процесс. Добавить `.dockerignore`: сейчас контекст `COPY . .` не отфильтрован отдельными правилами Docker.
+- Ввести автоматические проверки API, SQL, прав доступа, миграций и сборки SPA. Договориться о лицензии и правилах изменений: отдельный LICENSE и CONTRIBUTING в текущем дереве отсутствуют.
+
