@@ -14,6 +14,7 @@ type Skill struct {
 	Category    string    `json:"category"`
 	Status      string    `json:"status"`
 	Contributer uuid.UUID `json:"contributer"`
+	Addition    string    `json:"addition"`
 }
 
 type SkillDescription struct {
@@ -35,6 +36,7 @@ type SkillFull struct {
 	Category    string    `json:"category"`
 	Status      string    `json:"status"`
 	Contributer uuid.UUID `json:"contributer"`
+	Addition    string    `json:"addition"`
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 	Media       string    `json:"media,omitempty"`
@@ -43,5 +45,5 @@ type SkillFull struct {
 type SkillContribute struct {
 	SkillID  string `json:"skill_id"`
 	ID       string `json:"id"`
-	Username string `json:"username"`
+	Addition string `json:"addition"`
 }

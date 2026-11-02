@@ -18,7 +18,7 @@ type SkillRepository interface {
 	GetAllDescriptions(ctx context.Context) ([]models.SkillDescription, error)
 	GetDescriptionBySkillID(ctx context.Context, skillID int) (*models.SkillDescription, error)
 	UpsertDescription(ctx context.Context, skillID int, description, media string) error
-	ContributeSkill(ctx context.Context, skillId string, userId string) error
+	ContributeSkill(ctx context.Context, request models.SkillContribute) error
 }
 
 type UserRepository interface {
