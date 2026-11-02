@@ -1,7 +1,6 @@
 import style from './style.module.scss';
 import { GeneralLayout } from '../../layouts/GeneralLayout/GeneralLayout';
 import IconButton from '../../ui/IconButton/IconButton';
-import EyeOpenSVG from '../../ui/svg/EyeOpenSVG';
 import { useEffect, useState } from 'react';
 import { PreviewSkillModal } from '../../components/PreviewSkillModal/PreviewSkillModal';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
@@ -15,6 +14,8 @@ import { initEditSkill, setEditSkillField } from '../../store/slices/skillSlice'
 import { skillAPI } from '../../api/skill';
 import { useNavigate } from 'react-router-dom';
 import { setErrorWithTimeout } from '../../store/slices/appSlice';
+import PreviewSVG from '../../ui/svg/PreviewSVG';
+import TextareaExpandable from '../../ui/TextareaExpandable/TextareaExpandable';
 
 export const CreatorPage = () => {
   const [isOpenViewModal, setOpenViewModal] = useState(false);
@@ -91,7 +92,7 @@ export const CreatorPage = () => {
         <div className={style.header}>
           <h2>Создание обмена</h2>
           <div className={style.header__controls}>
-            <IconButton icon={<EyeOpenSVG />} onClick={() => setOpenViewModal(true)} />
+            <IconButton icon={<PreviewSVG />} onClick={() => setOpenViewModal(true)} />
           </div>
         </div>
 
@@ -127,10 +128,11 @@ export const CreatorPage = () => {
                 className={style.form__field__tooltip}
               />
               <label htmlFor="fieldDesc">Подробное описание</label>
-              <textarea
+              <TextareaExpandable
                 id="fieldDesc"
                 value={fieldDesc}
                 onChange={(e) => setFieldDesc(e.target.value)}
+                fieldClassName={style.form__textarea}
               />
             </div>
             <div className={style.form__field}>

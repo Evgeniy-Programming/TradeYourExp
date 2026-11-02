@@ -1,0 +1,49 @@
+.modal {
+  width: 100%;
+  max-width: 460px;
+
+  h2 {
+    margin-bottom: 4px;
+    font-size: var(--font-size-accent);
+    color: var(--color-text-title);
+    text-align: center;
+  }
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+
+  &__avatar {
+    align-self: center;
+    margin-bottom: 8px;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    label,
+    p {
+      font-size: var(--font-size-small);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-transparent);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    b {
+      color: var(--color-text-title);
+    }
+  }
+
+  &__controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+  }
+}

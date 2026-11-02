@@ -6,7 +6,7 @@ interface PlusSVGProps {
 
 const PlusSVG: React.FC<PlusSVGProps> = ({
   size = 30,
-  color = 'var(--color-element-secondary)',
+  color = 'currentColor',
   loading = false,
 }) => {
   if (loading) {

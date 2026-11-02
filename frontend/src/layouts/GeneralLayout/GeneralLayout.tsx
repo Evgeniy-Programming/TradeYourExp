@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { Header } from '../../components/Header/Header';
 import { ProfileInfo } from '../../components/ProfileInfo/ProfileInfo';
-import style from './GeneralLayout.module.scss';
+import style from './style.module.scss';
 import Block from '../../ui/Block/Block';
 
 interface GeneralLayoutProps {

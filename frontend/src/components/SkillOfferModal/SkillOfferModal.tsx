@@ -32,7 +32,7 @@ export const SkillOfferModal: React.FC<SkillOfferModalModalProps> = ({ onClose, 
             <label htmlFor="fieldDesc">Уточнение / дополнение к обмену</label>
             <textarea
               id="fieldDesc"
-              placeholder="Необязательно"
+              placeholder="Не обязательно"
               value={fieldAddition}
               onChange={(e) => setFieldAddition(e.target.value)}
             />

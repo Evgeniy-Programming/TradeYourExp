@@ -1,7 +1,7 @@
 import type { ISkill } from '../../types/skill';
 import AvatarLink from '../../ui/AvatarLink/AvatarLink';
 import Modal from '../../ui/Modal/Modal';
-import style from './SkillDescriptionModal.module.scss';
+import style from './style.module.scss';
 import logoIMG from '../../assets/img/logo.png';
 import Button from '../../ui/Button/Button';
 import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
@@ -49,7 +49,9 @@ export const SkillDescriptionModal: React.FC<SkillDescriptionModalProps> = ({
 
           <div className={style.skill__content__desc}>
             <p className={style.skill__subtitle}>Описание</p>
-            <p className={style.skill__content__desc__content}>{skill.description}</p>
+            <p className={style.skill__content__desc__content}>
+              {skill.description || 'Нет информации'}
+            </p>
           </div>
 
           <div className={style.skill__content__social}>

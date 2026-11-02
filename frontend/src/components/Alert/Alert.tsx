@@ -1,4 +1,4 @@
-import style from './Alert.module.scss';
+import style from './style.module.scss';
 import type { IAlert } from './../../types/alert';
 import classNames from 'classnames';
 import ErrorSVG from '../../ui/svg/ErrorSVG';

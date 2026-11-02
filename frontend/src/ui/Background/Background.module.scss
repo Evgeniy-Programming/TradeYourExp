@@ -1,6 +1,6 @@
 .background {
   position: fixed;
-  z-index: 100;
+  z-index: 1000;
   inset: 0;
 
   display: flex;
@@ -9,7 +9,7 @@
 
   padding: 20px;
 
-  background-color: rgb(15 26 20 / 72%);
+  background-color: rgb(var(--overlay-color) / var(--overlay-alpha));
   backdrop-filter: blur(4px);
 
   animation: fade-in var(--transition-duration) ease-out;
