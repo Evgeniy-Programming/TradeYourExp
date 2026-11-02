@@ -63,8 +63,21 @@ definitions:
         example: true
         type: boolean
     type: object
+  models.SkillContribute:
+    properties:
+      addition:
+        type: string
+      id:
+        type: string
+      skill_id:
+        type: string
+      username:
+        type: string
+    type: object
   models.SkillFull:
     properties:
+      addition:
+        type: string
       category:
         type: string
       contributer:
@@ -450,11 +463,12 @@ paths:
       - application/json
       description: Создает пару id + contribute user_id
       parameters:
-      - description: ID навыка
-        in: path
-        name: skill_id
+      - description: Данные для запроса коммуникации
+        in: body
+        name: input
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/models.SkillContribute'
       produces:
       - application/json
       responses:

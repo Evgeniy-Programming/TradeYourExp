@@ -687,11 +687,13 @@ const docTemplate = `{
                 "summary": "Создание коммуникации",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "ID навыка",
-                        "name": "skill_id",
-                        "in": "path",
-                        "required": true
+                        "description": "Данные для запроса коммуникации",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SkillContribute"
+                        }
                     }
                 ],
                 "responses": {
@@ -1102,9 +1104,29 @@ const docTemplate = `{
                 }
             }
         },
+        "models.SkillContribute": {
+            "type": "object",
+            "properties": {
+                "addition": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "skill_id": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "models.SkillFull": {
             "type": "object",
             "properties": {
+                "addition": {
+                    "type": "string"
+                },
                 "category": {
                     "type": "string"
                 },

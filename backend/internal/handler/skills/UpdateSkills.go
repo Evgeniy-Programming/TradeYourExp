@@ -15,7 +15,7 @@ import (
 // @Tags         skills
 // @Accept       json
 // @Produce      json
-// @Param        skill_id   path      string  true  "ID навыка"
+// @Param input body models.SkillContribute true "Данные для запроса коммуникации"
 // @Success      201  {object}  models.ResponseApi  "Синхронизация успешна"
 // @Failure      404  {object}  models.ResponseApi  "Неверный формат ID"
 // @Failure      500  {object}  models.ResponseApi  "Запрос не найден"
@@ -23,16 +23,27 @@ import (
 func (h *Handler) ContributeSkill(ctx *gin.Context) {
 	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
 	userId, _ := ctx.Get(contextkeys.UserIDKey)
-	skillId := ctx.Param("skill_id")
-	if skillId == "" {
+	var req struct {
+		SkillId  string `json:"skill_id" binding:"required"`
+		Addition string `json:"addition" binding:"required"`
+	}
+	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
-			Message:   "Skill undefined",
+			Error:     err.Error(),
+			Message:   "Bad request",
 		})
 		return
 	}
-	if err := h.repo.Skills.ContributeSkill(ctx, skillId, userId.(string)); err != nil {
+
+	contribute := models.SkillContribute{
+		SkillID:  req.SkillId,
+		ID:       userId.(string),
+		Addition: req.Addition,
+	}
+
+	if err := h.repo.Skills.ContributeSkill(ctx, contribute); err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,
@@ -45,7 +56,7 @@ func (h *Handler) ContributeSkill(ctx *gin.Context) {
 		RequestID: fmt.Sprint(requestID),
 		Status:    true,
 		Message:   "Successfull contribute",
-		Result:    skillId,
+		Result:    contribute,
 	}
 	ctx.JSON(http.StatusCreated, responseApi)
 }
