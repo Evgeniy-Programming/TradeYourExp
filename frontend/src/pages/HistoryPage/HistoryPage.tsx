@@ -12,6 +12,14 @@ import { setErrorWithTimeout } from '../../store/slices/appSlice';
 import { formatSkillHistorySearchType } from '../../utils/formatSkillStatusType';
 import { SkillHistory } from '../../components/SkillHistory/SkillHistory';
 
+const STATUS_ORDER: Record<string, number> = {
+  ACTIVE: 0,
+  PENDING: 1,
+  FREEZE: 2,
+  REJECTED: 3,
+  CLOSED: 4,
+};
+
 export const HistoryPage = () => {
   const [isOpenSelect, setOpenSelect] = useState(false);
   const [selectedSearchType, setSearchType] = useState<SkillHistorySearchType>('ALL');
@@ -26,15 +34,32 @@ export const HistoryPage = () => {
   }, [dispatch]);
 
   const filteredSkills = useMemo(() => {
-    switch (selectedSearchType) {
-      case 'ACTIVE':
-        return skills.filter((skill) => skill.status === 'ACTIVE');
-      case 'CLOSED':
-        return skills.filter((skill) => skill.status === 'CLOSED');
-      case 'ALL':
-      default:
-        return skills;
-    }
+    const filtered = (() => {
+      switch (selectedSearchType) {
+        case 'ACTIVE':
+          return skills.filter((skill) => skill.status === 'ACTIVE');
+        case 'CLOSED':
+          return skills.filter((skill) => skill.status === 'CLOSED');
+        case 'ALL':
+        default:
+          return skills;
+      }
+    })();
+
+    return [...filtered].sort((a, b) => {
+      const orderA = STATUS_ORDER[a.status] ?? Number.MAX_SAFE_INTEGER;
+      const orderB = STATUS_ORDER[b.status] ?? Number.MAX_SAFE_INTEGER;
+
+      if (orderA !== orderB) return orderA - orderB;
+
+      // createdAt — строка ISO 8601
+      const timeA = Date.parse(a.createdAt);
+      const timeB = Date.parse(b.createdAt);
+
+      if (Number.isNaN(timeA) || Number.isNaN(timeB)) return 0;
+
+      return timeB - timeA;
+    });
   }, [skills, selectedSearchType]);
 
   return (

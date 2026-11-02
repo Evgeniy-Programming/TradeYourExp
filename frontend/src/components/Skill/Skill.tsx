@@ -8,6 +8,7 @@ import { useAppSelector } from '../../hooks/useAppDispatch';
 import { ToAuthModal } from '../ToAuthModal/ToAuthModal';
 import type { ISkill } from '../../types/skill';
 import { SkillOfferModal } from '../SkillOfferModal/SkillOfferModal';
+import Badge from '../../ui/Badge/Badge';
 
 interface SkillProps {
   skill: ISkill;
@@ -45,6 +46,9 @@ export const Skill: React.FC<SkillProps> = ({ skill }) => {
       )}
       {isOpenAuthModal && <ToAuthModal onClose={() => setOpenAuthModal(false)} />}
       <div className={style.skill}>
+        <div className={style.skill__category}>
+          <Badge text={skill.category} />
+        </div>
         <div className={style.skill__content}>
           <div className={style.skill__content__info}>
             <div className={style.skill__content__avatar}>

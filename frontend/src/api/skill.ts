@@ -62,10 +62,7 @@ const listOrEmpty = (url: string) =>
       throw error;
     });
 
-const includes = (text: string, search: string) =>
-  text.toLowerCase().includes(search.toLowerCase());
-
-const getSkills = async ({ category, search = '', searchType = 'Все' }: ISkillQuery = {}) => {
+const getSkills = async ({ category, search = '' }: ISkillQuery = {}) => {
   const query = search.trim();
   const code = category && category !== 'Все категории' ? categoryCodes[category] : undefined;
 
@@ -79,17 +76,9 @@ const getSkills = async ({ category, search = '', searchType = 'Все' }: ISkil
     skills = await listOrEmpty('skills');
   }
 
-  // 'Получить' — ищем среди того, чему учат; 'Обменять' — среди того, что хотят взамен
-  if (query && searchType === 'Получить') {
-    return skills.filter((skill) => includes(skill.skill, query));
-  }
-  if (query && searchType === 'Обменять') {
-    return skills.filter((skill) => includes(skill.exchange, query));
-  }
   return skills;
 };
 
-// Отдельной ручки «мои запросы» на бэкенде нет — фильтруем общую ленту по автору
 const getUserSkills = async (username: string) =>
   (await getSkills()).filter((skill) => skill.username === username);
 
