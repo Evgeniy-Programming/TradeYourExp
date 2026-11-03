@@ -43,6 +43,7 @@ type RaitingHandler interface {
 	GetMyRait(ctx *gin.Context)
 	GetUserRait(ctx *gin.Context)
 	GetRaitHistory(ctx *gin.Context)
+	GetInfluenceRait(ctx *gin.Context)
 }
 
 type Handler struct {

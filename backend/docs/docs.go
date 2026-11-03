@@ -133,7 +133,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/rait/history/{id}": {
+        "/rait/history/me": {
             "get": {
                 "description": "Вывод рейтинговой шкалы.",
                 "consumes": [
@@ -146,12 +146,54 @@ const docTemplate = `{
                     "raiting"
                 ],
                 "summary": "Вывести историю выставлению рейтинга пользователя",
+                "responses": {
+                    "200": {
+                        "description": "Вывод рейтинга",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный формат",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/rait/history/{received_id}": {
+            "get": {
+                "description": "Вывод рейтинговой шкалы.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "raiting"
+                ],
+                "summary": "Вывести влияние пользователя в системе рейтинга",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Id пользователя",
-                        "name": "id",
+                        "description": "На кого пришлось влияние",
+                        "name": "received_id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Инициатор влияния",
+                        "name": "sent_id",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -1114,9 +1156,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "skill_id": {
-                    "type": "string"
-                },
-                "username": {
                     "type": "string"
                 }
             }
