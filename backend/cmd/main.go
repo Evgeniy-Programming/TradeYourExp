@@ -135,7 +135,7 @@ func main() {
 				rait.POST("/", h.Raiting.ChangeRait)
 				rait.GET("/me", h.Raiting.GetMyRait)
 				rait.GET("/user/:username", h.Raiting.GetUserRait)
-				rait.GET("/history/:id", h.Raiting.GetRaitHistory)
+				rait.GET("/history/me", h.Raiting.GetRaitHistory)
 			}
 		}
 
@@ -148,6 +148,7 @@ func main() {
 			admin.PUT("/users/:id", h.User.UpdateUser)
 			admin.DELETE("/users/:id", h.User.DeleteUser)
 			admin.POST("/rait/new", h.Raiting.UpdateRait)
+			admin.GET("/history/:received_id", h.Raiting.GetInfluenceRait)
 		}
 	}
 
