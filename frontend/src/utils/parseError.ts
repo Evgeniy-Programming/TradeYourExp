@@ -8,20 +8,18 @@ export const parseError = (error: unknown): IErrorMessage => {
     'message' in error &&
     'status' in error &&
     typeof error.message === 'string' &&
-    typeof error.message === 'number'
+    typeof error.status === 'number'
   ) {
     return error as IErrorMessage;
   }
 
   if (axios.isAxiosError(error)) {
-    let message;
-
     if (error.code === 'ERR_NETWORK') {
-      message = 'Проблема при подключении к серверу';
+      return { message: 'errors.network', status: error.response?.status };
     }
 
     return {
-      message: message || error.response?.data.message || error.message,
+      message: error.response?.data.message || error.message,
       status: error.response?.status,
     };
   }
@@ -30,5 +28,5 @@ export const parseError = (error: unknown): IErrorMessage => {
     return { message: error.message };
   }
 
-  return { message: 'Неизвестная ошибка' };
+  return { message: 'errors.unknown' };
 };

@@ -11,6 +11,8 @@ import { useState } from 'react';
 import Badge from '../../ui/Badge/Badge';
 import classNames from 'classnames';
 import { formatContactType } from '../../utils/formatContactType';
+import { useTranslation } from 'react-i18next';
+import { formatCategory } from '../../utils/formatCategory';
 
 interface PreviewSkillModalProps {
   onClose: () => void;
@@ -18,6 +20,7 @@ interface PreviewSkillModalProps {
 }
 
 export const PreviewSkillModal: React.FC<PreviewSkillModalProps> = ({ onClose, sendSkill }) => {
+  const { t } = useTranslation();
   const profile = useAppSelector((state) => state.profile.profile);
   const skill = useAppSelector((state) => state.skill.editSkill);
   const navigate = useNavigate();
@@ -35,9 +38,9 @@ export const PreviewSkillModal: React.FC<PreviewSkillModalProps> = ({ onClose, s
 
   return (
     <Modal className={style.modal} onClick={onClose}>
-      <h2>Предварительный просмотр</h2>
+      <h2>{t('preview.title')}</h2>
 
-      {!skill && <p>Загрузка...</p>}
+      {!skill && <p>{t('common.loading')}</p>}
 
       {skill && (
         <div className={style.skill}>
@@ -47,27 +50,27 @@ export const PreviewSkillModal: React.FC<PreviewSkillModalProps> = ({ onClose, s
               profileId={profile.username}
               username={profile.username}
             />
-            <div className={style.skill__header__category}>{skill.category}</div>
+            <div className={style.skill__header__category}>{formatCategory(skill.category, t)}</div>
           </div>
 
           <div className={style.skill__content}>
             <div className={style.skill__content__skill}>
-              <b>{skill.skill || 'Нет информации'}</b>
-              <p>обменять на</p>
-              <b>{skill.exchange || 'Нет информации'}</b>
+              <b>{skill.skill || t('common.noInfo')}</b>
+              <p>{t('preview.exchangeFor')}</p>
+              <b>{skill.exchange || t('common.noInfo')}</b>
             </div>
 
             <div className={style.skill__content__desc}>
-              <p className={style.skill__subtitle}>Описание</p>
+              <p className={style.skill__subtitle}>{t('skill.description')}</p>
               <p className={style.skill__content__desc__content}>
-                {skill.description || 'Нет информации'}
+                {skill.description || t('common.noInfo')}
               </p>
             </div>
 
             <div className={style.skill__content__social}>
               {skill.contactType !== 'site' && (
                 <Badge
-                  text={formatContactType(skill.contactType)}
+                  text={formatContactType(skill.contactType, t)}
                   className={classNames(
                     style.skill__content__social__badge,
                     skill.contactType === 'telegram' && style.badge_tg,
@@ -76,18 +79,22 @@ export const PreviewSkillModal: React.FC<PreviewSkillModalProps> = ({ onClose, s
                   )}
                 />
               )}
-              <p className={style.skill__subtitle}>Контактная информация</p>
+              <p className={style.skill__subtitle}>{t('skill.contact')}</p>
               <p>
-                {skill.contactType === 'site' ? 'На сайте' : skill.contactValue || 'Нет информации'}
+                {skill.contactType === 'site'
+                  ? t('creator.contactSite')
+                  : skill.contactValue || t('common.noInfo')}
               </p>
             </div>
 
-            <p className={style.created}>Опубликовано {formatTimestamp(currentTime)}</p>
+            <p className={style.created}>
+              {t('skill.published')} {formatTimestamp(currentTime, t)}
+            </p>
           </div>
 
           <div className={style.skill__controls}>
-            <ButtonSecondary onClick={onClose}>Отмена</ButtonSecondary>
-            <Button onClick={handleSendSkill}>Опубликовать</Button>
+            <ButtonSecondary onClick={onClose}>{t('common.cancel')}</ButtonSecondary>
+            <Button onClick={handleSendSkill}>{t('creator.publish')}</Button>
           </div>
         </div>
       )}

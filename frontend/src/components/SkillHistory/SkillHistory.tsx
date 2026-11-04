@@ -10,12 +10,14 @@ import Badge from '../../ui/Badge/Badge';
 import { formatSkillStatusType } from '../../utils/formatSkillStatusType';
 import classNames from 'classnames';
 import { SkillHistoryDescriptionModal } from '../SkillHistoryDescriptionModal/SkillHistoryDescriptionModal';
+import { useTranslation } from 'react-i18next';
 
 interface SkillHistoryProps {
   skill: ISkillHistory;
 }
 
 export const SkillHistory: React.FC<SkillHistoryProps> = ({ skill }) => {
+  const { t } = useTranslation();
   const [isOpenDescModal, setOpenDescModal] = useState(false);
   const [isOpenAuthModal, setOpenAuthModal] = useState(false);
   const profile = useAppSelector((state) => state.profile.profile);
@@ -46,14 +48,14 @@ export const SkillHistory: React.FC<SkillHistoryProps> = ({ skill }) => {
             </div>
             <div className={style.skill__contact}>
               <Button isMini onClick={handleOpenDesc}>
-                Подробнее
+                {t('skill.details')}
               </Button>
             </div>
           </div>
 
           <div className={style.skill__text}>
             <b>{skill.skill}</b>
-            <p>на</p>
+            <p>{t('skill.on')}</p>
             <b>{skill.exchange}</b>
           </div>
 
@@ -61,7 +63,7 @@ export const SkillHistory: React.FC<SkillHistoryProps> = ({ skill }) => {
             {skill.status && (
               <Badge
                 className={classNames(skill.status === 'CLOSED' && style.status_active)}
-                text={formatSkillStatusType(skill.status)}
+                text={formatSkillStatusType(skill.status, t)}
               />
             )}
           </div>

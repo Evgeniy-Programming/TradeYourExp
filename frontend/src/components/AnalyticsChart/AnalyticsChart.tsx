@@ -10,6 +10,7 @@ import {
   type TooltipContentProps,
 } from 'recharts';
 import type { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+import { useTranslation } from 'react-i18next';
 
 export interface ChartDataItem {
   name: string;
@@ -81,6 +82,7 @@ const useChartTheme = (): ChartTheme => {
 
 const CustomTooltip = (
   theme: ChartTheme,
+  t: (key: string) => string,
   { active, payload, label }: TooltipContentProps<ValueType, NameType>
 ) => {
   if (active && payload && payload.length) {
@@ -97,7 +99,7 @@ const CustomTooltip = (
       >
         <p style={{ margin: 0, fontWeight: 'bold', fontSize: '12px' }}>{label}</p>
         <p style={{ margin: '5px 0 0', color: theme.accent, fontSize: '14px' }}>
-          Обменов: {payload[0].value}
+          {t('chart.exchanges')}: {payload[0].value}
         </p>
       </div>
     );
@@ -106,11 +108,12 @@ const CustomTooltip = (
 };
 
 export default function AnalyticsChart({ data }: AnalyticsChartProps): React.JSX.Element {
+  const { t } = useTranslation();
   const theme = useChartTheme();
 
   const tooltipContent = useMemo(
-    () => (props: TooltipContentProps<ValueType, NameType>) => CustomTooltip(theme, props),
-    [theme]
+    () => (props: TooltipContentProps<ValueType, NameType>) => CustomTooltip(theme, t, props),
+    [theme, t]
   );
 
   return (
@@ -132,7 +135,7 @@ export default function AnalyticsChart({ data }: AnalyticsChartProps): React.JSX
           marginBottom: '20px',
         }}
       >
-        Опубликованные обмены
+        {t('chart.publishedExchanges')}
       </h3>
       <ResponsiveContainer width="100%" height="85%">
         <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>

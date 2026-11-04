@@ -9,6 +9,8 @@ import { formatTimestamp } from '../../utils/formatTimestamp';
 import Badge from '../../ui/Badge/Badge';
 import { formatContactType } from '../../utils/formatContactType';
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
+import { formatCategory } from '../../utils/formatCategory';
 
 interface SkillDescriptionModalProps {
   onClose: () => void;
@@ -21,6 +23,8 @@ export const SkillDescriptionModal: React.FC<SkillDescriptionModalProps> = ({
   onAccept,
   skill,
 }) => {
+  const { t } = useTranslation();
+
   const acceptSkill = () => {
     onAccept();
     onClose();
@@ -28,7 +32,7 @@ export const SkillDescriptionModal: React.FC<SkillDescriptionModalProps> = ({
 
   return (
     <Modal className={style.modal} onClick={onClose}>
-      <h2>Описание обмена</h2>
+      <h2>{t('skillDescription.title')}</h2>
 
       <div className={style.skill}>
         <div className={style.skill__header}>
@@ -37,27 +41,27 @@ export const SkillDescriptionModal: React.FC<SkillDescriptionModalProps> = ({
             profileId={skill.username}
             username={skill.username}
           />
-          <div className={style.skill__header__category}>{skill.category}</div>
+          <div className={style.skill__header__category}>{formatCategory(skill.category, t)}</div>
         </div>
 
         <div className={style.skill__content}>
           <div className={style.skill__content__skill}>
             <b>{skill.skill}</b>
-            <p>обменять на</p>
+            <p>{t('preview.exchangeFor')}</p>
             <b>{skill.exchange}</b>
           </div>
 
           <div className={style.skill__content__desc}>
-            <p className={style.skill__subtitle}>Описание</p>
+            <p className={style.skill__subtitle}>{t('skill.description')}</p>
             <p className={style.skill__content__desc__content}>
-              {skill.description || 'Нет информации'}
+              {skill.description || t('common.noInfo')}
             </p>
           </div>
 
           <div className={style.skill__content__social}>
             {skill.contactType !== 'site' && (
               <Badge
-                text={formatContactType(skill.contactType)}
+                text={formatContactType(skill.contactType, t)}
                 className={classNames(
                   style.skill__content__social__badge,
                   skill.contactType === 'telegram' && style.badge_tg,
@@ -66,18 +70,22 @@ export const SkillDescriptionModal: React.FC<SkillDescriptionModalProps> = ({
                 )}
               />
             )}
-            <p className={style.skill__subtitle}>Контактная информация</p>
+            <p className={style.skill__subtitle}>{t('skill.contact')}</p>
             <p>
-              {skill.contactType === 'site' ? 'На сайте' : skill.contactValue || 'Нет информации'}
+              {skill.contactType === 'site'
+                ? t('creator.contactSite')
+                : skill.contactValue || t('common.noInfo')}
             </p>
           </div>
 
-          <p className={style.created}>Опубликовано {formatTimestamp(skill.createdAt)}</p>
+          <p className={style.created}>
+            {t('skill.published')} {formatTimestamp(skill.createdAt, t)}
+          </p>
         </div>
 
         <div className={style.skill__controls}>
-          <ButtonSecondary onClick={onClose}>Отмена</ButtonSecondary>
-          <Button onClick={acceptSkill}>Принять обмен</Button>
+          <ButtonSecondary onClick={onClose}>{t('common.cancel')}</ButtonSecondary>
+          <Button onClick={acceptSkill}>{t('skill.acceptExchange')}</Button>
         </div>
       </div>
     </Modal>

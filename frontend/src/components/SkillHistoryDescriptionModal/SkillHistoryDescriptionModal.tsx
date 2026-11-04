@@ -9,6 +9,7 @@ import Badge from '../../ui/Badge/Badge';
 import { formatContactType } from '../../utils/formatContactType';
 import classNames from 'classnames';
 import { formatSkillStatusType } from '../../utils/formatSkillStatusType';
+import { useTranslation } from 'react-i18next';
 
 interface SkillHistoryDescriptionModalProps {
   onClose: () => void;
@@ -19,9 +20,11 @@ export const SkillHistoryDescriptionModal: React.FC<SkillHistoryDescriptionModal
   onClose,
   skill,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Modal className={style.modal} onClick={onClose}>
-      <h2>Описание обмена</h2>
+      <h2>{t('skillDescription.title')}</h2>
 
       <div className={style.skill}>
         <div className={style.skill__header}>
@@ -36,21 +39,21 @@ export const SkillHistoryDescriptionModal: React.FC<SkillHistoryDescriptionModal
         <div className={style.skill__content}>
           <div className={style.skill__content__skill}>
             <b>{skill.skill}</b>
-            <p>обменять на</p>
+            <p>{t('preview.exchangeFor')}</p>
             <b>{skill.exchange}</b>
           </div>
 
           <div className={style.skill__content__desc}>
-            <p className={style.skill__subtitle}>Описание</p>
+            <p className={style.skill__subtitle}>{t('skill.description')}</p>
             <p className={style.skill__content__desc__content}>
-              {skill.description || 'Нет информации'}
+              {skill.description || t('common.noInfo')}
             </p>
           </div>
 
           <div className={style.skill__content__social}>
             {skill.contactType !== 'site' && (
               <Badge
-                text={formatContactType(skill.contactType)}
+                text={formatContactType(skill.contactType, t)}
                 className={classNames(
                   style.skill__content__social__badge,
                   skill.contactType === 'telegram' && style.badge_tg,
@@ -59,23 +62,27 @@ export const SkillHistoryDescriptionModal: React.FC<SkillHistoryDescriptionModal
                 )}
               />
             )}
-            <p className={style.skill__subtitle}>Контактная информация</p>
+            <p className={style.skill__subtitle}>{t('skill.contact')}</p>
             <p>
-              {skill.contactType === 'site' ? 'На сайте' : skill.contactValue || 'Нет информации'}
+              {skill.contactType === 'site'
+                ? t('creator.contactSite')
+                : skill.contactValue || t('common.noInfo')}
             </p>
           </div>
 
           <div className={style.skill__created}>
-            <p className={style.created}>Опубликовано {formatTimestamp(skill.createdAt)}</p>
+            <p className={style.created}>
+              {t('skill.published')} {formatTimestamp(skill.createdAt, t)}
+            </p>
             <Badge
               className={classNames(skill.status === 'CLOSED' && style.status_active)}
-              text={formatSkillStatusType(skill.status)}
+              text={formatSkillStatusType(skill.status, t)}
             />
           </div>
         </div>
 
         <div className={style.skill__controls}>
-          <ButtonSecondary onClick={onClose}>Отмена</ButtonSecondary>
+          <ButtonSecondary onClick={onClose}>{t('common.cancel')}</ButtonSecondary>
         </div>
       </div>
     </Modal>

@@ -4,7 +4,7 @@ import style from './style.module.scss';
 export const ProfilePage = () => {
   return (
     <ProfileLayout>
-      <div className={style.profile}>Hello world</div>
+      <div className={style.profile}></div>
     </ProfileLayout>
   );
 };

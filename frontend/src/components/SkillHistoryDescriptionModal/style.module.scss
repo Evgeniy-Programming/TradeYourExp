@@ -4,6 +4,7 @@
 
   h2 {
     font-size: var(--font-size-accent);
+    color: var(--color-text-title);
     text-align: center;
   }
 }
@@ -16,59 +17,100 @@
 
   &__header {
     display: flex;
+    gap: 12px;
     align-items: center;
     justify-content: space-between;
 
     &__category {
-      padding: 2px 15px;
+      padding: 4px 14px;
       border: 1px solid var(--color-element);
-      border-radius: var(--border-radius-small);
+      border-radius: 999px;
+
+      font-size: var(--font-size-small);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-element);
+      white-space: nowrap;
+
+      background-color: var(--color-element-transparent);
     }
   }
 
   &__content {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 
     &__skill {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
       text-align: center;
+
+      b {
+        color: var(--color-text-title);
+      }
+
+      p {
+        font-size: var(--font-size-small);
+        color: var(--color-text-transparent);
+      }
     }
 
     &__desc__content {
       overflow-y: auto;
+
       max-height: 200px;
+      padding-right: 4px;
+
+      word-break: normal;
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
     }
 
     &__desc,
     &__social {
       position: relative;
-      padding: 10px;
+
+      padding: 12px;
+      border: 1px solid var(--color-line);
       border-radius: var(--border-radius-large);
+
       background-color: var(--color-block-transparent);
 
       &__badge {
         position: absolute;
-        top: 5px;
-        right: 5px;
+        top: 8px;
+        right: 8px;
       }
     }
   }
 
   &__subtitle {
+    margin-bottom: 4px;
+
     font-size: var(--font-size-small);
+    font-weight: var(--font-weight-bold);
     color: var(--color-text-transparent);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 
   &__created {
     display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
     justify-content: space-between;
   }
 
   &__controls {
     display: flex;
     gap: 10px;
-    justify-content: space-between;
+    justify-content: flex-end;
+
+    > * {
+      flex: 1;
+    }
   }
 }
 

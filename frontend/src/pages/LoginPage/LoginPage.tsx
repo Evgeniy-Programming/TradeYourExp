@@ -11,8 +11,10 @@ import { setErrorWithTimeout } from '../../store/slices/appSlice';
 import { useNavigate } from 'react-router-dom';
 import { setProfile } from '../../store/slices/profileSlice';
 import type { LoginType } from '../../types/auth';
+import { useTranslation } from 'react-i18next';
 
 export const LoginPage = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -45,11 +47,11 @@ export const LoginPage = () => {
   return (
     <AuthLayout>
       <form className={style.form} onSubmit={(e) => e.preventDefault()}>
-        <h2>Вход в профиль</h2>
+        <h2>{t('auth.loginTitle')}</h2>
 
         <div className={style.form__fields}>
           <div className={style.form__field}>
-            <label htmlFor="login">Никнейм или Email</label>
+            <label htmlFor="login">{t('auth.loginLabel')}</label>
             <Input
               id="login"
               value={fieldLogin}
@@ -58,7 +60,7 @@ export const LoginPage = () => {
             />
           </div>
           <div className={style.form__field}>
-            <label htmlFor="password">Пароль</label>
+            <label htmlFor="password">{t('auth.passwordLabel')}</label>
             <InputPassword
               id="password"
               value={fieldPassword}
@@ -69,11 +71,11 @@ export const LoginPage = () => {
         </div>
 
         <Button type="submit" isMaxWidth onClick={login}>
-          Войти
+          {t('auth.loginButton')}
         </Button>
 
         <p className={style.form__footer}>
-          Нет профиля? <A to="/register">Зарегистрироваться</A>
+          {t('auth.noProfile')} <A to="/register">{t('auth.registerButton')}</A>
         </p>
       </form>
     </AuthLayout>

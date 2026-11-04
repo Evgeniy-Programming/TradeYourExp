@@ -5,6 +5,7 @@ import style from './TextareaExpandable.module.scss';
 import IconButton from '../IconButton/IconButton';
 import MaximizeSVG from '../svg/MaximizeSVG';
 import MinimizeSVG from '../svg/MinimizeSVG';
+import { useTranslation } from 'react-i18next';
 
 interface TextareaExpandableProps extends Omit<
   React.TextareaHTMLAttributes<HTMLTextAreaElement>,
@@ -21,6 +22,7 @@ const TextareaExpandable: React.FC<TextareaExpandableProps> = ({
   onChange,
   ...rest
 }) => {
+  const { t } = useTranslation();
   const [isExpanded, setExpanded] = useState(false);
   const inlineRef = useRef<HTMLTextAreaElement>(null);
   const expandedRef = useRef<HTMLTextAreaElement>(null);
@@ -68,7 +70,7 @@ const TextareaExpandable: React.FC<TextareaExpandableProps> = ({
             type="button"
             icon={<MaximizeSVG size={25} />}
             onClick={() => setExpanded(true)}
-            title="Развернуть на весь экран"
+            title={t('textarea.expand')}
           />
         </div>
       </div>
@@ -82,12 +84,12 @@ const TextareaExpandable: React.FC<TextareaExpandableProps> = ({
         >
           <div className={style.expanded}>
             <div className={style.expanded__header}>
-              <span className={style.expanded__title}>Подробное описание</span>
+              <span className={style.expanded__title}>{t('textarea.expandedTitle')}</span>
               <IconButton
                 type="button"
                 icon={<MinimizeSVG size={25} />}
                 onClick={() => setExpanded(false)}
-                title="Свернуть"
+                title={t('textarea.collapse')}
               />
             </div>
 

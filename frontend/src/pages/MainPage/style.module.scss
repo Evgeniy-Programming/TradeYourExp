@@ -21,18 +21,14 @@
   flex-direction: column;
   gap: 12px;
   margin: 0 0 20px;
+}
 
-  &:empty::after {
-    content: 'Обменов не найдено';
+.empty {
+  padding: 40px 20px;
+  border: 1px dashed var(--color-line);
+  border-radius: var(--border-radius-large);
 
-    display: block;
-
-    padding: 40px 20px;
-    border: 1px dashed var(--color-line);
-    border-radius: var(--border-radius-large);
-
-    font-size: var(--font-size-text);
-    color: var(--color-text-transparent);
-    text-align: center;
-  }
+  font-size: var(--font-size-text);
+  color: var(--color-text-transparent);
+  text-align: center;
 }

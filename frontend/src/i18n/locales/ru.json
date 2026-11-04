@@ -1,0 +1,182 @@
+{
+  "header": {
+    "createExchange": "Предложить обмен",
+    "stats": "Статистика",
+    "history": "История",
+    "login": "Войти",
+    "register": "Зарегистрироваться",
+    "profile": "Профиль",
+    "exchanges": "Обмены"
+  },
+  "common": {
+    "save": "Сохранить",
+    "cancel": "Отменить",
+    "close": "Закрыть",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "loading": "Загрузка...",
+    "noInfo": "Нет информации",
+    "optional": "Не обязательно"
+  },
+  "auth": {
+    "loginTitle": "Вход в профиль",
+    "registerTitle": "Регистрация",
+    "loginLabel": "Никнейм или Email",
+    "passwordLabel": "Пароль",
+    "emailLabel": "Email",
+    "usernameLabel": "Никнейм",
+    "firstNameLabel": "Имя",
+    "lastNameLabel": "Фамилия",
+    "socialLabel": "Соц. сеть",
+    "socialPlaceholder": "Введите ссылку",
+    "loginButton": "Войти",
+    "registerButton": "Зарегистрироваться",
+    "noProfile": "Нет профиля?",
+    "haveProfile": "Уже есть профиль?",
+    "requiredHint": "Поля с * обязательны к заполнению"
+  },
+  "settings": {
+    "title": "Настройки",
+    "editProfile": "Редактировать профиль",
+    "changePassword": "Изменить пароль",
+    "darkTheme": "Тёмная тема",
+    "logout": "Выйти"
+  },
+  "skill": {
+    "details": "Подробнее",
+    "on": "на",
+    "category": "Категория",
+    "description": "Описание",
+    "contact": "Контактная информация",
+    "published": "Опубликовано",
+    "acceptExchange": "Принять обмен",
+    "offerExchange": "Предложить обмен"
+  },
+  "creator": {
+    "title": "Создание обмена",
+    "tooltipSkill": "Напишите коротко чему вы сможете научить",
+    "labelSkill": "Чему хотите научить?",
+    "tooltipExchange": "Напишите коротко что хотите получить взамен на ваш навык",
+    "labelExchange": "Что хотите получить?",
+    "tooltipDesc": "Расскажите подробнее что для вас нужно и что вы можете дать взамен",
+    "labelDesc": "Подробное описание",
+    "tooltipCategory": "Выберите одну из категорий ниже, которая подходит под ваш навык",
+    "labelCategory": "Категория",
+    "tooltipContact": "Укажите способ связи с вами",
+    "labelContactType": "Способ связи",
+    "contactSite": "На сайте",
+    "contactTelegram": "Телеграм",
+    "contactVk": "Вконтакте",
+    "contactWechat": "WeChat",
+    "contactPlaceholder": "Ваш никнейм",
+    "publish": "Опубликовать"
+  },
+  "history": {
+    "dealsTitle": "{{status}} сделки",
+    "all": "Все",
+    "active": "Активные",
+    "closed": "Завершенные",
+    "noDeals": "Сделок пока нет"
+  },
+  "main": {
+    "title": "Обмен навыками",
+    "results": "Результаты",
+    "noExchanges": "Обменов не найдено"
+  },
+  "stats": {
+    "title": "Ваша статистика",
+    "total": "Всего обменов",
+    "active": "Активных",
+    "closed": "Завершённых"
+  },
+  "months": {
+    "jan": "Янв",
+    "feb": "Фев",
+    "mar": "Мар",
+    "apr": "Апр",
+    "may": "Май",
+    "jun": "Июн",
+    "jul": "Июл",
+    "aug": "Авг",
+    "sep": "Сен",
+    "oct": "Окт",
+    "nov": "Ноя",
+    "dec": "Дек"
+  },
+  "textarea": {
+    "expand": "Развернуть на весь экран",
+    "collapse": "Свернуть",
+    "expandedTitle": "Подробное описание"
+  },
+  "chart": {
+    "exchanges": "Обменов",
+    "publishedExchanges": "Опубликованные обмены"
+  },
+  "changePassword": {
+    "title": "Редактирование пароля",
+    "oldPassword": "Старый пароль",
+    "newPassword": "Новый пароль",
+    "repeatPassword": "Повтор пароля",
+    "passwordsMismatch": "Новые пароли не совпадают"
+  },
+  "preview": {
+    "title": "Предварительный просмотр",
+    "exchangeFor": "обменять на"
+  },
+  "profileEdit": {
+    "notLoggedIn": "Вы не вошли в профиль.",
+    "doIt": "Сделайте это!",
+    "avatarAlt": "Изображение профиля",
+    "registered": "Зарегистрирован"
+  },
+  "profileEditModal": {
+    "title": "Редактирование профиля"
+  },
+  "profileInfo": {
+    "toProfile": "В профиль"
+  },
+  "skillDescription": {
+    "title": "Описание обмена"
+  },
+  "skillFilter": {
+    "categoriesLabel": "Категории предлагаемых навыков",
+    "searchLabel": "Поиск по названию и описанию",
+    "searchPlaceholder": "Введите навык...",
+    "searchButton": "Найти"
+  },
+  "skillOffer": {
+    "title": "Уточните предложение",
+    "tooltip": "Если у вас есть какие-то свои пожелания, уточнения, дополнения и тому подобное, то опишите это сразу",
+    "label": "Уточнение / дополнение к обмену"
+  },
+  "toAuth": {
+    "title": "Требуется вход",
+    "description": "Чтобы просматривать и публиковать обмены, необходимо войти в профиль."
+  },
+  "categories": {
+    "all": "Все категории",
+    "communicate": "Языки и коммуникация",
+    "it": "Технологии и IT",
+    "art": "Творчество и дизайн",
+    "knowledge": "Наука, бизнес и саморазвитие",
+    "hobby": "Хобби, здоровье и образ жизни"
+  },
+  "contactType": {
+    "site": "на сайте",
+    "vk": "вконтакте",
+    "telegram": "телеграм",
+    "wechat": "WeChat"
+  },
+  "skillStatus": {
+    "ACTIVE": "Активный",
+    "CLOSED": "Завершенный"
+  },
+  "timestamp": {
+    "unknown": "Неизвестная дата",
+    "format": "{{day}}.{{month}}.{{year}} в {{hours}}:{{minutes}}"
+  },
+  "errors": {
+    "network": "Проблема при подключении к серверу",
+    "unknown": "Неизвестная ошибка"
+  }
+}

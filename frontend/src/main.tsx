@@ -1,3 +1,4 @@
+import './i18n/i18n';
 import { createRoot } from 'react-dom/client';
 import './assets/styles/normalize.css';
 import './assets/styles/initialize.css';

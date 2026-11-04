@@ -1,0 +1,106 @@
+.switcher {
+  position: relative;
+  flex-shrink: 0;
+
+  &__trigger {
+    cursor: pointer;
+
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+
+    padding: 6px 10px;
+    border: 1px solid var(--color-line);
+    border-radius: var(--border-radius-small);
+
+    font-size: var(--font-size-small);
+    color: var(--color-text-base);
+
+    background-color: var(--color-block);
+    outline: none;
+
+    transition: var(--transition-duration);
+
+    &:hover {
+      border-color: var(--color-element);
+      color: var(--color-element);
+    }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 3px var(--color-element-transparent);
+    }
+  }
+
+  &__flag {
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  &__code {
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.04em;
+  }
+
+  &__menu {
+    position: absolute;
+    z-index: 200;
+    top: calc(100% + 6px);
+    right: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    min-width: 180px;
+    margin: 0;
+    padding: 6px;
+    border: 1px solid var(--color-line);
+    border-radius: var(--border-radius-large);
+
+    list-style: none;
+
+    background-color: var(--color-block);
+    box-shadow: var(--shadow-dropdown);
+  }
+
+  &__option {
+    cursor: pointer;
+
+    display: flex;
+    gap: 10px;
+    align-items: center;
+
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    border-radius: var(--border-radius-small);
+
+    font-size: var(--font-size-text);
+    color: var(--color-text-base);
+    text-align: left;
+
+    background-color: transparent;
+    outline: none;
+
+    transition: var(--transition-duration);
+
+    &:hover {
+      color: var(--color-element);
+      background-color: var(--color-element-transparent);
+    }
+
+    &_active {
+      color: var(--color-element);
+      background-color: var(--color-element-transparent);
+    }
+  }
+
+  &__label {
+    flex: 1 1 auto;
+  }
+
+  &__optionCode {
+    font-size: var(--font-size-small);
+    color: var(--color-text-transparent);
+  }
+}

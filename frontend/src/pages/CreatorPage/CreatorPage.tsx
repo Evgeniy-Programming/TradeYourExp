@@ -16,8 +16,11 @@ import { useNavigate } from 'react-router-dom';
 import { setErrorWithTimeout } from '../../store/slices/appSlice';
 import PreviewSVG from '../../ui/svg/PreviewSVG';
 import TextareaExpandable from '../../ui/TextareaExpandable/TextareaExpandable';
+import { useTranslation } from 'react-i18next';
+import { formatCategory } from '../../utils/formatCategory';
 
 export const CreatorPage = () => {
+  const { t } = useTranslation();
   const [isOpenViewModal, setOpenViewModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>(
     'Наука, бизнес и саморазвитие'
@@ -90,7 +93,7 @@ export const CreatorPage = () => {
       )}
       <div className={style.page}>
         <div className={style.header}>
-          <h2>Создание обмена</h2>
+          <h2>{t('creator.title')}</h2>
           <div className={style.header__controls}>
             <IconButton icon={<PreviewSVG />} onClick={() => setOpenViewModal(true)} />
           </div>
@@ -99,11 +102,8 @@ export const CreatorPage = () => {
         <form className={style.form}>
           <div className={style.form__editor}>
             <div className={style.form__field}>
-              <Tooltip
-                text="Напишите коротко чему вы сможете научить"
-                className={style.form__field__tooltip}
-              />
-              <label htmlFor="fieldSkill">Чему хотите научить?</label>
+              <Tooltip text={t('creator.tooltipSkill')} className={style.form__field__tooltip} />
+              <label htmlFor="fieldSkill">{t('creator.labelSkill')}</label>
               <Input
                 id="fieldSkill"
                 value={fieldSkill}
@@ -111,11 +111,8 @@ export const CreatorPage = () => {
               />
             </div>
             <div className={style.form__field}>
-              <Tooltip
-                text="Напишите коротко что хотите получить взамен на ваш навык"
-                className={style.form__field__tooltip}
-              />
-              <label htmlFor="fieldExchange">Что хотите получить?</label>
+              <Tooltip text={t('creator.tooltipExchange')} className={style.form__field__tooltip} />
+              <label htmlFor="fieldExchange">{t('creator.labelExchange')}</label>
               <Input
                 id="fieldExchange"
                 value={fieldExchange}
@@ -123,11 +120,8 @@ export const CreatorPage = () => {
               />
             </div>
             <div className={style.form__field}>
-              <Tooltip
-                text="Расскажите подробнее что для вас нужно и что вы можете дать взамен"
-                className={style.form__field__tooltip}
-              />
-              <label htmlFor="fieldDesc">Подробное описание</label>
+              <Tooltip text={t('creator.tooltipDesc')} className={style.form__field__tooltip} />
+              <label htmlFor="fieldDesc">{t('creator.labelDesc')}</label>
               <TextareaExpandable
                 id="fieldDesc"
                 value={fieldDesc}
@@ -136,19 +130,18 @@ export const CreatorPage = () => {
               />
             </div>
             <div className={style.form__field}>
-              <Tooltip
-                text="Выберите одну из категорий ниже, которая подходит под ваш навык"
-                className={style.form__field__tooltip}
-              />
-              <label>Категория</label>
+              <Tooltip text={t('creator.tooltipCategory')} className={style.form__field__tooltip} />
+              <label>{t('creator.labelCategory')}</label>
               <div className={style.form__field__category}>
                 {categories.map((category) => (
                   <div key={category}>
                     {selectedCategory === category ? (
-                      <Button onClick={() => setSelectedCategory(category)}>{category}</Button>
+                      <Button onClick={() => setSelectedCategory(category)}>
+                        {formatCategory(category, t)}
+                      </Button>
                     ) : (
                       <ButtonSecondary onClick={() => setSelectedCategory(category)}>
-                        {category}
+                        {formatCategory(category, t)}
                       </ButtonSecondary>
                     )}
                   </div>
@@ -156,21 +149,21 @@ export const CreatorPage = () => {
               </div>
             </div>
             <div className={style.form__field}>
-              <Tooltip text="Укажите способ связи с вами" className={style.form__field__tooltip} />
-              <label htmlFor="fieldContactType">Способ связи</label>
+              <Tooltip text={t('creator.tooltipContact')} className={style.form__field__tooltip} />
+              <label htmlFor="fieldContactType">{t('creator.labelContactType')}</label>
               <select
                 id="fieldContactType"
                 value={fieldContactType}
                 onChange={handleChangeContactType}
               >
-                <option value="site">На сайте</option>
-                <option value="telegram">Телеграм</option>
-                <option value="vk">Вконтакте</option>
-                <option value="wechat">WeChat</option>
+                <option value="site">{t('creator.contactSite')}</option>
+                <option value="telegram">{t('creator.contactTelegram')}</option>
+                <option value="vk">{t('creator.contactVk')}</option>
+                <option value="wechat">{t('creator.contactWechat')}</option>
               </select>
               {isOpenContact && (
                 <Input
-                  placeholder="Ваш никнейм"
+                  placeholder={t('creator.contactPlaceholder')}
                   className={style.form__field__contactValue}
                   value={fieldContactValue || ''}
                   onChange={(e) => setFieldContactValue(e.target.value)}
@@ -180,7 +173,7 @@ export const CreatorPage = () => {
           </div>
 
           <div className={style.form__controls}>
-            <Button onClick={sendSkill}>Опубликовать</Button>
+            <Button onClick={sendSkill}>{t('creator.publish')}</Button>
           </div>
         </form>
       </div>

@@ -3,21 +3,18 @@ import Button from '../../ui/Button/Button';
 import Input from '../../ui/Input/Input';
 import style from './style.module.scss';
 import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
-import ButtonAction from '../../ui/ButtonAction/ButtonAction';
-import Dropdown from '../../ui/Dropdown/Dropdown';
 import { categoriesView as categories } from '../../constants/categories';
-import type { CategoryViewType, SkillSearchType } from '../../types/skill';
-import ArrowSVG from '../../ui/svg/ArrowSVG';
+import type { CategoryViewType } from '../../types/skill';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { fetchSkills } from '../../store/slices/skillSlice';
 import { setErrorWithTimeout } from '../../store/slices/appSlice';
+import { useTranslation } from 'react-i18next';
+import { formatCategory } from '../../utils/formatCategory';
 
 export const SkillFilter = () => {
+  const { t } = useTranslation();
   const [skill, setSkill] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryViewType>('Все категории');
-  const [isOpenSelect, setOpenSelect] = useState(false);
-  const [selectedSearchType, setSearchType] = useState<SkillSearchType>('Все');
-  // Поиск применяется по кнопке «Найти», категория и тип поиска — сразу
   const [appliedSearch, setAppliedSearch] = useState('');
   const dispatch = useAppDispatch();
 
@@ -26,12 +23,11 @@ export const SkillFilter = () => {
       fetchSkills({
         category: selectedCategory,
         search: appliedSearch,
-        searchType: selectedSearchType,
       })
     )
       .unwrap()
       .catch((error) => dispatch(setErrorWithTimeout(error)));
-  }, [dispatch, selectedCategory, selectedSearchType, appliedSearch]);
+  }, [dispatch, selectedCategory, appliedSearch]);
 
   const searchSkill = () => {
     setAppliedSearch(skill.trim());
@@ -43,42 +39,31 @@ export const SkillFilter = () => {
 
   return (
     <div className={style.filter}>
-      <p className="label">Категории предлагаемых навыков</p>
+      <p className="label">{t('skillFilter.categoriesLabel')}</p>
       <div className={style.filter__category}>
         {categories.map((category) => (
           <div key={category}>
             {selectedCategory === category ? (
-              <Button onClick={() => findByCategory(category)}>{category}</Button>
+              <Button onClick={() => findByCategory(category)}>
+                {formatCategory(category, t)}
+              </Button>
             ) : (
-              <ButtonSecondary onClick={() => findByCategory(category)}>{category}</ButtonSecondary>
+              <ButtonSecondary onClick={() => findByCategory(category)}>
+                {formatCategory(category, t)}
+              </ButtonSecondary>
             )}
           </div>
         ))}
       </div>
 
-      <p className="label">Поиск и фильтрация по названию</p>
+      <p className="label">{t('skillFilter.searchLabel')}</p>
       <div className={style.filter__search}>
         <Input
           value={skill}
           onChange={(e) => setSkill(e.target.value)}
-          placeholder="Введите навык..."
+          placeholder={t('skillFilter.searchPlaceholder')}
         />
-        <div className={style.filter__select}>
-          <ButtonAction
-            icon={<ArrowSVG direction={isOpenSelect ? 'down' : 'up'} />}
-            onClick={() => setOpenSelect(true)}
-          >
-            <p>{selectedSearchType}</p>
-          </ButtonAction>
-          {isOpenSelect && (
-            <Dropdown dropdownClose={() => setOpenSelect(false)} className={style.select}>
-              <Button onClick={() => setSearchType('Все')}>Все</Button>
-              <Button onClick={() => setSearchType('Получить')}>Получить</Button>
-              <Button onClick={() => setSearchType('Обменять')}>Обменять</Button>
-            </Dropdown>
-          )}
-        </div>
-        <Button onClick={searchSkill}>Найти</Button>
+        <Button onClick={searchSkill}>{t('skillFilter.searchButton')}</Button>
       </div>
     </div>
   );
