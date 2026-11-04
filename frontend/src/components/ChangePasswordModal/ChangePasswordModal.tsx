@@ -7,12 +7,14 @@ import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { setErrorWithTimeout } from '../../store/slices/appSlice';
 import { authAPI } from '../../api/auth';
+import { useTranslation } from 'react-i18next';
 
 interface ChangePasswordModalProps {
   onClose: () => void;
 }
 
 export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ onClose }) => {
+  const { t } = useTranslation();
   const [fieldCurrentPassword, setFieldCurrentPassword] = useState('');
   const [fieldNewPassword, setFieldNewPassword] = useState('');
   const [fieldRepeatPassword, setFieldRepeatPassword] = useState('');
@@ -23,7 +25,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ onClos
     e.preventDefault();
 
     if (fieldNewPassword !== fieldRepeatPassword) {
-      dispatch(setErrorWithTimeout(new Error('Новые пароли не совпадают')));
+      dispatch(setErrorWithTimeout(new Error(t('changePassword.passwordsMismatch'))));
       return;
     }
 
@@ -40,33 +42,33 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ onClos
 
   return (
     <Modal className={style.modal} onClick={onClose}>
-      <h2>Редактирование пароля</h2>
+      <h2>{t('changePassword.title')}</h2>
 
       <form className={style.form} onSubmit={(e) => editPassword(e)}>
         <div className={style.form__field}>
-          <label>Старый пароль</label>
+          <label>{t('changePassword.oldPassword')}</label>
           <InputPassword
             value={fieldCurrentPassword}
             onChange={(e) => setFieldCurrentPassword(e.target.value)}
           />
         </div>
         <div className={style.form__field}>
-          <label>Новый пароль</label>
+          <label>{t('changePassword.newPassword')}</label>
           <InputPassword
             value={fieldNewPassword}
             onChange={(e) => setFieldNewPassword(e.target.value)}
           />
         </div>
         <div className={style.form__field}>
-          <label>Повтор пароля</label>
+          <label>{t('changePassword.repeatPassword')}</label>
           <InputPassword
             value={fieldRepeatPassword}
             onChange={(e) => setFieldRepeatPassword(e.target.value)}
           />
         </div>
 
-        <Button type="submit">Сохранить</Button>
-        <ButtonSecondary onClick={onClose}>Отмена</ButtonSecondary>
+        <Button type="submit">{t('common.save')}</Button>
+        <ButtonSecondary onClick={onClose}>{t('common.cancel')}</ButtonSecondary>
       </form>
     </Modal>
   );

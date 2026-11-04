@@ -11,12 +11,14 @@ import { setErrorWithTimeout } from '../../store/slices/appSlice';
 import type { IEditProfile } from '../../types/profile';
 import logoIMG from '../../assets/img/logo.png';
 import style from './style.module.scss';
+import { useTranslation } from 'react-i18next';
 
 interface ProfileEditModalProps {
   onClose: () => void;
 }
 
 export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ onClose }) => {
+  const { t } = useTranslation();
   const profile = useAppSelector((state) => state.profile.profile);
   const dispatch = useAppDispatch();
 
@@ -51,13 +53,13 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ onClose }) =
 
   return (
     <Modal className={style.modal} onClick={onClose}>
-      <h2>Редактирование профиля</h2>
+      <h2>{t('profileEditModal.title')}</h2>
 
       <div className={style.fields}>
         <AvatarEdit className={style.fields__avatar} profileAvatar={logoIMG} />
 
         <div className={style.fields__field}>
-          <label htmlFor="edit-username">Никнейм</label>
+          <label htmlFor="edit-username">{t('auth.usernameLabel')}</label>
           <Input
             id="edit-username"
             value={fieldUsername}
@@ -65,7 +67,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ onClose }) =
           />
         </div>
         <div className={style.fields__field}>
-          <label htmlFor="edit-email">Email</label>
+          <label htmlFor="edit-email">{t('auth.emailLabel')}</label>
           <Input
             id="edit-email"
             type="email"
@@ -74,29 +76,29 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ onClose }) =
           />
         </div>
         <div className={style.fields__field}>
-          <label htmlFor="edit-lastName">Фамилия</label>
+          <label htmlFor="edit-lastName">{t('auth.lastNameLabel')}</label>
           <Input
             id="edit-lastName"
-            placeholder="Не обязательно"
+            placeholder={t('common.optional')}
             value={fieldLastName}
             onChange={(e) => setFieldLastName(e.target.value)}
           />
         </div>
         <div className={style.fields__field}>
-          <label htmlFor="edit-firstName">Имя</label>
+          <label htmlFor="edit-firstName">{t('auth.firstNameLabel')}</label>
           <Input
             id="edit-firstName"
-            placeholder="Не обязательно"
+            placeholder={t('common.optional')}
             value={fieldFirstName}
             onChange={(e) => setFieldFirstName(e.target.value)}
           />
         </div>
         <div className={style.fields__field}>
-          <label htmlFor="edit-link">Соц. сеть</label>
+          <label htmlFor="edit-link">{t('auth.socialLabel')}</label>
           <Input
             id="edit-link"
             type="url"
-            placeholder="Не обязательно"
+            placeholder={t('common.optional')}
             value={fieldLink}
             onChange={(e) => setFieldLink(e.target.value)}
           />
@@ -104,10 +106,10 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ onClose }) =
 
         <div className={style.fields__controls}>
           <Button isMaxWidth onClick={saveProfile}>
-            Сохранить
+            {t('common.save')}
           </Button>
           <ButtonSecondary isMaxWidth onClick={onClose}>
-            Отменить
+            {t('common.cancel')}
           </ButtonSecondary>
         </div>
       </div>

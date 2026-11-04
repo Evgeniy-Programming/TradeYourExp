@@ -51,5 +51,132 @@
     "published": "Published",
     "acceptExchange": "Accept exchange",
     "offerExchange": "Offer exchange"
+  },
+  "creator": {
+    "title": "Create exchange",
+    "tooltipSkill": "Write briefly what you can teach",
+    "labelSkill": "What do you want to teach?",
+    "tooltipExchange": "Write briefly what you want to get in exchange for your skill",
+    "labelExchange": "What do you want to get?",
+    "tooltipDesc": "Tell us in more detail what you need and what you can give in return",
+    "labelDesc": "Detailed description",
+    "tooltipCategory": "Choose one of the categories below that fits your skill",
+    "labelCategory": "Category",
+    "tooltipContact": "Specify how to contact you",
+    "labelContactType": "Contact method",
+    "contactSite": "On the site",
+    "contactTelegram": "Telegram",
+    "contactVk": "VKontakte",
+    "contactWechat": "WeChat",
+    "contactPlaceholder": "Your nickname",
+    "publish": "Publish"
+  },
+  "history": {
+    "dealsTitle": "{{status}} deals",
+    "all": "All",
+    "active": "Active",
+    "closed": "Completed",
+    "noDeals": "No deals yet"
+  },
+  "main": {
+    "title": "Skill exchange",
+    "results": "Results",
+    "noExchanges": "No exchanges found"
+  },
+  "stats": {
+    "title": "Your statistics",
+    "total": "Total exchanges",
+    "active": "Active",
+    "closed": "Completed"
+  },
+  "months": {
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mar",
+    "apr": "Apr",
+    "may": "May",
+    "jun": "Jun",
+    "jul": "Jul",
+    "aug": "Aug",
+    "sep": "Sep",
+    "oct": "Oct",
+    "nov": "Nov",
+    "dec": "Dec"
+  },
+  "textarea": {
+    "expand": "Expand to full screen",
+    "collapse": "Collapse",
+    "expandedTitle": "Detailed description"
+  },
+  "chart": {
+    "exchanges": "Exchanges",
+    "publishedExchanges": "Published exchanges"
+  },
+  "changePassword": {
+    "title": "Edit password",
+    "oldPassword": "Old password",
+    "newPassword": "New password",
+    "repeatPassword": "Repeat password",
+    "passwordsMismatch": "New passwords do not match"
+  },
+  "preview": {
+    "title": "Preview",
+    "exchangeFor": "exchange for"
+  },
+  "profileEdit": {
+    "notLoggedIn": "You are not logged in.",
+    "doIt": "Do it!",
+    "avatarAlt": "Profile image",
+    "registered": "Registered"
+  },
+  "profileEditModal": {
+    "title": "Edit profile"
+  },
+  "profileInfo": {
+    "toProfile": "Go to profile"
+  },
+  "skillDescription": {
+    "title": "Exchange description"
+  },
+  "skillFilter": {
+    "categoriesLabel": "Categories of offered skills",
+    "searchLabel": "Search by title and description",
+    "searchPlaceholder": "Enter a skill...",
+    "searchButton": "Search"
+  },
+  "skillOffer": {
+    "title": "Clarify your offer",
+    "tooltip": "If you have any wishes, clarifications, additions, etc., describe them right away",
+    "label": "Clarification / addition to the exchange"
+  },
+  "toAuth": {
+    "title": "Login required",
+    "description": "To view and publish exchanges, you need to log in to your profile."
+  },
+  "categories": {
+    "all": "All categories",
+    "communicate": "Languages & communication",
+    "it": "Technology & IT",
+    "art": "Creativity & design",
+    "knowledge": "Science, business & self-development",
+    "hobby": "Hobbies, health & lifestyle"
+  },
+  "contactType": {
+    "site": "on the site",
+    "vk": "VKontakte",
+    "telegram": "Telegram",
+    "wechat": "WeChat"
+  },
+  "skillStatus": {
+    "ACTIVE": "Active",
+    "CLOSED": "Completed"
+  },
+  "timestamp": {
+    "unknown": "Unknown date",
+    "format": "{{day}}.{{month}}.{{year}} at {{hours}}:{{minutes}}"
+  },
+  "errors": {
+    "network": "Problem connecting to the server",
+    "unknown": "Unknown error"
   }
 }

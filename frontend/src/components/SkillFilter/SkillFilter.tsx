@@ -8,8 +8,11 @@ import type { CategoryViewType } from '../../types/skill';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { fetchSkills } from '../../store/slices/skillSlice';
 import { setErrorWithTimeout } from '../../store/slices/appSlice';
+import { useTranslation } from 'react-i18next';
+import { formatCategory } from '../../utils/formatCategory';
 
 export const SkillFilter = () => {
+  const { t } = useTranslation();
   const [skill, setSkill] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryViewType>('Все категории');
   const [appliedSearch, setAppliedSearch] = useState('');
@@ -36,27 +39,31 @@ export const SkillFilter = () => {
 
   return (
     <div className={style.filter}>
-      <p className="label">Категории предлагаемых навыков</p>
+      <p className="label">{t('skillFilter.categoriesLabel')}</p>
       <div className={style.filter__category}>
         {categories.map((category) => (
           <div key={category}>
             {selectedCategory === category ? (
-              <Button onClick={() => findByCategory(category)}>{category}</Button>
+              <Button onClick={() => findByCategory(category)}>
+                {formatCategory(category, t)}
+              </Button>
             ) : (
-              <ButtonSecondary onClick={() => findByCategory(category)}>{category}</ButtonSecondary>
+              <ButtonSecondary onClick={() => findByCategory(category)}>
+                {formatCategory(category, t)}
+              </ButtonSecondary>
             )}
           </div>
         ))}
       </div>
 
-      <p className="label">Поиск по названию и описанию</p>
+      <p className="label">{t('skillFilter.searchLabel')}</p>
       <div className={style.filter__search}>
         <Input
           value={skill}
           onChange={(e) => setSkill(e.target.value)}
-          placeholder="Введите навык..."
+          placeholder={t('skillFilter.searchPlaceholder')}
         />
-        <Button onClick={searchSkill}>Найти</Button>
+        <Button onClick={searchSkill}>{t('skillFilter.searchButton')}</Button>
       </div>
     </div>
   );

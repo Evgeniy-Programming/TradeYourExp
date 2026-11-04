@@ -37,21 +37,17 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-
-    &:empty::after {
-      content: 'Сделок пока нет';
-
-      display: block;
-
-      padding: 40px 20px;
-      border: 1px dashed var(--color-line);
-      border-radius: var(--border-radius-large);
-
-      font-size: var(--font-size-text);
-      color: var(--color-text-transparent);
-      text-align: center;
-    }
   }
+}
+
+.empty {
+  padding: 40px 20px;
+  border: 1px dashed var(--color-line);
+  border-radius: var(--border-radius-large);
+
+  font-size: var(--font-size-text);
+  color: var(--color-text-transparent);
+  text-align: center;
 }
 
 .select {

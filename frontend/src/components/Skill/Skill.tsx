@@ -9,12 +9,15 @@ import { ToAuthModal } from '../ToAuthModal/ToAuthModal';
 import type { ISkill } from '../../types/skill';
 import { SkillOfferModal } from '../SkillOfferModal/SkillOfferModal';
 import Badge from '../../ui/Badge/Badge';
+import { useTranslation } from 'react-i18next';
+import { formatCategory } from '../../utils/formatCategory';
 
 interface SkillProps {
   skill: ISkill;
 }
 
 export const Skill: React.FC<SkillProps> = ({ skill }) => {
+  const { t } = useTranslation();
   const [isOpenDescModal, setOpenDescModal] = useState(false);
   const [isOpenOfferModal, setOpenOfferModal] = useState(false);
   const [isOpenAuthModal, setOpenAuthModal] = useState(false);
@@ -47,7 +50,7 @@ export const Skill: React.FC<SkillProps> = ({ skill }) => {
       {isOpenAuthModal && <ToAuthModal onClose={() => setOpenAuthModal(false)} />}
       <div className={style.skill}>
         <div className={style.skill__category}>
-          <Badge text={skill.category} />
+          <Badge text={formatCategory(skill.category, t)} />
         </div>
         <div className={style.skill__content}>
           <div className={style.skill__content__info}>
@@ -60,14 +63,14 @@ export const Skill: React.FC<SkillProps> = ({ skill }) => {
             </div>
             <div className={style.skill__contact}>
               <Button isMini onClick={handleOpenDesc}>
-                Подробнее
+                {t('skill.details')}
               </Button>
             </div>
           </div>
 
           <div className={style.skill__text}>
             <b>{skill.skill}</b>
-            <p>на</p>
+            <p>{t('skill.on')}</p>
             <b>{skill.exchange}</b>
           </div>
 

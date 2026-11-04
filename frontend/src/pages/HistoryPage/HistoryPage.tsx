@@ -11,6 +11,7 @@ import { fetchHistorySkills } from '../../store/slices/skillSlice';
 import { setErrorWithTimeout } from '../../store/slices/appSlice';
 import { formatSkillHistorySearchType } from '../../utils/formatSkillStatusType';
 import { SkillHistory } from '../../components/SkillHistory/SkillHistory';
+import { useTranslation } from 'react-i18next';
 
 const STATUS_ORDER: Record<string, number> = {
   ACTIVE: 0,
@@ -21,6 +22,7 @@ const STATUS_ORDER: Record<string, number> = {
 };
 
 export const HistoryPage = () => {
+  const { t } = useTranslation();
   const [isOpenSelect, setOpenSelect] = useState(false);
   const [selectedSearchType, setSearchType] = useState<SkillHistorySearchType>('ALL');
 
@@ -66,29 +68,35 @@ export const HistoryPage = () => {
     <ProfileLayout>
       <div className={style.profile}>
         <div className={style.profile__title}>
-          <h2>{formatSkillHistorySearchType(selectedSearchType)} сделки</h2>
+          <h2>
+            {t('history.dealsTitle', {
+              status: formatSkillHistorySearchType(selectedSearchType, t),
+            })}
+          </h2>
 
           <div className={style.profile__title__select}>
             <ButtonAction
               icon={<ArrowSVG direction={isOpenSelect ? 'down' : 'up'} />}
               onClick={() => setOpenSelect(true)}
             >
-              <p>{formatSkillHistorySearchType(selectedSearchType)}</p>
+              <p>{formatSkillHistorySearchType(selectedSearchType, t)}</p>
             </ButtonAction>
             {isOpenSelect && (
               <Dropdown dropdownClose={() => setOpenSelect(false)} className={style.select}>
-                <Button onClick={() => setSearchType('ALL')}>Все</Button>
-                <Button onClick={() => setSearchType('ACTIVE')}>Активные</Button>
-                <Button onClick={() => setSearchType('CLOSED')}>Завершенные</Button>
+                <Button onClick={() => setSearchType('ALL')}>{t('history.all')}</Button>
+                <Button onClick={() => setSearchType('ACTIVE')}>{t('history.active')}</Button>
+                <Button onClick={() => setSearchType('CLOSED')}>{t('history.closed')}</Button>
               </Dropdown>
             )}
           </div>
         </div>
 
         <div className={style.profile__skills}>
-          {filteredSkills.map((skill) => (
-            <SkillHistory key={skill.id} skill={skill} />
-          ))}
+          {filteredSkills.length === 0 ? (
+            <div className={style.empty}>{t('history.noDeals')}</div>
+          ) : (
+            filteredSkills.map((skill) => <SkillHistory key={skill.id} skill={skill} />)
+          )}
         </div>
       </div>
     </ProfileLayout>

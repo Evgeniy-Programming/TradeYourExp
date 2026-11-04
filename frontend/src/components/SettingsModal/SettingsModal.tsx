@@ -11,12 +11,14 @@ import { clearProfile } from '../../store/slices/profileSlice';
 import { setErrorWithTimeout } from '../../store/slices/appSlice';
 import { useNavigate } from 'react-router-dom';
 import style from './style.module.scss';
+import { useTranslation } from 'react-i18next';
 
 interface SettingsModalProps {
   onClose: () => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -46,25 +48,25 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
   return (
     <>
       <Modal className={style.modal} onClick={onClose}>
-        <h2>Настройки</h2>
+        <h2>{t('settings.title')}</h2>
 
         <div className={style.actions}>
           <Button isMaxWidth onClick={() => setOpenProfileModal(true)}>
-            Редактировать профиль
+            {t('settings.editProfile')}
           </Button>
           <ButtonSecondary isMaxWidth onClick={() => setOpenPasswordModal(true)}>
-            Изменить пароль
+            {t('settings.changePassword')}
           </ButtonSecondary>
 
           <Switch
             checked={isDarkTheme}
             onChange={toggleTheme}
-            label="Тёмная тема"
+            label={t('settings.darkTheme')}
             className={style.switch}
           />
 
           <ButtonSecondary isMaxWidth isDanger onClick={logout}>
-            Выйти
+            {t('settings.logout')}
           </ButtonSecondary>
         </div>
       </Modal>

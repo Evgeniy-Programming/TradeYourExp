@@ -8,12 +8,14 @@ import SuccessSVG from '../../ui/svg/SuccessSVG';
 import Close from '../../ui/Close/Close';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { clearAlert } from '../../store/slices/appSlice';
+import { useTranslation } from 'react-i18next';
 
 interface AlertProps {
   alert: IAlert | null;
 }
 
 const Alert: React.FC<AlertProps> = ({ alert }) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const closeAlert = () => {
@@ -39,7 +41,7 @@ const Alert: React.FC<AlertProps> = ({ alert }) => {
           {alert.type === 'info' && <InformationSVG />}
           {alert.type === 'success' && <SuccessSVG />}
           {alert.type === 'warning' && <WarningSVG />}
-          <p>{alert.message}</p>
+          <p>{t(alert.message, { defaultValue: alert.message })}</p>
         </div>
       )}
     </div>

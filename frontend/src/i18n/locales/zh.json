@@ -51,5 +51,132 @@
     "published": "发布于",
     "acceptExchange": "接受交换",
     "offerExchange": "发起交换"
+  },
+  "creator": {
+    "title": "创建交换",
+    "tooltipSkill": "简要说明您能教什么",
+    "labelSkill": "您想教什么？",
+    "tooltipExchange": "简要说明您希望用技能换取什么",
+    "labelExchange": "您想获得什么？",
+    "tooltipDesc": "详细说明您的需求以及您能提供什么作为回报",
+    "labelDesc": "详细描述",
+    "tooltipCategory": "从下面选择一个适合您技能的分类",
+    "labelCategory": "分类",
+    "tooltipContact": "请说明联系方式",
+    "labelContactType": "联系方式",
+    "contactSite": "在网站上",
+    "contactTelegram": "Telegram",
+    "contactVk": "VKontakte",
+    "contactWechat": "WeChat",
+    "contactPlaceholder": "您的昵称",
+    "publish": "发布"
+  },
+  "history": {
+    "dealsTitle": "{{status}} 交易",
+    "all": "全部",
+    "active": "进行中",
+    "closed": "已完成",
+    "noDeals": "暂无交易"
+  },
+  "main": {
+    "title": "技能交换",
+    "results": "结果",
+    "noExchanges": "未找到交换"
+  },
+  "stats": {
+    "title": "您的统计",
+    "total": "总交换数",
+    "active": "进行中",
+    "closed": "已完成"
+  },
+  "months": {
+    "jan": "1月",
+    "feb": "2月",
+    "mar": "3月",
+    "apr": "4月",
+    "may": "5月",
+    "jun": "6月",
+    "jul": "7月",
+    "aug": "8月",
+    "sep": "9月",
+    "oct": "10月",
+    "nov": "11月",
+    "dec": "12月"
+  },
+  "textarea": {
+    "expand": "全屏展开",
+    "collapse": "收起",
+    "expandedTitle": "详细描述"
+  },
+  "chart": {
+    "exchanges": "交换次数",
+    "publishedExchanges": "已发布的交换"
+  },
+  "changePassword": {
+    "title": "修改密码",
+    "oldPassword": "旧密码",
+    "newPassword": "新密码",
+    "repeatPassword": "重复密码",
+    "passwordsMismatch": "新密码不一致"
+  },
+  "preview": {
+    "title": "预览",
+    "exchangeFor": "交换为"
+  },
+  "profileEdit": {
+    "notLoggedIn": "您尚未登录。",
+    "doIt": "立即登录！",
+    "avatarAlt": "头像",
+    "registered": "注册于"
+  },
+  "profileEditModal": {
+    "title": "编辑资料"
+  },
+  "profileInfo": {
+    "toProfile": "前往个人资料"
+  },
+  "skillDescription": {
+    "title": "交换描述"
+  },
+  "skillFilter": {
+    "categoriesLabel": "提供的技能分类",
+    "searchLabel": "按名称和描述搜索",
+    "searchPlaceholder": "输入技能...",
+    "searchButton": "搜索"
+  },
+  "skillOffer": {
+    "title": "明确您的提议",
+    "tooltip": "如果您有任何愿望、说明、补充等，请立即描述",
+    "label": "交换的说明 / 补充"
+  },
+  "toAuth": {
+    "title": "需要登录",
+    "description": "要查看和发布交换，您需要登录个人资料。"
+  },
+  "categories": {
+    "all": "所有分类",
+    "communicate": "语言与沟通",
+    "it": "科技与IT",
+    "art": "创意与设计",
+    "knowledge": "科学、商业与自我发展",
+    "hobby": "爱好、健康与生活方式"
+  },
+  "contactType": {
+    "site": "在网站上",
+    "vk": "VKontakte",
+    "telegram": "Telegram",
+    "wechat": "WeChat"
+  },
+  "skillStatus": {
+    "ACTIVE": "进行中",
+    "CLOSED": "已完成"
+  },
+  "timestamp": {
+    "unknown": "未知日期",
+    "format": "{{year}}年{{month}}月{{day}}日 {{hours}}:{{minutes}}"
+  },
+  "errors": {
+    "network": "连接服务器时出现问题",
+    "unknown": "未知错误"
   }
 }

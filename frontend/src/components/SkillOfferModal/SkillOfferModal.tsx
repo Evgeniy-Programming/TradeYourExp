@@ -4,6 +4,7 @@ import Button from '../../ui/Button/Button';
 import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
 import Tooltip from '../../ui/Tooltip/Tooltip';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface SkillOfferModalModalProps {
   onClose: () => void;
@@ -11,6 +12,7 @@ interface SkillOfferModalModalProps {
 }
 
 export const SkillOfferModal: React.FC<SkillOfferModalModalProps> = ({ onClose, onAccept }) => {
+  const { t } = useTranslation();
   const acceptSkill = () => {
     onAccept(fieldAddition);
     onClose();
@@ -20,19 +22,16 @@ export const SkillOfferModal: React.FC<SkillOfferModalModalProps> = ({ onClose, 
 
   return (
     <Modal className={style.modal} onClick={onClose}>
-      <h2>Уточните предложение</h2>
+      <h2>{t('skillOffer.title')}</h2>
 
       <form className={style.form}>
         <div className={style.form__editor}>
           <div className={style.form__field}>
-            <Tooltip
-              text="Если у вас есть какие-то свои пожелания, уточнения, дополнения и тому подобное, то опишите это сразу"
-              className={style.form__field__tooltip}
-            />
-            <label htmlFor="fieldDesc">Уточнение / дополнение к обмену</label>
+            <Tooltip text={t('skillOffer.tooltip')} className={style.form__field__tooltip} />
+            <label htmlFor="fieldDesc">{t('skillOffer.label')}</label>
             <textarea
               id="fieldDesc"
-              placeholder="Не обязательно"
+              placeholder={t('common.optional')}
               value={fieldAddition}
               onChange={(e) => setFieldAddition(e.target.value)}
             />
@@ -40,8 +39,8 @@ export const SkillOfferModal: React.FC<SkillOfferModalModalProps> = ({ onClose, 
         </div>
 
         <div className={style.skill__controls}>
-          <ButtonSecondary onClick={onClose}>Отмена</ButtonSecondary>
-          <Button onClick={acceptSkill}>Предложить обмен</Button>
+          <ButtonSecondary onClick={onClose}>{t('common.cancel')}</ButtonSecondary>
+          <Button onClick={acceptSkill}>{t('skill.offerExchange')}</Button>
         </div>
       </form>
     </Modal>
