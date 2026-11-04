@@ -1,0 +1,55 @@
+{
+  "header": {
+    "createExchange": "发起交换",
+    "stats": "统计",
+    "history": "历史",
+    "login": "登录",
+    "register": "注册",
+    "profile": "个人资料",
+    "exchanges": "交换"
+  },
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "close": "关闭",
+    "edit": "编辑",
+    "delete": "删除",
+    "loading": "加载中...",
+    "noInfo": "暂无信息",
+    "optional": "选填"
+  },
+  "auth": {
+    "loginTitle": "登录个人资料",
+    "registerTitle": "注册",
+    "loginLabel": "用户名或邮箱",
+    "passwordLabel": "密码",
+    "emailLabel": "邮箱",
+    "usernameLabel": "用户名",
+    "firstNameLabel": "名",
+    "lastNameLabel": "姓",
+    "socialLabel": "社交网络",
+    "socialPlaceholder": "输入链接",
+    "loginButton": "登录",
+    "registerButton": "注册",
+    "noProfile": "还没有资料？",
+    "haveProfile": "已有资料？",
+    "requiredHint": "带 * 的字段为必填项"
+  },
+  "settings": {
+    "title": "设置",
+    "editProfile": "编辑资料",
+    "changePassword": "修改密码",
+    "darkTheme": "深色主题",
+    "logout": "退出登录"
+  },
+  "skill": {
+    "details": "详情",
+    "on": "换",
+    "category": "分类",
+    "description": "描述",
+    "contact": "联系方式",
+    "published": "发布于",
+    "acceptExchange": "接受交换",
+    "offerExchange": "发起交换"
+  }
+}

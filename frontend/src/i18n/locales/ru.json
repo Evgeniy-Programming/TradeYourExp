@@ -1,0 +1,55 @@
+{
+  "header": {
+    "createExchange": "Предложить обмен",
+    "stats": "Статистика",
+    "history": "История",
+    "login": "Войти",
+    "register": "Зарегистрироваться",
+    "profile": "Профиль",
+    "exchanges": "Обмены"
+  },
+  "common": {
+    "save": "Сохранить",
+    "cancel": "Отменить",
+    "close": "Закрыть",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "loading": "Загрузка...",
+    "noInfo": "Нет информации",
+    "optional": "Не обязательно"
+  },
+  "auth": {
+    "loginTitle": "Вход в профиль",
+    "registerTitle": "Регистрация",
+    "loginLabel": "Никнейм или Email",
+    "passwordLabel": "Пароль",
+    "emailLabel": "Email",
+    "usernameLabel": "Никнейм",
+    "firstNameLabel": "Имя",
+    "lastNameLabel": "Фамилия",
+    "socialLabel": "Соц. сеть",
+    "socialPlaceholder": "Введите ссылку",
+    "loginButton": "Войти",
+    "registerButton": "Зарегистрироваться",
+    "noProfile": "Нет профиля?",
+    "haveProfile": "Уже есть профиль?",
+    "requiredHint": "Поля с * обязательны к заполнению"
+  },
+  "settings": {
+    "title": "Настройки",
+    "editProfile": "Редактировать профиль",
+    "changePassword": "Изменить пароль",
+    "darkTheme": "Тёмная тема",
+    "logout": "Выйти"
+  },
+  "skill": {
+    "details": "Подробнее",
+    "on": "на",
+    "category": "Категория",
+    "description": "Описание",
+    "contact": "Контактная информация",
+    "published": "Опубликовано",
+    "acceptExchange": "Принять обмен",
+    "offerExchange": "Предложить обмен"
+  }
+}

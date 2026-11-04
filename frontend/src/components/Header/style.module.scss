@@ -37,6 +37,12 @@
     height: 100%;
   }
 
+  &__right {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
   &__nav {
     display: flex;
     gap: 20px;
@@ -159,6 +165,26 @@
       svg {
         flex-shrink: 0;
       }
+    }
+  }
+
+  @media (width <= 1024px) {
+    padding: 0 20px;
+
+    &__nav__links {
+      display: none;
+    }
+
+    &__profile {
+      display: none;
+    }
+
+    &__button {
+      display: block;
+    }
+
+    &__burger {
+      display: flex;
     }
   }
 

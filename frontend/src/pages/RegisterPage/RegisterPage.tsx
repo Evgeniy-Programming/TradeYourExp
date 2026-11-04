@@ -9,8 +9,10 @@ import style from './style.module.scss';
 import { useState } from 'react';
 import { authAPI } from '../../api/auth';
 import { setErrorWithTimeout } from '../../store/slices/appSlice';
+import { useTranslation } from 'react-i18next';
 
 export const RegisterPage = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -41,12 +43,12 @@ export const RegisterPage = () => {
   return (
     <AuthLayout>
       <form className={style.form} onSubmit={(e) => e.preventDefault()}>
-        <h2>Регистрация</h2>
+        <h2>{t('auth.registerTitle')}</h2>
 
         <div className={style.form__fields}>
           <div className={style.form__field}>
             <label htmlFor="username">
-              Никнейм <span className={style.form__field__req}>*</span>
+              {t('auth.usernameLabel')} <span className={style.form__field__req}>*</span>
             </label>
             <Input
               id="username"
@@ -57,7 +59,7 @@ export const RegisterPage = () => {
           </div>
           <div className={style.form__field}>
             <label htmlFor="email">
-              Email <span className={style.form__field__req}>*</span>
+              {t('auth.emailLabel')} <span className={style.form__field__req}>*</span>
             </label>
             <Input
               id="email"
@@ -69,7 +71,7 @@ export const RegisterPage = () => {
           </div>
           <div className={style.form__field}>
             <label htmlFor="password">
-              Пароль <span className={style.form__field__req}>*</span>
+              {t('auth.passwordLabel')} <span className={style.form__field__req}>*</span>
             </label>
             <InputPassword
               id="password"
@@ -79,7 +81,7 @@ export const RegisterPage = () => {
             />
           </div>
           <div className={style.form__field}>
-            <label htmlFor="firstName">Имя</label>
+            <label htmlFor="firstName">{t('auth.firstNameLabel')}</label>
             <Input
               id="firstName"
               autoComplete="given-name"
@@ -88,7 +90,7 @@ export const RegisterPage = () => {
             />
           </div>
           <div className={style.form__field}>
-            <label htmlFor="lastName">Фамилия</label>
+            <label htmlFor="lastName">{t('auth.lastNameLabel')}</label>
             <Input
               id="lastName"
               autoComplete="family-name"
@@ -97,11 +99,11 @@ export const RegisterPage = () => {
             />
           </div>
           <div className={style.form__field}>
-            <label htmlFor="social">Соц. сеть</label>
+            <label htmlFor="social">{t('auth.socialLabel')}</label>
             <Input
               id="social"
               type="url"
-              placeholder="Введите ссылку"
+              placeholder={t('auth.socialPlaceholder')}
               autoComplete="url"
               value={fieldLink}
               onChange={(e) => setFieldLink(e.target.value)}
@@ -110,16 +112,14 @@ export const RegisterPage = () => {
         </div>
 
         <Button type="submit" isMaxWidth onClick={registration}>
-          Зарегистрироваться
+          {t('auth.registerButton')}
         </Button>
 
         <p className={style.form__footer}>
-          Уже есть профиль? <A to="/login">Войти</A>
+          {t('auth.haveProfile')} <A to="/login">{t('auth.loginButton')}</A>
         </p>
 
-        <p className={style.form__hint}>
-          Поля с <span className={style.form__field__req}>*</span> обязательны к заполнению
-        </p>
+        <p className={style.form__hint}>{t('auth.requiredHint')}</p>
       </form>
     </AuthLayout>
   );

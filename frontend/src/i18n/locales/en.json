@@ -1,0 +1,55 @@
+{
+  "header": {
+    "createExchange": "Offer an exchange",
+    "stats": "Statistics",
+    "history": "History",
+    "login": "Log in",
+    "register": "Sign up",
+    "profile": "Profile",
+    "exchanges": "Exchanges"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "edit": "Edit",
+    "delete": "Delete",
+    "loading": "Loading...",
+    "noInfo": "No information",
+    "optional": "Optional"
+  },
+  "auth": {
+    "loginTitle": "Log in to your profile",
+    "registerTitle": "Registration",
+    "loginLabel": "Username or Email",
+    "passwordLabel": "Password",
+    "emailLabel": "Email",
+    "usernameLabel": "Username",
+    "firstNameLabel": "First name",
+    "lastNameLabel": "Last name",
+    "socialLabel": "Social network",
+    "socialPlaceholder": "Enter a link",
+    "loginButton": "Log in",
+    "registerButton": "Sign up",
+    "noProfile": "No profile?",
+    "haveProfile": "Already have a profile?",
+    "requiredHint": "Fields marked with * are required"
+  },
+  "settings": {
+    "title": "Settings",
+    "editProfile": "Edit profile",
+    "changePassword": "Change password",
+    "darkTheme": "Dark theme",
+    "logout": "Log out"
+  },
+  "skill": {
+    "details": "Details",
+    "on": "for",
+    "category": "Category",
+    "description": "Description",
+    "contact": "Contact information",
+    "published": "Published",
+    "acceptExchange": "Accept exchange",
+    "offerExchange": "Offer exchange"
+  }
+}
