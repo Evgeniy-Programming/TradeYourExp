@@ -10,6 +10,7 @@ import { formatContactType } from '../../utils/formatContactType';
 import classNames from 'classnames';
 import { formatSkillStatusType } from '../../utils/formatSkillStatusType';
 import { useTranslation } from 'react-i18next';
+import { formatCategory } from '../../utils/formatCategory';
 
 interface SkillHistoryDescriptionModalProps {
   onClose: () => void;
@@ -33,7 +34,7 @@ export const SkillHistoryDescriptionModal: React.FC<SkillHistoryDescriptionModal
             profileId={skill.username}
             username={skill.username}
           />
-          <div className={style.skill__header__category}>{skill.category}</div>
+          <div className={style.skill__header__category}>{formatCategory(skill.category, t)}</div>
         </div>
 
         <div className={style.skill__content}>
