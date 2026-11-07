@@ -12,6 +12,7 @@ import { setErrorWithTimeout } from '../../store/slices/appSlice';
 import { useNavigate } from 'react-router-dom';
 import style from './style.module.scss';
 import { useTranslation } from 'react-i18next';
+import ConfirmModal from '../ConfirmModal/ConfirmModal';
 
 interface SettingsModalProps {
   onClose: () => void;
@@ -24,6 +25,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
 
   const [isOpenProfileModal, setOpenProfileModal] = useState(false);
   const [isOpenPasswordModal, setOpenPasswordModal] = useState(false);
+  const [isOpenLogoutConfirm, setOpenLogoutConfirm] = useState(false);
+
   const [isDarkTheme, setDarkTheme] = useState(
     () => document.documentElement.dataset.theme === 'dark'
   );
@@ -43,6 +46,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
     setDarkTheme(next);
     document.documentElement.dataset.theme = next ? 'dark' : 'light';
     localStorage.setItem('theme', next ? 'dark' : 'light');
+  };
+
+  const handleLogoutClick = () => setOpenLogoutConfirm(true);
+
+  const handleLogoutConfirm = async () => {
+    setOpenLogoutConfirm(false);
+    await logout();
   };
 
   return (
@@ -65,9 +75,20 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
             className={style.switch}
           />
 
-          <ButtonSecondary isMaxWidth isDanger onClick={logout}>
+          <ButtonSecondary isMaxWidth isDanger onClick={handleLogoutClick}>
             {t('settings.logout')}
           </ButtonSecondary>
+
+          {isOpenLogoutConfirm && (
+            <ConfirmModal
+              text="confirm.logout_q"
+              onConfirm={handleLogoutConfirm}
+              onCancel={() => setOpenLogoutConfirm(false)}
+              confirmText="settings.logout"
+              cancelText="common.cancel"
+              isDanger
+            />
+          )}
         </div>
       </Modal>
 
