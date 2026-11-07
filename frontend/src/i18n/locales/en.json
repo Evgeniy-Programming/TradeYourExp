@@ -16,7 +16,9 @@
     "delete": "Delete",
     "loading": "Loading...",
     "noInfo": "No information",
-    "optional": "Optional"
+    "optional": "Optional",
+    "unpublish": "Revoke",
+    "confirm": "Confirm"
   },
   "auth": {
     "loginTitle": "Log in to your profile",
@@ -178,5 +180,12 @@
   "errors": {
     "network": "Problem connecting to the server",
     "unknown": "Unknown error"
+  },
+  "confirm": {
+    "title": "Confirm",
+    "cancel": "No",
+    "confirm": "Yes",
+    "logout_q": "Are you sure you want to log out?",
+    "reject_q": "Are you sure you want to unpublish the deal?"
   }
 }
