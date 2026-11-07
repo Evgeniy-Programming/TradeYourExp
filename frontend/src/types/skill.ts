@@ -34,6 +34,7 @@ export type SkillStatusType = keyof typeof skillStatus;
 export interface ISkillQuery {
   category?: CategoryViewType;
   search?: string;
+  username?: string;
 }
 
 export interface ISkillStats {

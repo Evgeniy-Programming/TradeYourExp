@@ -11,17 +11,28 @@ import classNames from 'classnames';
 import { formatSkillStatusType } from '../../utils/formatSkillStatusType';
 import { useTranslation } from 'react-i18next';
 import { formatCategory } from '../../utils/formatCategory';
+import { useState } from 'react';
+import ConfirmModal from '../ConfirmModal/ConfirmModal';
 
 interface SkillHistoryDescriptionModalProps {
   onClose: () => void;
+  onReject: () => void;
   skill: ISkillHistory;
 }
 
 export const SkillHistoryDescriptionModal: React.FC<SkillHistoryDescriptionModalProps> = ({
   onClose,
+  onReject,
   skill,
 }) => {
   const { t } = useTranslation();
+
+  const [isOpenRejectConfirm, setOpenRejectConfirm] = useState(false);
+
+  const handleRejectConfirm = () => {
+    onReject();
+    onClose();
+  };
 
   return (
     <Modal className={style.modal} onClick={onClose}>
@@ -84,6 +95,20 @@ export const SkillHistoryDescriptionModal: React.FC<SkillHistoryDescriptionModal
 
         <div className={style.skill__controls}>
           <ButtonSecondary onClick={onClose}>{t('common.cancel')}</ButtonSecondary>
+          <ButtonSecondary isDanger onClick={() => setOpenRejectConfirm(true)}>
+            {t('common.unpublish')}
+          </ButtonSecondary>
+
+          {isOpenRejectConfirm && (
+            <ConfirmModal
+              text="confirm.reject_q"
+              onConfirm={handleRejectConfirm}
+              onCancel={() => setOpenRejectConfirm(false)}
+              confirmText="common.confirm"
+              cancelText="common.cancel"
+              isDanger
+            />
+          )}
         </div>
       </div>
     </Modal>

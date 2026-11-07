@@ -62,7 +62,7 @@ const listOrEmpty = (url: string) =>
       throw error;
     });
 
-const getSkills = async ({ category, search = '' }: ISkillQuery = {}) => {
+const getSkills = async ({ category, search = '', username }: ISkillQuery = {}) => {
   const query = search.trim();
   const code = category && category !== 'Все категории' ? categoryCodes[category] : undefined;
 
@@ -74,6 +74,10 @@ const getSkills = async ({ category, search = '' }: ISkillQuery = {}) => {
     skills = await listOrEmpty(`skills/${code}`);
   } else {
     skills = await listOrEmpty('skills');
+  }
+
+  if (username) {
+    return skills.filter((skill) => skill.username !== username);
   }
 
   return skills;
@@ -116,4 +120,5 @@ export const skillAPI = {
         contact_value: data.contactType === 'site' ? '' : (data.contactValue ?? ''),
       })
     ),
+  rejectSkill: (skillId: string) => unwrap<string>(instance.post(`skills/reject/${skillId}`)),
 };
