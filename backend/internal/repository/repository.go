@@ -7,6 +7,8 @@ import (
 	"Trade-y-exp/internal/repository/user"
 	"context"
 	"database/sql"
+
+	"github.com/redis/go-redis/v9"
 )
 
 type SkillRepository interface {
@@ -49,12 +51,13 @@ type Repository struct {
 	User    *user.Repository
 	Raiting *raiting.RaitRepository
 	DB      *sql.DB
+	Redis   *redis.Client
 }
 
-func NewHMainRepository(DB *sql.DB) *Repository {
+func NewHMainRepository(DB *sql.DB, Redis *redis.Client) *Repository {
 	return &Repository{
 		User:    user.NewUserRepository(DB),
 		Skills:  skills.NewSkillRepository(DB),
-		Raiting: raiting.NewRaitRepository(DB),
+		Raiting: raiting.NewRaitRepository(DB, Redis),
 	}
 }

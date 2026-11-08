@@ -28,6 +28,7 @@ import (
 
 func main() {
 	// === Database ===
+	// PostgreSQL
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
 		dsn = "postgres://user:pass@localhost:5432/trade_db?sslmode=disable"
@@ -40,7 +41,14 @@ func main() {
 	defer dB.Close()
 
 	db.RunMigrations(dB, "trade_db")
-	repo := repository.NewHMainRepository(dB)
+	// Redis
+	redisClient, err := db.NewClient(os.Getenv("REDIS_URL"))
+	if err != nil {
+		log.Fatal("Redis connection failed:", err)
+	}
+	defer redisClient.Close()
+	// Repository
+	repo := repository.NewHMainRepository(dB, redisClient)
 
 	// === gRPC Client to Auth Service ===
 	authAddr := os.Getenv("AUTH_SERVICE_ADDR")
