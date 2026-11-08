@@ -2,6 +2,7 @@ export interface IProfile {
   id: string;
   username: string;
   email: string;
+  avatar: string | null;
   firstName: string | null;
   lastName: string | null;
   link: string | null;

@@ -1,5 +1,4 @@
 import style from './style.module.scss';
-import logoIMG from '../../assets/img/logo.png';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import Block from '../../ui/Block/Block';
 import { useAppSelector } from '../../hooks/useAppDispatch';
@@ -7,6 +6,7 @@ import A from '../../ui/A/A';
 import AButton from '../../ui/AButton/AButton';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
+import Avatar from '../../ui/Avatar/Avatar';
 
 interface ProfileInfoProps {
   className?: string;
@@ -26,7 +26,13 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ className }) => {
       )}
       {profile && (
         <div className={style.profile__fields}>
-          <img src={logoIMG} alt={t('profileEdit.avatarAlt')} />
+          <Avatar
+            className={style.profile__avatar}
+            src={profile.avatar}
+            size={100}
+            username={profile.username}
+          />
+          {/* <img src={logoIMG} alt={t('profileEdit.avatarAlt')} /> */}
           <div className={style.profile__field}>
             <p>{t('auth.usernameLabel')}</p>
             <b>{profile.username}</b>

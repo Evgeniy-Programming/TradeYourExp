@@ -1,0 +1,15 @@
+.userAvatar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  &__username {
+    font-size: var(--font-size-small);
+    color: var(--color-text-link);
+    transition: var(--transition-duration);
+  }
+
+  &:hover &__username {
+    color: var(--color-text-link-hover);
+  }
+}
