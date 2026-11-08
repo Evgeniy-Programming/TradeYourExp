@@ -1,5 +1,4 @@
 import style from './style.module.scss';
-import logoIMG from '../../assets/img/logo.png';
 import AvatarLink from '../../ui/AvatarLink/AvatarLink';
 import Button from '../../ui/Button/Button';
 import { useState } from 'react';
@@ -57,7 +56,7 @@ export const SkillHistory: React.FC<SkillHistoryProps> = ({ skill }) => {
           <div className={style.skill__content__info}>
             <div className={style.skill__content__avatar}>
               <AvatarLink
-                profileAvatar={logoIMG}
+                profileAvatar={skill.avatarUsername}
                 username={skill.username}
                 profileId={skill.username}
               />

@@ -1,0 +1,10 @@
+.userAvatar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  &__username {
+    font-size: var(--font-size-small);
+    color: var(--color-text-base);
+  }
+}

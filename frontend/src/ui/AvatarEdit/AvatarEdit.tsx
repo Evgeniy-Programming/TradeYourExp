@@ -1,22 +1,30 @@
 import classNames from 'classnames';
 import EditSVG from '../svg/EditSVG';
 import style from './AvatarEdit.module.scss';
-import userIMG from '@/assets/img/logo.png';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
+import Avatar from '../Avatar/Avatar';
 
 interface AvatarEditProps {
   profileAvatar: string | null;
+  username?: string | null;
   className?: string;
 }
 
-const AvatarEdit: React.FC<AvatarEditProps> = ({ profileAvatar, className }) => {
+const AvatarEdit: React.FC<AvatarEditProps> = ({ profileAvatar, username, className }) => {
   return (
     <Button className={classNames(style.avatar, className)}>
-      <img className={style.avatar__image} src={profileAvatar ? profileAvatar : userIMG} />
+      <Avatar
+        src={profileAvatar}
+        username={username}
+        size={100}
+        className={style.avatar__preview}
+      />
+
       <div className={style.avatar__edit}>
         <EditSVG color="#ffffff" />
       </div>
+
       <label className={style.avatar__label}>
         <Input type="file" className={style.avatar__input} />
       </label>

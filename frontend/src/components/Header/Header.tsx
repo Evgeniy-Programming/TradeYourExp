@@ -7,10 +7,10 @@ import { useState } from 'react';
 import logoIMG from '../../assets/img/logo.png';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import ArrowSVG from '../../ui/svg/ArrowSVG';
-import Avatar from '../../ui/Avatar/Avatar';
 import classNames from 'classnames';
 import PlusSVG from '../../ui/svg/PlusSVG';
 import { useTranslation } from 'react-i18next';
+import UserAvatar from '../UserAvatar/UserAvatar';
 
 export const Header = () => {
   const { t } = useTranslation();
@@ -45,7 +45,7 @@ export const Header = () => {
               {profile && (
                 <A to="/profile">
                   <div className={style.profile}>
-                    <Avatar profileAvatar={logoIMG} username={profile.username} />
+                    <UserAvatar profileAvatar={profile.avatar} username={profile.username} />
                     <ArrowSVG size={15} direction="right" />
                   </div>
                 </A>

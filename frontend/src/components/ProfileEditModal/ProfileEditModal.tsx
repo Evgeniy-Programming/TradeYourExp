@@ -9,7 +9,6 @@ import { authAPI } from '../../api/auth';
 import { setProfile } from '../../store/slices/profileSlice';
 import { setErrorWithTimeout } from '../../store/slices/appSlice';
 import type { IEditProfile } from '../../types/profile';
-import logoIMG from '../../assets/img/logo.png';
 import style from './style.module.scss';
 import { useTranslation } from 'react-i18next';
 
@@ -56,7 +55,11 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ onClose }) =
       <h2>{t('profileEditModal.title')}</h2>
 
       <div className={style.fields}>
-        <AvatarEdit className={style.fields__avatar} profileAvatar={logoIMG} />
+        <AvatarEdit
+          className={style.fields__avatar}
+          profileAvatar={profile.avatar}
+          username={profile.username}
+        />
 
         <div className={style.fields__field}>
           <label htmlFor="edit-username">{t('auth.usernameLabel')}</label>

@@ -2,7 +2,6 @@ import type { ISkillHistory } from '../../types/skill';
 import AvatarLink from '../../ui/AvatarLink/AvatarLink';
 import Modal from '../../ui/Modal/Modal';
 import style from './style.module.scss';
-import logoIMG from '../../assets/img/logo.png';
 import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import Badge from '../../ui/Badge/Badge';
@@ -41,7 +40,7 @@ export const SkillHistoryDescriptionModal: React.FC<SkillHistoryDescriptionModal
       <div className={style.skill}>
         <div className={style.skill__header}>
           <AvatarLink
-            profileAvatar={logoIMG}
+            profileAvatar={skill.avatarUsername}
             profileId={skill.username}
             username={skill.username}
           />
