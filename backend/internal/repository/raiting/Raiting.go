@@ -8,13 +8,14 @@ import (
 )
 
 type RaitRepository struct {
-	db    *sql.DB
-	redis *redis.Client
+	db           *sql.DB
+	redis        *redis.Client
+	streakPrefix string
 }
 
 func NewRaitRepository(DB *sql.DB, redis *redis.Client) *RaitRepository {
 	if DB == nil {
 		return nil
 	}
-	return &RaitRepository{db: DB, redis: redis}
+	return &RaitRepository{db: DB, redis: redis, streakPrefix: "rating:streak:"}
 }

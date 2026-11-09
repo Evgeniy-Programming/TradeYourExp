@@ -5,6 +5,7 @@ import (
 	"Trade-y-exp/internal/repository"
 	"Trade-y-exp/pkg/db"
 	authpb "Trade-y-exp/proto/auth"
+	"context"
 	"database/sql"
 	"log"
 	"net/http"
@@ -49,6 +50,9 @@ func main() {
 	defer redisClient.Close()
 	// Repository
 	repo := repository.NewHMainRepository(dB, redisClient)
+	streakCtx, cancelStreakWorker := context.WithCancel(context.Background())
+	defer cancelStreakWorker()
+	go repo.Raiting.RunStreakWorker(streakCtx)
 
 	// === gRPC Client to Auth Service ===
 	authAddr := os.Getenv("AUTH_SERVICE_ADDR")

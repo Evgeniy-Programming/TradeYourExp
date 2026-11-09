@@ -3,44 +3,13 @@ package raiting
 import (
 	"Trade-y-exp/internal/models"
 	"context"
-	"fmt"
+	"database/sql"
+	"errors"
 	"strconv"
 	"time"
 
 	"github.com/google/uuid"
 )
-
-// func (rr *RaitRepository) ChangeRait(ctx context.Context, request models.LogicRaitRequest) error {
-// 	tx, err := rr.db.BeginTx(ctx, nil)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	defer tx.Rollback()
-
-// 	var lastRaiting float32
-// 	err = tx.QueryRowContext(ctx, `SELECT raiting FROM users WHERE id = $1 FOR UPDATE`, request.ReceivedId).Scan(&lastRaiting)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	newRait := lastRaiting + float32(request.Mark) // ДОРАБОТКА РАСЧЕТА
-// 	newId := uuid.New()
-// 	_, err = tx.ExecContext(ctx, `
-// 		INSERT INTO raiting (id, received_id, sent_id, last_raiting, new_raiting)
-// 		VALUES ($1, $2, $3, $4, $5)
-// 		ON CONFLICT (id)
-// 		DO UPDATE SET
-// 			last_raiting = EXCLUDED.last_raiting,
-// 			new_raiting = EXCLUDED.new_raiting,
-// 			created_at = NOW()`,
-// 		newId, request.ReceivedId, request.SentId, lastRaiting, newRait)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	_, err = tx.ExecContext(ctx, `UPDATE users SET raiting = $1 WHERE id = $2`, newRait, request.ReceivedId)
-
-// 	return tx.Commit()
-// }
 
 func (rr *RaitRepository) UpdateRait(ctx context.Context, request models.LogicRaitRequest) error {
 	tx, err := rr.db.BeginTx(ctx, nil)
@@ -49,115 +18,117 @@ func (rr *RaitRepository) UpdateRait(ctx context.Context, request models.LogicRa
 	}
 	defer tx.Rollback()
 
-	var lastRaiting float32
-	err = tx.QueryRowContext(ctx, `SELECT raiting FROM users WHERE id = $1 FOR UPDATE`, request.ReceivedId).Scan(&lastRaiting)
-	if err != nil {
+	var lastRaiting float64
+	if err := tx.QueryRowContext(ctx, `SELECT raiting FROM users WHERE id = $1 FOR UPDATE`, request.ReceivedId).Scan(&lastRaiting); err != nil {
 		return err
 	}
-	newRait := float32(request.Mark) // admin set
-	newId := uuid.New()
-	_, err = tx.ExecContext(ctx, `
-		INSERT INTO raiting (id, received_id, sent_id, last_raiting, new_raiting) 
-		VALUES ($1, $2, $3, $4, $5) 
-		ON CONFLICT (id) 
-		DO UPDATE SET 
-			last_raiting = EXCLUDED.last_raiting, 
-			new_raiting = EXCLUDED.new_raiting,
-			created_at = NOW()`,
-		newId, request.ReceivedId, request.SentId, lastRaiting, newRait)
-	if err != nil {
+	newRait := float64(request.Mark)
+	if _, err := tx.ExecContext(ctx, `
+		INSERT INTO raiting (id, received_id, sent_id, last_raiting, new_raiting)
+		VALUES ($1, $2, $3, $4, $5)`,
+		uuid.New(), request.ReceivedId, request.SentId, lastRaiting, newRait); err != nil {
 		return err
 	}
-
-	_, err = tx.ExecContext(ctx, `UPDATE users SET raiting = $1 WHERE id = $2`, newRait, request.ReceivedId)
-
+	if _, err := tx.ExecContext(ctx, `UPDATE users SET raiting = $1 WHERE id = $2`, newRait, request.ReceivedId); err != nil {
+		return err
+	}
 	return tx.Commit()
 }
 
 func (rr *RaitRepository) ChangeRait(ctx context.Context, request models.LogicRaitRequest) error {
-	bonus, _ := rr.getStreakBonus(ctx, request.ReceivedId, request.Mark)
+	ctx, cancel := context.WithTimeout(ctx, streakOperationTimeout)
+	defer cancel()
+	// сессия голосования может быть заблокирована другим воркером, поэтому нужно ждать разблокировки
+	unlock, err := rr.lockStreak(ctx, request.ReceivedId)
+	if err != nil {
+		return err
+	}
+	defer unlock()
 
+	if err := rr.persistExpiredStreak(ctx, request.ReceivedId); err != nil {
+		return err
+	}
 	tx, err := rr.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
 
-	var lastRaiting float32
-	err = tx.QueryRowContext(ctx, `SELECT raiting FROM users WHERE id = $1 FOR UPDATE`, request.ReceivedId).Scan(&lastRaiting)
+	var lastRaiting float64
+	if err := tx.QueryRowContext(ctx, `SELECT raiting FROM users WHERE id = $1 FOR UPDATE`, request.ReceivedId).Scan(&lastRaiting); err != nil {
+		return err
+	}
+	var currentCount int
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM raiting WHERE received_id = $1`, request.ReceivedId).Scan(&currentCount); err != nil {
+		return err
+	}
+	bonus, series, err := rr.getStreakBonus(ctx, tx, request.ReceivedId, request.Mark)
 	if err != nil {
 		return err
 	}
-	newRait := lastRaiting + float32(request.Mark) + bonus
-
-	newId := uuid.New()
-
-	// Мы не обновляем его постоянно. Он останется таким, каким был зафиксирован
-	// при завершении предыдущей сессии (или NULL, если ты добавишь отдельную логику закрытия сессии).
-	_, err = tx.ExecContext(ctx, `
-		INSERT INTO raiting (id, received_id, sent_id, last_raiting, new_raiting) 
-		VALUES ($1, $2, $3, $4, $5) 
-		ON CONFLICT (id) 
-		DO UPDATE SET 
-			last_raiting = EXCLUDED.last_raiting, 
-			new_raiting = EXCLUDED.new_raiting,
-			created_at = NOW()`,
-		newId, request.ReceivedId, request.SentId, lastRaiting, newRait)
-	if err != nil {
+	newRait := calculateRating(lastRaiting, request.Mark, bonus, currentCount)
+	newID := uuid.NewString()
+	if _, err := tx.ExecContext(ctx, `
+		INSERT INTO raiting (id, received_id, sent_id, last_raiting, new_raiting, series)
+		VALUES ($1, $2, $3, $4, $5, NULL)`,
+		newID, request.ReceivedId, request.SentId, lastRaiting, newRait); err != nil {
 		return err
 	}
-
-	_, err = tx.ExecContext(ctx, `UPDATE users SET raiting = $1 WHERE id = $2`, newRait, request.ReceivedId)
-	if err != nil {
+	if _, err := tx.ExecContext(ctx, `UPDATE users SET raiting = $1 WHERE id = $2`, newRait, request.ReceivedId); err != nil {
 		return err
 	}
-
-	return tx.Commit()
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+	saveCtx, cancelSave := context.WithTimeout(context.WithoutCancel(ctx), 2*time.Second)
+	defer cancelSave()
+	if err := rr.saveStreak(saveCtx, request.ReceivedId, newID, request.Mark, series); err != nil {
+		return errors.New("Redis inactive" + err.Error())
+	}
+	return nil
 }
 
-// getStreakBonus возвращает: (бонус к рейтингу, текущая длина серии)
-func (rr *RaitRepository) getStreakBonus(ctx context.Context, userID string, newMark int) (float32, int) {
-	key := fmt.Sprintf("rating:streak:%s", userID)
-	var currentStreak int
-	var lastMark int
+func calculateRating(previous float64, mark int, bonus float64, currentCount int) float64 {
+	// последний рейтинг * количество голосов + новый голос + бонус за серию / (количество голосов + 1)
+	previousSum := previous * float64(currentCount)
+	return (previousSum + float64(mark) + bonus) / float64(currentCount+1)
+}
 
-	// 1. Проверяем активную сессию в Redis
-	redisData, err := rr.redis.HGetAll(ctx, key).Result()
-	if err == nil && len(redisData) > 0 {
-		lastMark, _ = strconv.Atoi(redisData["last_mark"])
-		currentStreak, _ = strconv.Atoi(redisData["count"])
-
+// getStreakBonus подсчет бонус за серию голосов. Если предыдущий голос был того же типа, что и текущий, то бонус увеличивается на 1% за каждый голос в серии. Если предыдущий голос был другого типа, то бонус сбрасывается до 0.
+func (rr *RaitRepository) getStreakBonus(ctx context.Context, tx *sql.Tx, userID string, newMark int) (float64, int, error) {
+	data, err := rr.redis.HGetAll(ctx, rr.streakPrefix+userID).Result()
+	if err != nil {
+		return 0, 0, err
+	}
+	series := 1
+	if len(data) > 0 {
+		lastMark, err := strconv.Atoi(data["last_mark"])
+		if err != nil {
+			return 0, 0, errors.New("invalid Redis last_mark: " + err.Error())
+		}
+		count, err := strconv.Atoi(data["count"])
+		if err != nil || count < 1 {
+			return 0, 0, errors.New("invalid Redis streak count")
+		}
 		if lastMark == newMark {
-			currentStreak++ // Сессия продолжается
-		} else {
-			currentStreak = 1 // Серия прервана другой оценкой, начинаем новую
+			series = count + 1
 		}
 	} else {
-		// 2. Redis пуст (сессия истекла или это первая оценка).
-		// Идем в Postgres за ПОСЛЕДНЕЙ записью, чтобы взять исторический series.
-		// !!! Убедись, что имена таблиц и колонок совпадают с твоими !!!
-		query := `SELECT new_raiting, series FROM raiting WHERE received_id = $1 ORDER BY created_at DESC LIMIT 1`
-
-		var dbMark, dbSeries int
-		err = rr.db.QueryRowContext(ctx, query, userID).Scan(&dbMark, &dbSeries)
-
-		// Так как сессия в Redis истекла (прошло 48 часов), мы начинаем новую серию с 1.
-		// Переменная dbSeries прочитана для истории/логики, но текущая серия сбрасывается.
-		currentStreak = 1
-		lastMark = newMark
+		var saved sql.NullInt64
+		err := tx.QueryRowContext(ctx, `
+			SELECT series FROM raiting WHERE received_id = $1
+			ORDER BY created_at DESC, id DESC LIMIT 1`, userID).Scan(&saved)
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
+			return 0, 0, err
+		}
+		if saved.Valid && saved.Int64 > 0 {
+			series = int(saved.Int64) + 1
+		}
 	}
-
-	// 3. Обновляем ТОЛЬКО Redis (это наше "живое" хранилище активной сессии)
-	if rr.redis != nil {
-		pipe := rr.redis.Pipeline()
-		pipe.HSet(ctx, key, "last_mark", lastMark)
-		pipe.HSet(ctx, key, "count", currentStreak)
-		pipe.Expire(ctx, key, 48*time.Hour) // Сессия живет ровно 48 часов
-		pipe.Exec(ctx)                      // Ошибку игнорируем, чтобы не ронять основной процесс
-	}
-
-	// 4. Расчет бонуса: серия * 0.01
-	bonus := float32(currentStreak) * 0.01
-
-	return bonus, currentStreak
+	return float64(series) / 100, series, nil
 }
+
+const (
+	streakTimeout          = 48 * time.Hour
+	streakOperationTimeout = 10 * time.Second
+)
