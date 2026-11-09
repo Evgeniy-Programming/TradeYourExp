@@ -1,0 +1,2 @@
+ALTER TABLE raiting 
+    ADD COLUMN IF NOT EXISTS series INTEGER;
