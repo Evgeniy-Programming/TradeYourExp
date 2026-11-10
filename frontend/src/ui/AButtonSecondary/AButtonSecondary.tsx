@@ -8,6 +8,7 @@ interface AButtonSecondaryProps {
   isMaxWidth?: boolean;
   isDanger?: boolean;
   children: React.ReactNode;
+  className?: string;
 }
 
 const AButtonSecondary: React.FC<AButtonSecondaryProps> = ({
@@ -15,13 +16,15 @@ const AButtonSecondary: React.FC<AButtonSecondaryProps> = ({
   isMaxWidth = false,
   isDanger = false,
   children,
+  className,
 }) => {
   return (
     <Link
       className={classNames(
         style.aButtonSecondary,
         isMaxWidth && 'max-width',
-        isDanger && style.aButtonSecondary_danger
+        isDanger && style.aButtonSecondary_danger,
+        className
       )}
       to={to}
     >
