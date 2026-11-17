@@ -1,8 +1,8 @@
 # Trade Your Experience — техническая документация
 
-Платформа обмена навыками: пользователь публикует, чему готов научить, и указывает, что хочет получить взамен. Проект включает React SPA, HTTP API, отдельный gRPC-сервис авторизации и общую PostgreSQL.
+Платформа обмена навыками: пользователь публикует, чему готов научить, и указывает, что хочет получить взамен. Проект включает React SPA, HTTP API, отдельный gRPC-сервис авторизации, общую PostgreSQL и Redis для сессий серий оценок.
 
-Документ описывает исходный код репозитория на **2 ноября 2026 года**, ревизия `3117eea`. Источники истины: [HTTP-маршруты](backend/cmd/main.go), [SQL-миграции](backend/migrations), [gRPC-контракт](proto/auth.proto), [клиент API](frontend/src/api) и [Docker Compose](docker-compose.yml). Примеры ниже соответствуют этим файлам. Ограничения реализации выделены явно: наличие функции в API не означает, что она подключена в интерфейсе или готова к публичной эксплуатации.
+Документ описывает исходный код репозитория на **17 ноября 2026 года**, ревизия `ed1a2bb`. Источники истины: [HTTP-маршруты](backend/cmd/main.go), [SQL-миграции](backend/migrations), [gRPC-контракт](proto/auth.proto), [клиент API](frontend/src/api) и [Docker Compose](docker-compose.yml). Примеры ниже соответствуют этим файлам. Ограничения реализации выделены явно: наличие функции в API не означает, что она подключена в интерфейсе или готова к публичной эксплуатации.
 
 ## Содержание
 
@@ -30,7 +30,7 @@
 | Учётные записи | Регистрация, вход по username/email, профиль, смена пароля, logout и refresh | Нет подтверждения email, восстановления пароля и хранилища сессий |
 | Объявления об обмене | Создание, описание, категории, поиск, удаление | Нет проверки владельца для удаления и изменения описания; автор передаётся клиентом |
 | Отклик на обмен | API переводит объявление в `freeze`, записывает участника | Кнопка предложения обмена в SPA выводит текст в консоль и API не вызывает |
-| Рейтинг | Изменение на целое значение, административная установка, чтение и история | Нет связи оценки с завершённой сделкой, ограничения частоты и запрета самооценки |
+| Рейтинг | Средневзвешенный расчёт с бонусом серии, Redis-сессии на 48 часов, фоновая фиксация серии, административная установка и история | Нет связи оценки с завершённой сделкой, ограничения частоты и запрета самооценки |
 | История и статистика SPA | Список собственных объявлений, месячный график | Статистика считается в браузере; все объявления отображаются как `ACTIVE` |
 | Коммуникация | Контакт Telegram/VK/WeChat в описании | Полноценного чата и серверной доставки сообщений нет |
 | Администрирование | HTTP-маршруты с требованием роли `admin` | Проверка роли содержит несовпадение типов ключей контекста; нет административного интерфейса и штатного процесса выдачи роли |
@@ -46,6 +46,10 @@ flowchart LR
     API -->|gRPC :50051| Auth[Auth service]
     API -->|database/sql + lib/pq| DB[(PostgreSQL 15)]
     Auth -->|database/sql + pgx| DB
+    API -->|go-redis :6379| Redis[(Redis 7)]
+    API --> Worker[RunStreakWorker внутри backend]
+    Worker -->|Сроки сессий и блокировки| Redis
+    Worker -->|Фиксация series| DB
     API --> Migrations[Миграции при старте]
     Migrations --> DB
 ```
@@ -54,11 +58,13 @@ flowchart LR
 
 ### Ответственность сервисов
 
-**backend** владеет схемой БД и HTTP API: применяет миграции, обрабатывает навыки, профили и рейтинг, устанавливает cookie. Регистрацию, вход, refresh и logout делегирует auth service. Защищённые маршруты сначала проверяют JWT локально; gRPC-валидация вызывается при неудаче локальной проверки.
+**backend** владеет схемой БД и HTTP API: применяет миграции, обрабатывает навыки, профили и рейтинг, устанавливает cookie. Подключается к Redis и запускает `RunStreakWorker` в отдельной goroutine для сохранения завершённых серий в PostgreSQL. Регистрацию, вход, refresh и logout делегирует auth service. Защищённые маршруты сначала проверяют JWT локально; gRPC-валидация вызывается при неудаче локальной проверки.
 
 **auth_service** хранит и читает пользователей в общей таблице `users`, хеширует пароли, выпускает JWT, проверяет токены и ведёт blacklist access-токенов в памяти. Самостоятельных миграций у сервиса нет.
 
 **frontend** отвечает за маршрутизацию, формы, адаптацию API-моделей, фильтрацию и клиентскую статистику. Cookie с токенами недоступны JavaScript; Axios отправляет их с `withCredentials: true`.
+
+**Redis** хранит активные серии оценок по получателю, блокировки и данные для отложенной фиксации серии. Итоговый рейтинг и история хранятся в PostgreSQL; чтение рейтинга выполняется из SQL. Redis не используется для JWT-blacklist auth service. Потеря Redis может повлиять на незавершённые серии, поэтому это обязательная зависимость backend, а не необязательный кеш.
 
 ### Организация Go-кода
 
@@ -74,6 +80,7 @@ flowchart LR
 |---|---|
 | Go | `go 1.25.0` в обоих модулях |
 | PostgreSQL | `postgres:15-alpine` в Compose |
+| Redis | `redis:7-alpine`; клиент backend `github.com/redis/go-redis/v9 v9.7.0` |
 | HTTP | Gin `v1.12.0` |
 | SQL backend | `database/sql`, `lib/pq v1.10.9` |
 | SQL auth | `database/sql`, `pgx/v5 v5.5.4` |
@@ -97,7 +104,7 @@ flowchart LR
 
 ```text
 .
-├── docker-compose.yml        # db, auth, app, frontend; сеть project; том pgdata
+├── docker-compose.yml        # db, redis, auth, app, frontend; тома pgdata и redis_data
 ├── .env.example              # шаблон переменных; реальные секреты в .env
 ├── README.md                 # исходное описание
 ├── README1.md                # подробная техническая документация
@@ -117,8 +124,9 @@ flowchart LR
 │   ├── internal/models/     # структуры запросов и ответов
 │   ├── internal/contextkeys/
 │   ├── pkg/db/migrations.go
+│   ├── pkg/db/redisClient.go # URL, pool, PING при старте
 │   ├── pkg/repo/categoryList.go
-│   ├── migrations/          # версии 000001–000010, только up
+│   ├── migrations/          # версии 1–13, только up
 │   ├── docs/                # сгенерированный Swagger
 │   ├── proto/auth/          # сгенерированный Go-код
 │   ├── sheets/              # старые HTML-шаблоны
@@ -137,7 +145,7 @@ flowchart LR
 
 ## Запуск через Docker Compose
 
-Команды выполняются из корня репозитория. Требуются работающий Docker Engine/Docker Desktop с Compose v2, доступ к реестрам образов и зависимостей при первой сборке, свободные порты `5173`, `8080`, `50051`, `5432`.
+Команды выполняются из корня репозитория. Требуются работающий Docker Engine/Docker Desktop с Compose v2, доступ к реестрам образов и зависимостей при первой сборке, свободные порты `5173`, `8080`, `50051`, `5432`, `6379`.
 
 ### Первый запуск
 
@@ -156,7 +164,7 @@ flowchart LR
    docker compose logs --tail=100 app auth
    ```
 
-База проходит `pg_isready`, затем запускается auth; backend ждёт здоровую БД и факт старта auth, применяет миграции и открывает HTTP. Условие `service_started` не проверяет готовность gRPC: сразу после запуска возможна кратковременная недоступность авторизации.
+PostgreSQL проходит `pg_isready`, Redis — `redis-cli ping`, затем Compose запускает зависимые сервисы. Backend ждёт здоровые PostgreSQL и Redis и факт старта auth, применяет SQL-миграции, проверяет подключение к Redis, запускает воркер серий и открывает HTTP. Условие `service_started` не проверяет готовность gRPC: сразу после запуска возможна кратковременная недоступность авторизации.
 
 | Ресурс | Локальный адрес |
 |---|---|
@@ -166,6 +174,7 @@ flowchart LR
 | Старый HTML-интерфейс | `http://localhost:8080/` |
 | gRPC auth | `localhost:50051` |
 | PostgreSQL | `localhost:5432`, БД `trade_db`, пользователь `user`, пароль `pass` |
+| Redis | `localhost:6379`, БД `0`; в Docker-сети — `redis:6379` |
 
 Проверка чтения API:
 
@@ -181,7 +190,7 @@ curl -i http://localhost:8080/api/v1/skills
 docker compose up -d --build app auth frontend
 ```
 
-Исходники и миграции включаются в образ через `COPY`; bind mounts для разработки не настроены. `docker compose restart app` перезапускает прежний образ и **не добавляет новые SQL-файлы**. Данные PostgreSQL сохраняются в томе `pgdata`.
+Исходники и миграции включаются в образ через `COPY`; bind mounts для разработки не настроены. `docker compose restart app` перезапускает прежний образ и **не добавляет новые SQL-файлы**. Данные PostgreSQL сохраняются в томе `pgdata`, Redis — в `redis_data` с включённым AOF. После изменения параметров сервиса Redis примените `docker compose up -d redis app`.
 
 ### Остановка
 
@@ -189,7 +198,7 @@ docker compose up -d --build app auth frontend
 docker compose stop
 ```
 
-`docker compose down` удаляет контейнеры и сеть, сохраняя именованный том. Флаг `down -v` дополнительно удаляет данные БД; его нельзя использовать как способ исправления миграций на базе с нужными данными.
+`docker compose down` удаляет контейнеры и сеть, сохраняя именованные тома. Флаг `down -v` дополнительно удаляет данные PostgreSQL и Redis; его нельзя использовать как способ исправления миграций на базе с нужными данными.
 
 ## Конфигурация
 
@@ -198,6 +207,7 @@ docker compose stop
 | Переменная | Потребитель | Поведение |
 |---|---|---|
 | `DATABASE_URL` | backend | По умолчанию `postgres://user:pass@localhost:5432/trade_db?sslmode=disable` |
+| `REDIS_URL` | backend | Обязательный URL, например `redis://localhost:6379/0`; Compose задаёт `redis://redis:6379/0`, значения по умолчанию в Go нет |
 | `DATABASE_URL` | auth | По умолчанию `postgres://user:pass@db:5432/trade_db?sslmode=disable`; для запуска вне Docker нужен `localhost` |
 | `JWT_ACCESS_SECRET` | auth | Обязательна: при пустом значении JWT manager вызывает panic |
 | `JWT_REFRESH_SECRET` | auth | Обязательна; должна отличаться от access secret |
@@ -208,7 +218,7 @@ docker compose stop
 | `VITE_API_URL` | frontend | По умолчанию `/api/v1/`; читается через `import.meta.env`, значение встраивается при сборке |
 | `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` | PostgreSQL image | В Compose заданы буквально: `user`, `pass`, `trade_db` |
 
-**Особенности текущего Compose:** поля `POSTGRES_*`, `DATABASE_URL`, `AUTH_SERVICE_ADDR` и `GRPC_PORT` из корневого `.env` не переопределяют одноимённые литералы в YAML. Для другой БД/порта измените Compose или используйте согласованный override. `VITE_API_URL` в `frontend.environment` не передаётся; для отдельного API origin нужно изменить способ передачи конфигурации/сборку.
+**Особенности текущего Compose:** поля `POSTGRES_*`, `DATABASE_URL`, `REDIS_URL`, `AUTH_SERVICE_ADDR` и `GRPC_PORT` из корневого `.env` не переопределяют одноимённые литералы в YAML. Для другой БД/порта измените Compose или используйте согласованный override. `VITE_API_URL` в `frontend.environment` не передаётся; для отдельного API origin нужно изменить способ передачи конфигурации/сборку.
 
 Изменение пароля PostgreSQL в конфигурации не переинициализирует существующий том: учётные данные существующей БД меняются отдельно. Имя `trade_db`, переданное в `RunMigrations`, не переключает подключение: фактическую БД определяет DSN.
 
@@ -216,10 +226,10 @@ docker compose stop
 
 Требуются Go toolchain, совместимый с модулями, PostgreSQL 15 и Node/npm, совместимые с зависимостями frontend. Контейнер frontend использует Node 22; дополнительные ограничения проверяйте по `engines` установленных пакетов. Два каталога Go — независимые модули, общего `go.work` нет.
 
-Базу можно поднять отдельно:
+PostgreSQL и Redis можно поднять отдельно:
 
 ```bash
-docker compose up -d db
+docker compose up -d db redis
 ```
 
 В терминале auth, предварительно задав JWT-секреты:
@@ -237,6 +247,7 @@ go run ./cmd/server
 cd backend
 export DATABASE_URL='postgres://user:pass@localhost:5432/trade_db?sslmode=disable'
 export AUTH_SERVICE_ADDR=localhost:50051
+export REDIS_URL='redis://localhost:6379/0'
 # JWT_SECRET должен совпадать с JWT_ACCESS_SECRET запущенного auth.
 export JWT_SECRET="$JWT_ACCESS_SECRET"
 go run ./cmd
@@ -322,11 +333,12 @@ Middleware возвращает ошибки в сокращённом виде 
 
 | Метод | Путь | Доступ | Поведение |
 |---|---|---|---|
-| POST | `/rait/` | Сессия | `received_id`, `mark`; прибавляет оценку; `201` |
+| POST | `/rait/` | Сессия | `received_id`, `mark`; пересчитывает средний рейтинг с бонусом серии; `201` |
 | GET | `/rait/me` | Сессия | Текущий рейтинг отправителя запроса в виде строки |
 | GET | `/rait/user/:username` | Сессия | Рейтинг по username в виде строки |
-| GET | `/rait/history/:id` | Сессия | Записи, где пользователь получатель **или отправитель** |
+| GET | `/rait/history/me` | Сессия | Записи, где текущий пользователь из JWT — получатель **или отправитель** |
 | POST | `/rait/new` | admin | `received_id`, `mark`; устанавливает абсолютный рейтинг; `201` |
+| GET | `/history/:received_id?sent_id=<UUID>` | admin | Выборка влияния; текущий SQL использует `received_id = $1 OR sent_id = $2`, а не пересечение пары |
 
 ### Пример работы с cookie через curl
 
@@ -446,7 +458,7 @@ newRating = (previousSum + mark + bonus) / (currentCount + 1)
 bonus = series * 0.01
 ```
 
-`currentCount` — количество существующих записей `raiting` для `received_id`, без текущей оценки. `lastRating` — среднее, поэтому умножение на количество оценок восстанавливает предыдущую сумму. Например, при рейтинге 3.5 по двум оценкам (2 и 5), новой оценке 5 и серии 2 получается `(3.5 * 2 + 5 + 0.02) / 3 = 4.006666…`. С текущей точностью `DECIMAL(4,3)` БД сохранит 4.007. SQL читает исходные данные и сохраняет готовые значения; расчёт выполняется в Go.
+`currentCount` — количество существующих записей `raiting` для `received_id`, без текущей оценки. `lastRating` — сохранённое среднее, поэтому умножение на количество записей восстанавливает сумму с точностью сохранённого значения. В `COUNT(*)` входят и записи административной установки, а исходные оценки `mark` в SQL отдельно не сохраняются. Например, при рейтинге 3.5 по двум оценкам (2 и 5), новой оценке 5 и серии 2 получается `(3.5 * 2 + 5 + 0.02) / 3 = 4.006666…`. С текущей точностью `DECIMAL(4,3)` БД сохранит 4.007. SQL читает исходные данные и сохраняет готовые значения; расчёт выполняется в Go.
 
 Обычная оценка блокирует Redis-сессию получателя, затем в SQL-транзакции блокирует строку пользователя (`FOR UPDATE`), читает рейтинг и количество записей, вычисляет результат, добавляет историю и обновляет пользователя. Только после успешного commit обновляются `last_mark`, `count` и TTL Redis. В активной сессии одинаковая оценка увеличивает серию, другая начинает её с 1; в Redis всегда сохраняется новая `last_mark`.
 
@@ -454,27 +466,41 @@ bonus = series * 0.01
 
 При новой оценке без активной Redis-сессии сначала завершается ожидающая записи истёкшая сессия, затем читается `series` последней строки истории по `received_id`. Отсутствие строки или `NULL` начинает серию с 1; заполненное значение продолжает её с `series + 1`. Между сессиями длина продолжается независимо от новой оценки; внутри сессии сохраняется сравнение `last_mark`. Redis-блокировка согласует обычные запросы и обработчики таймаута в разных экземплярах backend.
 
-Административная установка сохраняет исходную семантику: `newRating = mark`, новая строка истории и обновление пользователя. Новых накопителей и колонок `mark` нет: используются `series` из миграции 12 и точность `DECIMAL(4,3)` из миграции 13.
+Административная установка выполняется только в SQL: `newRating = mark`, новая строка истории и обновление пользователя. Она не меняет и не сбрасывает Redis-сессию, но её строка учитывается в `currentCount` следующего обычного голосования. Новых накопителей и колонок `mark` нет: используются `series` из миграции 12 и точность `DECIMAL(4,3)` из миграции 13.
 
-Проверки:
+### Ключи Redis и завершение сессий
 
-```bash
-cd backend
-go test ./...
-# Тесты используют отдельную временную схему PostgreSQL и уникальный префикс Redis.
-RAITING_TEST_DATABASE_URL='postgres://user:pass@localhost:5432/trade_db?sslmode=disable' \
-RAITING_TEST_REDIS_URL='redis://localhost:6379/0' \
-go test -race ./internal/repository/raiting -v
-```
+Префикс задаётся в [Raiting.go](backend/internal/repository/raiting/Raiting.go): `rating:streak:`. Сессия относится к **получателю**, объединяя оценки от разных отправителей. `count` — длина текущей серии одинаковых оценок, а не общее число голосов и не SQL-счётчик `currentCount`.
+
+| Ключ | Тип | Содержимое | Срок жизни |
+|---|---|---|---|
+| `rating:streak:<user_id>` | Hash | `last_mark`, `count`, `rating_id` последней оценки | 48 часов, продлевается после успешной записи оценки |
+| `rating:streak:pending:<user_id>` | Hash | `count`, `rating_id` для фиксации серии | Без TTL; удаляется после записи `series` в SQL |
+| `rating:streak:expires` | Sorted set | Участник — user ID, score — срок завершения в Unix milliseconds | Без TTL; участник удаляется после фиксации серии |
+| `rating:streak:lock:<user_id>` | String | Уникальный токен владельца блокировки | 30 секунд; обычно удаляется при завершении операции |
+
+`saveStreak` обновляет активный ключ, TTL, pending-копию и sorted set через `TxPipelined`. Это группа Redis-команд в транзакции Redis, но она выполняется **после** отдельного commit PostgreSQL. Активный ключ содержит последнюю оценку даже при смене её значения; серия в таком случае сбрасывается до 1. Бонус равен `series / 100`, включая `0.01` для первой оценки; он прибавляется к числителю формулы, а не умножает весь рейтинг.
+
+[RunStreakWorker](backend/internal/repository/raiting/StreakSession.go) работает внутри каждого backend, без отдельного контейнера. На проходе он выбирает до 100 истёкших участников sorted set, обрабатывает их последовательно и повторяет проверку с секундным ticker. Проверка каждой сессии и обычная оценка имеют timeout 10 секунд. При длительной обработке фактическая задержка фиксации может быть больше секунды.
+
+Фиксация проверяет срок из sorted set и отсутствие активного ключа, затем обновляет `series` по сохранённым `rating_id` и `received_id`. Pending-копия удаляется только если SQL обновил ровно одну строку. После ошибки SQL данные остаются для следующей попытки; если Redis не потерял состояние, обработка возобновится после рестарта backend. При новой оценке тот же механизм сначала завершает просроченную сессию. Это опрос сроков, а не подписка на Redis keyspace notifications.
+
+Блокировка берётся через `SET NX` с TTL 30 секунд, повтор попытки — каждые 25 мс в пределах контекста. Освобождение выполняется Lua-скриптом, который удаляет ключ только при совпадении токена владельца. Продления блокировки нет; вытеснение ключа или истечение TTL снимает её защиту. SQL `FOR UPDATE` дополнительно сериализует обновление строки получателя.
+
+Поле `series` пока не включено в модель `Raiting` и SELECT истории: оно хранится в SQL для продолжения серии, но не возвращается клиенту в истории.
+
+### Проверки реализации
+
+Из каталога `backend` доступна команда `go test ./...`. В текущем дереве нет файлов `_test.go`, поэтому переменные `RAITING_TEST_DATABASE_URL` и `RAITING_TEST_REDIS_URL` не подключены к тестам; успешная команда не проверяет сценарии PostgreSQL/Redis. Для интеграционной проверки нужны отдельные тестовые данные: повтор одинаковой оценки, смена оценки, завершение TTL, рестарт воркера и отказ Redis после SQL commit.
 
 ### Существенные ограничения
 
-- Сохранение SQL и обновление Redis не являются общей транзакцией: если Redis недоступен после SQL commit, метод явно сообщает, что рейтинг сохранён, а сессия — нет. Повтор запроса не идемпотентен. Удаление Redis-данных или вытеснение pending-копии политикой `allkeys-lru` также может потерять незавершённую серию.
+- Сохранение SQL и обновление Redis не являются общей транзакцией: если Redis недоступен после SQL commit, метод возвращает ошибку с префиксом `Redis inactive`, хотя рейтинг уже сохранён. HTTP-обработчик преобразует её в `500`; тело ошибки не сообщает клиенту об успешном SQL commit. Повтор запроса не идемпотентен. Удаление Redis-данных или вытеснение pending-копии политикой `allkeys-lru` также может потерять незавершённую серию.
 - Рейтинг хранится с точностью до трёх знаков: это значение участвует в следующем расчёте. `DECIMAL(4,3)` допускает значения от −9.999 до 9.999; переполнение откатывает SQL-транзакцию.
 - `mark` — целое число с `binding:"required"`: **0 отклоняется**, отрицательные и большие значения специальной проверкой не ограничены. Для admin это означает невозможность штатно установить 0.
 - Нет запрета оценивать себя, повторять оценку и оценивать без совершённого обмена. Нет бизнес-диапазона `mark`, ограничения частоты и уникальности пары участников.
 - `received_id`/`sent_id` не имеют FK. Получатель проверяется косвенно чтением `users`, отправитель приходит из JWT.
-- История выбирается без сортировки, пагинации и проверки принадлежности запрашиваемого ID. Любой авторизованный пользователь может запросить чужую историю. Список колонок задан явно; ошибки `Scan` и `rows.Err()` возвращаются вызывающему коду.
+- История `/rait/history/me` получает ID из JWT и выбирает входящие и исходящие записи текущего пользователя без сортировки и пагинации. Административная выборка влияния имеет отдельный маршрут `/history/:received_id`; её SQL использует `OR`, поэтому не ограничивает результат только указанной парой участников. Список колонок задан явно; ошибки `Scan` и `rows.Err()` возвращаются вызывающему коду.
 - GET рейтинга возвращает строку; профильные модели используют число. `/users/me` рейтинг не выбирает из БД, поэтому поле модели остаётся `0`, тогда как `/users/profile/:username` и `/users/me/static` его читают.
 
 ## База данных и миграции
@@ -483,15 +509,15 @@ go test -race ./internal/repository/raiting -v
 
 | Таблица | Основные поля | Ограничения и связи |
 |---|---|---|
-| `users` | UUID `id`; username, email, password; first_name, last_name, social_link; created_at; role; raiting | PK id; UNIQUE email; username NOT NULL, **без UNIQUE**; role NOT NULL default `manager`; raiting nullable default `0.0` |
-| `skills` | SERIAL `id`; username, skill, exchange, created_at; category; status; contributor | PK id; status NOT NULL default `active`; contributor nullable UUID, без FK; username без FK |
+| `users` | UUID `id`; username, email, password; first_name, last_name, social_link; created_at; role; raiting | PK id; UNIQUE email; username NOT NULL, **без UNIQUE**; role NOT NULL default `manager`; raiting `DECIMAL(4,3)` nullable default `0.000` |
+| `skills` | SERIAL `id`; username, skill, exchange, created_at; category; status; contributor; addition | PK id; status NOT NULL default `active`; contributor nullable UUID, без FK; username без FK |
 | `skill_descriptions` | SERIAL `id`; skill_id, description, media, created_at | PK id; UNIQUE skill_id; FK → skills(id), ON DELETE CASCADE |
-| `raiting` | UUID id, received_id, sent_id; last_raiting, new_raiting; created_at | PK id; обязательные UUID участников и numeric значения; внешних ключей нет |
+| `raiting` | UUID id, received_id, sent_id; last_raiting, new_raiting `DECIMAL(4,3)`; created_at; nullable series INTEGER | PK id; обязательные UUID участников и numeric значения; внешних ключей нет |
 | `schema_migrations` | version, dirty | Состояние migrator, не журнал всех выполненных файлов |
 
 `users.created_at`, `skills.created_at`, `raiting.created_at` — `TIMESTAMP WITH TIME ZONE`; дата описания — `TIMESTAMP` без timezone. Нормализацию времени нужно учитывать при API-выдаче и клиентских группировках по месяцу.
 
-Индексы: `idx_users_username`, `idx_users_email`, `idx_skill_desc_created(created_at DESC)`; также индексы PK/UNIQUE. Email уже имеет индекс от UNIQUE, дополнительный индекс может дублировать его назначение. Индекс на `skill_descriptions.skill_id`, созданный миграцией 2, исчезает вместе с таблицей в миграции 3 и заменяется индексом UNIQUE. Индексов истории по участникам нет.
+Индексы: `idx_users_username`, `idx_users_email`, `idx_skill_desc_created(created_at DESC)`; также индексы PK/UNIQUE. Email уже имеет индекс от UNIQUE, дополнительный индекс может дублировать его назначение. Индекс на `skill_descriptions.skill_id`, созданный миграцией 2, исчезает вместе с таблицей в миграции 3 и заменяется индексом UNIQUE. Миграция 13 добавляет `idx_raiting_received_id` для истории по получателю; отдельного индекса на `sent_id` нет.
 
 ### Последовательность миграций
 
@@ -507,6 +533,9 @@ go test -race ./internal/repository/raiting -v
 | 8 | `000008_alter_table_skills.up.sql` | status и contributor |
 | 9 | `000009_alter_table_users.up.sql` | users.raiting |
 | 10 | `000010_restore_raiting.up.sql` | Повторный CREATE TABLE IF NOT EXISTS raiting для восстановления отсутствующей таблицы |
+| 11 | `0000011_alter_table_skills.up.sql` | nullable addition TEXT в skills |
+| 12 | `0000012_alter_table_raiting.up.sql` | nullable series INTEGER в истории рейтинга |
+| 13 | `0000013_alter_table_raiting.up.sql` | Индекс received_id; DECIMAL(4,3) для трёх рейтинговых колонок; default users.raiting = 0.000 |
 
 Backend вызывает `m.Up()` до запуска HTTP. Ошибка миграции завершает процесс через `log.Fatal`. `ErrNoChange` считается нормальным, и сообщение `Migrations applied successfully!` выводится также при отсутствии новых миграций.
 
@@ -526,7 +555,7 @@ docker compose exec -T db psql -U user -d trade_db -c \
 docker compose exec -T db psql -U user -d trade_db -c '\d public.raiting'
 ```
 
-Для схемы из текущего репозитория ожидается версия `10`, `dirty=false` и наличие таблицы. Это ожидаемое состояние после запуска текущего кода, а не утверждение о любой внешней БД.
+Для схемы из текущего репозитория ожидается версия `13`, `dirty=false` и наличие таблицы. Это ожидаемое состояние после запуска текущего кода, а не утверждение о любой внешней БД.
 
 Если `dirty=true`, сначала установите причину по логам и фактической схеме, исправьте или завершите неудавшееся изменение, затем согласуйте версию migrator. Слепой `force` только меняет метаданные и не исполняет пропущенный SQL. Для дальнейших изменений добавляйте новый уникальный номер, не редактируя историю применённых миграций.
 
@@ -573,15 +602,35 @@ Legacy JS использует sessionStorage для состояния инте
 
 ```bash
 docker compose ps -a
-docker compose logs --tail=100 app auth db frontend
+docker compose logs --tail=100 app auth db redis frontend
 docker compose logs -f app auth
 ```
 
-Имена контейнеров фиксированы (`trade_db_container`, `trade_auth_container`, `trade_app_container`, `trade_frontend_container`), поэтому параллельный Compose-проект с теми же именами создаст конфликт даже при другом имени проекта.
+Имена контейнеров фиксированы (`trade_db_container`, `trade_auth_container`, `trade_app_container`, `trade_frontend_container`, `trade_redis`), поэтому параллельный Compose-проект с теми же именами создаст конфликт даже при другом имени проекта.
 
-Auth делает `db.Ping()` на старте. Backend открывает соединение, затем обращается к БД при инициализации migrator. `restart: unless-stopped` настроен для app/auth/frontend, но не для db. Healthcheck есть только у БД; состояние контейнера `Up` само по себе не подтверждает исправность API.
+Auth делает `db.Ping()` на старте. Backend открывает соединение, затем обращается к БД при инициализации migrator. `restart: unless-stopped` настроен для app/auth/frontend/redis, но не для db. Healthcheck есть у PostgreSQL и Redis; состояние контейнера `Up` само по себе не подтверждает исправность API.
 
 Gin включает logger и recovery. Request ID возвращается, но нет настроенной централизованной системы логов, метрик и трассировки; gRPC-контекст не получает ID автоматически. SQL/gRPC-ошибки во многих ответах передаются клиенту через `err.Error()`.
+
+### Redis: запуск, сохранность и диагностика
+
+[redisClient.go](backend/pkg/db/redisClient.go) использует `redis.ParseURL`: нужен полный URL (`redis://…` или поддерживаемый клиентом `rediss://…`), а не голый `host:port`. Pool: `PoolSize=10`, `MinIdleConns=2`, `ConnMaxLifetime=1m`. При старте выполняется PING с timeout 5 секунд. Ошибка URL или подключения завершает **весь backend** через `log.Fatal("Redis connection failed:", err)`; fallback к SQL-only режиму не предусмотрен.
+
+Compose запускает `redis:7-alpine` с `--appendonly yes --maxmemory 128mb --maxmemory-policy allkeys-lru`, томом `redis_data:/data` и опубликованным портом 6379. Пароль/ACL/TLS в текущей конфигурации не заданы. AOF сохраняет Redis-состояние при обычном перезапуске с тем же томом, но не заменяет backup и не гарантирует сохранение каждого последнего изменения при аварии.
+
+`allkeys-lru` может вытеснять **любые** ключи, включая pending-копии, сроки и блокировки без TTL. Поэтому Redis-состояние нельзя считать полностью восстанавливаемым кешем: вытеснение способно потерять серию или нарушить координацию. Следите за памятью, `evicted_keys`, состоянием AOF и логами `persist rating sessions:`. Для production нужно согласовать политику вытеснения и объём памяти с требованиями сохранности сессий.
+
+Проверки без изменения данных:
+
+```bash
+docker compose exec -T redis redis-cli PING
+docker compose exec -T redis redis-cli INFO memory
+docker compose exec -T redis redis-cli INFO stats
+docker compose exec -T redis redis-cli INFO persistence
+docker compose exec -T redis redis-cli --scan --pattern 'rating:streak:*'
+```
+
+Для конкретного получателя можно проверить `HGETALL rating:streak:<UUID>`, `TTL rating:streak:<UUID>`, `HGETALL rating:streak:pending:<UUID>` и `ZSCORE rating:streak:expires <UUID>` через `redis-cli`. Отсутствие активного hash после 48 часов нормально; pending-копия и участник sorted set должны исчезнуть после успешной фиксации в SQL. Не удаляйте их вручную для «сброса кеша»: они содержат незавершённое состояние серии.
 
 ### Резервное копирование
 
@@ -593,7 +642,7 @@ docker compose exec -T db pg_dump -U user -d trade_db -Fc > /tmp/tye-trade-db.du
 
 Команда сохраняет данные и схему; код возврата и пригодность файла необходимо проверять. `/tmp` подходит только для разовой локальной операции: эксплуатационные копии должны храниться отдельно от Docker-тома с ограниченным доступом и сроками хранения.
 
-Проверяйте восстановление в отдельную тестовую БД через `pg_restore`, не поверх рабочей базы. В копию входят хеши паролей, email и контакты пользователей. Blacklist auth в SQL-backup не входит, поскольку хранится в памяти. Доступность backup без проверенного восстановления не гарантирует восстановимость приложения.
+Проверяйте восстановление в отдельную тестовую БД через `pg_restore`, не поверх рабочей базы. В копию входят хеши паролей, email и контакты пользователей. Blacklist auth в SQL-backup не входит, поскольку хранится в памяти. Redis-сессии, pending-копии и очередь завершения также не входят в `pg_dump`: для них нужны отдельное сохранение Redis и согласованный порядок восстановления PostgreSQL/Redis. После восстановления проверяйте, что `rating_id` pending-записей существует в SQL; иначе воркер будет повторять ошибку фиксации. Доступность backup без проверенного восстановления не гарантирует восстановимость приложения.
 
 ### Типовые проблемы
 
@@ -602,9 +651,12 @@ docker compose exec -T db pg_dump -U user -d trade_db -Fc > /tmp/tye-trade-db.du
 | `migration init error` | Рабочий каталог backend, наличие `migrations` в образе, корректность DSN |
 | `Dirty database version` | Логи предыдущего запуска, `schema_migrations`, фактический результат неудавшегося DDL |
 | `raiting` нет, но migrations successful | Версию БД и содержимое образа; уже применённые миграции повторно не исполняются |
-| `INSERT has more target columns than expressions` | Соответствие списка колонок VALUES; в текущем рейтинговом INSERT 5 колонок и 5 параметров, created_at задаётся default; при старой ошибке пересобрать app |
-| Ошибка `ON CONFLICT` | Ограничение на выбранную колонку; текущий код рейтинга использует PK `id`, не `received_id` |
-| `numeric field overflow` | Сумму рейтинга и `DECIMAL(2,1)` во всех рейтинговых колонках |
+| `INSERT has more target columns than expressions` | Соответствие списка колонок VALUES; в обычной оценке INSERT содержит 6 колонок и 5 параметров плюс явный NULL для series; в admin INSERT — 5 колонок и 5 параметров, created_at задаётся default; при старой ошибке пересобрать app |
+| Ошибка `ON CONFLICT` | SQL из запущенного образа; в текущем рейтинговом INSERT нет ON CONFLICT, новая запись получает новый UUID |
+| `numeric field overflow` | Результат формулы и применение миграции 13: текущий тип всех рейтинговых колонок — `DECIMAL(4,3)` |
+| `Redis connection failed` | Наличие полного REDIS_URL в окружении backend, доступность Redis и результат PING |
+| `Redis inactive...` при оценке | Возможен успешный SQL commit с неудачным обновлением серии; не повторять запрос автоматически без проверки истории |
+| `persist rating sessions:` в логах | Redis, pending-копию, наличие rating_id в SQL и состояние sorted set; воркер повторяет неуспешные записи |
 | `mark: 0` возвращает 400 | `binding:"required"` для int отвергает ноль |
 | 401 после входа | Cookie, host/path/SameSite, совпадение JWT-секретов, срок токена |
 | Admin получает `Forbidden: role not found` | Несовпадение `contextkeys.RoleKey` и строкового `ContextRole` в `RequireRole`; это разные ключи для Gin 1.12 |
@@ -708,7 +760,7 @@ git add -f README1.md
 - Сделать создание объявления с описанием атомарным; определить обработку частичного успеха регистрации. Добавить проверки `RowsAffected`, `rows.Err()` и ошибок Scan/UPDATE.
 - Настроить SQL pool, ограничения соединений, observability и индексы по результатам измерений. Сейчас параметры `SetMaxOpenConns`, `SetMaxIdleConns`, `SetConnMaxLifetime` явно не задаются.
 - Добавить пагинацию, индексы и серверные выборки собственных объявлений/статистики; не загружать всю ленту для каждого профиля.
-- Настроить резервное копирование, проверенное восстановление, readiness/liveness и оповещения. Общая БД — критическая зависимость обоих Go-сервисов.
+- Настроить резервное копирование, проверенное восстановление, readiness/liveness и оповещения. Общая БД — критическая зависимость обоих Go-сервисов; Redis обязателен для запуска backend и согласованной обработки обычных оценок. Контролировать AOF, вытеснения ключей и отставание воркера завершения серий.
 - Закрепить базовые образы, toolchain и генераторы; заменить frontend `npm install --force` в Dockerfile на проверенный воспроизводимый процесс. Добавить `.dockerignore`: сейчас контекст `COPY . .` не отфильтрован отдельными правилами Docker.
 - Ввести автоматические проверки API, SQL, прав доступа, миграций и сборки SPA. Договориться о лицензии и правилах изменений: отдельный LICENSE и CONTRIBUTING в текущем дереве отсутствуют.
 
