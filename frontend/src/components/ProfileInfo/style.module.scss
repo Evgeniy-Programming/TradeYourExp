@@ -41,6 +41,18 @@
     }
   }
 
+  &__avatar {
+    align-self: center;
+
+    width: 100px;
+    height: 100px;
+    margin-bottom: 8px;
+    border: 2px solid var(--color-element-transparent);
+    border-radius: 50%;
+
+    object-fit: cover;
+  }
+
   &__field {
     display: flex;
     flex-direction: column;

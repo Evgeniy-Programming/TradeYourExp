@@ -2,7 +2,6 @@ import type { ISkillHistory } from '../../types/skill';
 import AvatarLink from '../../ui/AvatarLink/AvatarLink';
 import Modal from '../../ui/Modal/Modal';
 import style from './style.module.scss';
-import logoIMG from '../../assets/img/logo.png';
 import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import Badge from '../../ui/Badge/Badge';
@@ -11,17 +10,28 @@ import classNames from 'classnames';
 import { formatSkillStatusType } from '../../utils/formatSkillStatusType';
 import { useTranslation } from 'react-i18next';
 import { formatCategory } from '../../utils/formatCategory';
+import { useState } from 'react';
+import ConfirmModal from '../ConfirmModal/ConfirmModal';
 
 interface SkillHistoryDescriptionModalProps {
   onClose: () => void;
+  onReject: () => void;
   skill: ISkillHistory;
 }
 
 export const SkillHistoryDescriptionModal: React.FC<SkillHistoryDescriptionModalProps> = ({
   onClose,
+  onReject,
   skill,
 }) => {
   const { t } = useTranslation();
+
+  const [isOpenRejectConfirm, setOpenRejectConfirm] = useState(false);
+
+  const handleRejectConfirm = () => {
+    onReject();
+    onClose();
+  };
 
   return (
     <Modal className={style.modal} onClick={onClose}>
@@ -30,7 +40,7 @@ export const SkillHistoryDescriptionModal: React.FC<SkillHistoryDescriptionModal
       <div className={style.skill}>
         <div className={style.skill__header}>
           <AvatarLink
-            profileAvatar={logoIMG}
+            profileAvatar={skill.avatarUsername}
             profileId={skill.username}
             username={skill.username}
           />
@@ -84,6 +94,20 @@ export const SkillHistoryDescriptionModal: React.FC<SkillHistoryDescriptionModal
 
         <div className={style.skill__controls}>
           <ButtonSecondary onClick={onClose}>{t('common.cancel')}</ButtonSecondary>
+          <ButtonSecondary isDanger onClick={() => setOpenRejectConfirm(true)}>
+            {t('common.unpublish')}
+          </ButtonSecondary>
+
+          {isOpenRejectConfirm && (
+            <ConfirmModal
+              text="confirm.reject_q"
+              onConfirm={handleRejectConfirm}
+              onCancel={() => setOpenRejectConfirm(false)}
+              confirmText="common.confirm"
+              cancelText="common.cancel"
+              isDanger
+            />
+          )}
         </div>
       </div>
     </Modal>

@@ -1,9 +1,8 @@
 import style from './style.module.scss';
-import logoIMG from '../../assets/img/logo.png';
 import AvatarLink from '../../ui/AvatarLink/AvatarLink';
 import Button from '../../ui/Button/Button';
 import { useState } from 'react';
-import { useAppSelector } from '../../hooks/useAppDispatch';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { ToAuthModal } from '../ToAuthModal/ToAuthModal';
 import type { ISkillHistory } from '../../types/skill';
 import Badge from '../../ui/Badge/Badge';
@@ -11,6 +10,8 @@ import { formatSkillStatusType } from '../../utils/formatSkillStatusType';
 import classNames from 'classnames';
 import { SkillHistoryDescriptionModal } from '../SkillHistoryDescriptionModal/SkillHistoryDescriptionModal';
 import { useTranslation } from 'react-i18next';
+import { skillAPI } from '../../api/skill';
+import { setErrorWithTimeout } from '../../store/slices/appSlice';
 
 interface SkillHistoryProps {
   skill: ISkillHistory;
@@ -21,6 +22,7 @@ export const SkillHistory: React.FC<SkillHistoryProps> = ({ skill }) => {
   const [isOpenDescModal, setOpenDescModal] = useState(false);
   const [isOpenAuthModal, setOpenAuthModal] = useState(false);
   const profile = useAppSelector((state) => state.profile.profile);
+  const dispatch = useAppDispatch();
 
   const handleOpenDesc = () => {
     if (profile) {
@@ -30,10 +32,23 @@ export const SkillHistory: React.FC<SkillHistoryProps> = ({ skill }) => {
     }
   };
 
+  const rejectSkill = async () => {
+    try {
+      await skillAPI.rejectSkill(skill.id);
+      setOpenDescModal(false);
+    } catch (error) {
+      dispatch(setErrorWithTimeout(error));
+    }
+  };
+
   return (
     <>
       {isOpenDescModal && (
-        <SkillHistoryDescriptionModal skill={skill} onClose={() => setOpenDescModal(false)} />
+        <SkillHistoryDescriptionModal
+          skill={skill}
+          onClose={() => setOpenDescModal(false)}
+          onReject={rejectSkill}
+        />
       )}
       {isOpenAuthModal && <ToAuthModal onClose={() => setOpenAuthModal(false)} />}
       <div className={style.skill}>
@@ -41,7 +56,7 @@ export const SkillHistory: React.FC<SkillHistoryProps> = ({ skill }) => {
           <div className={style.skill__content__info}>
             <div className={style.skill__content__avatar}>
               <AvatarLink
-                profileAvatar={logoIMG}
+                profileAvatar={skill.avatarUsername}
                 username={skill.username}
                 profileId={skill.username}
               />

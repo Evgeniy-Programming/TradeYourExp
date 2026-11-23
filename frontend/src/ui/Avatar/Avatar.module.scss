@@ -1,19 +1,24 @@
 .avatar {
-  display: flex;
-  gap: 8px;
-  align-items: center;
+  flex-shrink: 0;
+  border: 2px solid var(--color-element-transparent);
+  border-radius: 50%;
+  object-fit: cover;
 
-  &__image {
-    width: 32px;
-    height: 32px;
-    border: 2px solid var(--color-element-transparent);
-    border-radius: 50%;
+  &_letter {
+    user-select: none;
 
-    object-fit: cover;
-  }
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  &__username {
-    font-size: var(--font-size-small);
-    color: var(--color-text-base);
+    font-family: var(--font-family-base);
+    font-weight: var(--font-weight-bold);
+    color: #ffffff;
+
+    // Размер шрифта зависит от размера круга.
+    // 0.45 — эмпирический коэффициент, чтобы буква занимала ~45% диаметра.
+    // size передаётся инлайном как width/height, поэтому используем cqw-подход
+    // через container queries недоступен — вместо этого font-size задаётся
+    // в компоненте инлайном (см. inlineStyle ниже).
   }
 }

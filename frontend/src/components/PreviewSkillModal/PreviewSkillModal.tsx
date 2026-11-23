@@ -1,7 +1,6 @@
 import AvatarLink from '../../ui/AvatarLink/AvatarLink';
 import Modal from '../../ui/Modal/Modal';
 import style from './style.module.scss';
-import logoIMG from '../../assets/img/logo.png';
 import Button from '../../ui/Button/Button';
 import ButtonSecondary from '../../ui/ButtonSecondary/ButtonSecondary';
 import { formatTimestamp } from '../../utils/formatTimestamp';
@@ -46,7 +45,7 @@ export const PreviewSkillModal: React.FC<PreviewSkillModalProps> = ({ onClose, s
         <div className={style.skill}>
           <div className={style.skill__header}>
             <AvatarLink
-              profileAvatar={logoIMG}
+              profileAvatar={profile.avatar}
               profileId={profile.username}
               username={profile.username}
             />

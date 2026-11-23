@@ -1,7 +1,8 @@
 export const skillStatus = {
-  ACTIVE: 'ACTIVE',
-  PENDING: 'PENDING',
-  FREEZE: 'FREEZE',
-  CLOSED: 'CLOSED',
-  REJECTED: 'REJECTED',
+  OPEN: 'OPEN', // Сделка опубликована и открыта для всех
+  PENDING: 'PENDING', // Сделка ожидает подтверждения, когда другой пользователь откликнулся на неё
+  ACTIVE: 'ACTIVE', // Сделка подтвердилась, открыта только для двух участников
+  CLOSED: 'CLOSED', // Сделака закрыта после подтверждения обеих пользователей
+  REJECTED: 'REJECTED', // Сделка отменена одним из пользователей
+  FREEZE: 'FREEZE', // Пока не используется
 };

@@ -1,6 +1,4 @@
 import style from './style.module.scss';
-import logoIMG from '../../assets/img/logo.png';
-import AvatarLink from '../../ui/AvatarLink/AvatarLink';
 import Button from '../../ui/Button/Button';
 import { useState } from 'react';
 import { SkillDescriptionModal } from '../SkillDescriptionModal/SkillDescriptionModal';
@@ -11,6 +9,7 @@ import { SkillOfferModal } from '../SkillOfferModal/SkillOfferModal';
 import Badge from '../../ui/Badge/Badge';
 import { useTranslation } from 'react-i18next';
 import { formatCategory } from '../../utils/formatCategory';
+import UserAvatarLink from '../UserAvatarLink/UserAvatarLink';
 
 interface SkillProps {
   skill: ISkill;
@@ -55,8 +54,8 @@ export const Skill: React.FC<SkillProps> = ({ skill }) => {
         <div className={style.skill__content}>
           <div className={style.skill__content__info}>
             <div className={style.skill__content__avatar}>
-              <AvatarLink
-                profileAvatar={logoIMG}
+              <UserAvatarLink
+                profileAvatar={skill.avatarUsername}
                 username={skill.username}
                 profileId={skill.username}
               />

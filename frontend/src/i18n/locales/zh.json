@@ -16,7 +16,9 @@
     "delete": "删除",
     "loading": "加载中...",
     "noInfo": "暂无信息",
-    "optional": "选填"
+    "optional": "选填",
+    "unpublish": "记起",
+    "confirm": "确认"
   },
   "auth": {
     "loginTitle": "登录个人资料",
@@ -178,5 +180,12 @@
   "errors": {
     "network": "连接服务器时出现问题",
     "unknown": "未知错误"
+  },
+  "confirm": {
+    "title": "确认",
+    "cancel": "否",
+    "confirm": "是",
+    "logout_q": "确定要注销吗？",
+    "reject_q": "您确定要取消发布此交易吗？"
   }
 }
