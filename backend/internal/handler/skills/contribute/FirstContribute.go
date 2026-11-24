@@ -1,4 +1,4 @@
-package skills
+package contribute
 
 import (
 	"Trade-y-exp/internal/contextkeys"
@@ -9,18 +9,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ContributeSkill cоздание коммуникации
+// FirstContribute cоздание коммуникации
 // @Summary      Создание коммуникации
 // @Description  Создает пару id + contribute user_id
-// @Tags         skills
+// @Tags         contribute
 // @Accept       json
 // @Produce      json
 // @Param input body models.SkillContribute true "Данные для запроса коммуникации"
 // @Success      201  {object}  models.ResponseApi  "Синхронизация успешна"
 // @Failure      404  {object}  models.ResponseApi  "Неверный формат ID"
 // @Failure      500  {object}  models.ResponseApi  "Запрос не найден"
-// @Router       /skills/{skill_id} [patch]
-func (h *Handler) ContributeSkill(ctx *gin.Context) {
+// @Router       /skills/contribute/{skill_id} [patch]
+func (ch *ContributeHandler) ContributeSkill(ctx *gin.Context) {
 	requestID, _ := ctx.Get(contextkeys.RequestIDKey)
 	userId, _ := ctx.Get(contextkeys.UserIDKey)
 	var req struct {
@@ -43,7 +43,7 @@ func (h *Handler) ContributeSkill(ctx *gin.Context) {
 		Addition: req.Addition,
 	}
 
-	if err := h.repo.Skills.ContributeSkill(ctx, contribute); err != nil {
+	if err := ch.repo.Skills.ContributeSkill(ctx, contribute); err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.ResponseApi{
 			RequestID: fmt.Sprint(requestID),
 			Status:    false,

@@ -132,7 +132,14 @@ func main() {
 				skill.GET("/desc", h.Skills.GetAllDescriptions)
 				skill.POST("/desc", h.Skills.CreateDescription)
 				skill.POST("/with-desc", h.Skills.CreateSkillWithDesc)
-				skill.PATCH("/:skill_id", h.Skills.ContributeSkill)
+				contribute := skill.Group("/contribute")
+				{
+					contribute.PATCH("/:skill_id", h.Skills.ContributeSkill)
+					contribute.PATCH("/approve/:skill_id", h.Skills.ApproveContribute)
+					contribute.PATCH("/decline/:skill_id", h.Skills.ActivateContribute)
+					contribute.PATCH("/reject/:skill_id", h.Skills.RejectedContribute)
+					contribute.PATCH("/close/:skill_id", h.Skills.ClosedContribute)
+				}
 			}
 			user := protected.Group("/users")
 			{

@@ -451,6 +451,228 @@ const docTemplate = `{
                 }
             }
         },
+        "/skills/contribute/approve/{skill_id}": {
+            "patch": {
+                "description": "Утверждает контакт user A с user B",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contribute"
+                ],
+                "summary": "Начало совместной коммуникации",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID запроса",
+                        "name": "skill_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Синхронизация успешна",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "404": {
+                        "description": "Неверный формат ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "500": {
+                        "description": "Запрос не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/skills/contribute/close/{skill_id}": {
+            "patch": {
+                "description": "Завершение взаимодействия (freeze -\u003e closed)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contribute"
+                ],
+                "summary": "Успешное завершение взаимодействия",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID запроса",
+                        "name": "skill_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Успешное завершение обмена",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "404": {
+                        "description": "Неверный формат ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "500": {
+                        "description": "Запрос не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/skills/contribute/decline/{skill_id}": {
+            "patch": {
+                "description": "Отклонение первичного взаимодействия (pending -\u003e active)\nи повторная активация.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contribute"
+                ],
+                "summary": "Отклонение совместной коммуникации",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID запроса",
+                        "name": "skill_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Первичная коммуникация завершена",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "404": {
+                        "description": "Неверный формат ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "500": {
+                        "description": "Запрос не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/skills/contribute/reject/{skill_id}": {
+            "patch": {
+                "description": "Одностороннее принудительное отклонение (freeze -\u003e rejected)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contribute"
+                ],
+                "summary": "Принудительная отмена взаимодействия",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID запроса",
+                        "name": "skill_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Принудительная отмена успешна",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "404": {
+                        "description": "Неверный формат ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "500": {
+                        "description": "Запрос не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
+        "/skills/contribute/{skill_id}": {
+            "patch": {
+                "description": "Создает пару id + contribute user_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contribute"
+                ],
+                "summary": "Создание коммуникации",
+                "parameters": [
+                    {
+                        "description": "Данные для запроса коммуникации",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SkillContribute"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Синхронизация успешна",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "404": {
+                        "description": "Неверный формат ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "500": {
+                        "description": "Запрос не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
         "/skills/desc": {
             "get": {
                 "description": "Вывод полного дополнительных описаний",
@@ -695,52 +917,6 @@ const docTemplate = `{
                 "responses": {
                     "201": {
                         "description": "Запрос навыка успешно удален",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "404": {
-                        "description": "Неверный формат ID",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    },
-                    "500": {
-                        "description": "Запрос не найден",
-                        "schema": {
-                            "$ref": "#/definitions/models.ResponseApi"
-                        }
-                    }
-                }
-            }
-        },
-        "/skills/{skill_id}": {
-            "patch": {
-                "description": "Создает пару id + contribute user_id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "skills"
-                ],
-                "summary": "Создание коммуникации",
-                "parameters": [
-                    {
-                        "description": "Данные для запроса коммуникации",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.SkillContribute"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Синхронизация успешна",
                         "schema": {
                             "$ref": "#/definitions/models.ResponseApi"
                         }

@@ -483,7 +483,7 @@ paths:
       summary: Удалить запрос
       tags:
       - skills
-  /skills/{skill_id}:
+  /skills/contribute/{skill_id}:
     patch:
       consumes:
       - application/json
@@ -512,7 +512,125 @@ paths:
             $ref: '#/definitions/models.ResponseApi'
       summary: Создание коммуникации
       tags:
-      - skills
+      - contribute
+  /skills/contribute/approve/{skill_id}:
+    patch:
+      consumes:
+      - application/json
+      description: Утверждает контакт user A с user B
+      parameters:
+      - description: ID запроса
+        in: path
+        name: skill_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Синхронизация успешна
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "404":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "500":
+          description: Запрос не найден
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Начало совместной коммуникации
+      tags:
+      - contribute
+  /skills/contribute/close/{skill_id}:
+    patch:
+      consumes:
+      - application/json
+      description: Завершение взаимодействия (freeze -> closed)
+      parameters:
+      - description: ID запроса
+        in: path
+        name: skill_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Успешное завершение обмена
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "404":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "500":
+          description: Запрос не найден
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Успешное завершение взаимодействия
+      tags:
+      - contribute
+  /skills/contribute/decline/{skill_id}:
+    patch:
+      consumes:
+      - application/json
+      description: |-
+        Отклонение первичного взаимодействия (pending -> active)
+        и повторная активация.
+      parameters:
+      - description: ID запроса
+        in: path
+        name: skill_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Первичная коммуникация завершена
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "404":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "500":
+          description: Запрос не найден
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Отклонение совместной коммуникации
+      tags:
+      - contribute
+  /skills/contribute/reject/{skill_id}:
+    patch:
+      consumes:
+      - application/json
+      description: Одностороннее принудительное отклонение (freeze -> rejected)
+      parameters:
+      - description: ID запроса
+        in: path
+        name: skill_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Принудительная отмена успешна
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "404":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "500":
+          description: Запрос не найден
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Принудительная отмена взаимодействия
+      tags:
+      - contribute
   /skills/desc:
     get:
       consumes:

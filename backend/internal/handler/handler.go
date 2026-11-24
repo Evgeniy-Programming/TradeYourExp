@@ -20,7 +20,7 @@ type SkillsHandler interface {
 	GetSkillByCategory(ctx *gin.Context)
 	GetSkillByFilters(ctx *gin.Context)
 	DeleteSkill(ctx *gin.Context)
-	ContributeSkill(ctx *gin.Context)
+	skills.ContributeHandler
 }
 
 type UserHandler interface {
