@@ -1,0 +1,32 @@
+.main {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding-block: 20px;
+
+  &__profile {
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 320px;
+
+    @media (width <= 1000px) {
+      max-width: none;
+    }
+  }
+
+  &__block {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__loading {
+    padding: 40px 20px;
+    font-size: var(--font-size-text);
+    color: var(--color-text-transparent);
+    text-align: center;
+  }
+
+  @media (width <= 1000px) {
+    flex-direction: column;
+  }
+}

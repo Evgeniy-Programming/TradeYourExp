@@ -125,6 +125,11 @@
     "title": "Preview",
     "exchangeFor": "exchange for"
   },
+  "profile": {
+    "name": "Name",
+    "link": "Link",
+    "registered": "Member since"
+  },
   "profileEdit": {
     "notLoggedIn": "You are not logged in.",
     "doIt": "Do it!",

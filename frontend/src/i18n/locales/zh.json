@@ -125,6 +125,11 @@
     "title": "预览",
     "exchangeFor": "交换为"
   },
+  "profile": {
+    "name": "姓名",
+    "link": "链接",
+    "registered": "注册于"
+  },
   "profileEdit": {
     "notLoggedIn": "您尚未登录。",
     "doIt": "立即登录！",
