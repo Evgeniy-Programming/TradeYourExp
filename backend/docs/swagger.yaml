@@ -216,6 +216,35 @@ paths:
       summary: Выставить свой рейтинг
       tags:
       - raiting
+  /rait/history/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Вывод рейтинговой шкалы указанного пользователя.
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Вывод рейтинга
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "400":
+          description: Неверный формат
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+        "404":
+          description: Пользователь не найден
+          schema:
+            $ref: '#/definitions/models.ResponseApi'
+      summary: Вывести историю выставления рейтинга указанного пользователя
+      tags:
+      - raiting
   /rait/history/{received_id}:
     get:
       consumes:

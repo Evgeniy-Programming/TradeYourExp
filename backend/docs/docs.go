@@ -168,6 +168,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/rait/history/{id}": {
+            "get": {
+                "description": "Вывод рейтинговой шкалы указанного пользователя.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "raiting"
+                ],
+                "summary": "Вывести историю выставления рейтинга указанного пользователя",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID пользователя",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Вывод рейтинга",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный формат",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь не найден",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseApi"
+                        }
+                    }
+                }
+            }
+        },
         "/rait/history/{received_id}": {
             "get": {
                 "description": "Вывод рейтинговой шкалы.",

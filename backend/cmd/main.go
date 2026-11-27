@@ -155,6 +155,7 @@ func main() {
 				rait.GET("/me", h.Raiting.GetMyRait)
 				rait.GET("/user/:username", h.Raiting.GetUserRait)
 				rait.GET("/history/me", h.Raiting.GetRaitHistory)
+				rait.GET("/history/:id", h.Raiting.GetUserHistory)
 			}
 		}
 
