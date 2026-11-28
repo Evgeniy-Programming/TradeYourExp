@@ -58,6 +58,7 @@ export const Skill: React.FC<SkillProps> = ({ skill }) => {
                 profileAvatar={skill.avatarUsername}
                 username={skill.username}
                 profileId={skill.username}
+                profileRaiting={5}
               />
             </div>
             <div className={style.skill__contact}>

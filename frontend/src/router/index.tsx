@@ -8,6 +8,10 @@ import { CreatorPage } from '../pages/CreatorPage/CreatorPage';
 import { RootLayout } from '../layouts/RootLayout/RootLayout';
 import { HistoryPage } from '../pages/HistoryPage/HistoryPage';
 import { StatsPage } from '../pages/StatsPage/StatsPage';
+import { ProfileViewPage } from '../pages/ProfileViewPage/ProfileViewPage';
+import { ReviewsPage } from '../pages/ReviewsPage/ReviewsPage';
+import { ReviewsViewPage } from '../pages/ReviewsViewPage/ReviewsViewPage';
+import { HistoryViewPage } from '../pages/HistoryViewPage/HistoryViewPage';
 
 export const router = createBrowserRouter([
   {
@@ -44,8 +48,20 @@ export const router = createBrowserRouter([
             element: <HistoryPage />,
           },
           {
-            path: '/profile/view/:profileId',
-            element: <div>Profile View page</div>,
+            path: '/profile/reviews',
+            element: <ReviewsPage />,
+          },
+          {
+            path: '/profile/view/:username',
+            element: <ProfileViewPage />,
+          },
+          {
+            path: '/profile/history/view/:username',
+            element: <HistoryViewPage />,
+          },
+          {
+            path: '/profile/reviews/view/:username',
+            element: <ReviewsViewPage />,
           },
           {
             path: '/create',

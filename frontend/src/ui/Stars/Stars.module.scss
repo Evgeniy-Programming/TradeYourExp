@@ -1,0 +1,40 @@
+.stars {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+
+  &__row {
+    display: inline-flex;
+    gap: 2px;
+    line-height: 1;
+    color: #f0b429; /* золотой — не завязан на палитру, это «рейтинг» */
+  }
+
+  &__item {
+    position: relative;
+    display: inline-block;
+    line-height: 1;
+  }
+
+  &__empty {
+    color: var(--color-line);
+  }
+
+  &__fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    overflow: hidden;
+    display: inline-block;
+
+    color: #f0b429;
+    white-space: nowrap;
+  }
+
+  &__value {
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-base);
+  }
+}

@@ -125,6 +125,11 @@
     "title": "Предварительный просмотр",
     "exchangeFor": "обменять на"
   },
+  "profile": {
+    "name": "Имя",
+    "link": "Ссылка",
+    "registered": "На сайте с"
+  },
   "profileEdit": {
     "notLoggedIn": "Вы не вошли в профиль.",
     "doIt": "Сделайте это!",

@@ -9,6 +9,7 @@ interface ButtonSecondaryProps extends React.ButtonHTMLAttributes<HTMLButtonElem
   isCircle?: boolean;
   disabled?: boolean;
   children: React.ReactNode;
+  className?: string;
 }
 
 const ButtonSecondary: React.FC<ButtonSecondaryProps> = ({
@@ -18,6 +19,7 @@ const ButtonSecondary: React.FC<ButtonSecondaryProps> = ({
   isCircle = false,
   disabled = false,
   children,
+  className,
   ...rest
 }) => {
   const handleClick = () => {
@@ -34,7 +36,8 @@ const ButtonSecondary: React.FC<ButtonSecondaryProps> = ({
         isMaxWidth && 'max-width',
         isDanger && style.buttonSecondary_danger,
         isCircle && style.button_circle,
-        disabled && style.button_disabled
+        disabled && style.button_disabled,
+        className
       )}
       onClick={handleClick}
       {...rest}
