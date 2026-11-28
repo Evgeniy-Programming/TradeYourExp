@@ -1,0 +1,177 @@
+.reviews {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &__header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  &__title {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+
+    margin: 0;
+
+    font-size: var(--font-size-accent);
+    color: var(--color-text-title);
+  }
+
+  &__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 24px;
+    height: 24px;
+    padding: 0 8px;
+    border-radius: 999px;
+
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-element);
+
+    background-color: var(--color-element-transparent);
+  }
+
+  &__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__filter {
+    cursor: pointer;
+
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 48px;
+    padding: 6px 12px;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-small);
+    color: var(--color-text-base);
+
+    background-color: var(--color-block);
+
+    transition:
+      background-color var(--transition-duration),
+      border-color var(--transition-duration),
+      color var(--transition-duration);
+
+    &:hover {
+      border-color: var(--color-element-secondary);
+    }
+
+    &_active {
+      border-color: var(--color-element);
+      color: var(--color-element);
+      background-color: var(--color-element-transparent);
+    }
+  }
+
+  &__empty {
+    padding: 40px 20px;
+    border: 1px dashed var(--color-line);
+    border-radius: var(--border-radius-large);
+
+    font-size: var(--font-size-text);
+    color: var(--color-text-transparent);
+    text-align: center;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-end;
+  }
+
+  &__date {
+    font-size: var(--font-size-small);
+    color: var(--color-text-transparent);
+  }
+
+  &__deal {
+    align-self: flex-start;
+
+    border: 1px solid var(--color-line);
+
+    font-size: var(--font-size-small);
+    color: var(--color-text-base);
+
+    background-color: var(--color-block);
+  }
+
+  &__text {
+    margin: 0;
+
+    font-size: var(--font-size-text);
+    line-height: 1.5;
+    color: var(--color-text-base);
+    word-break: normal;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+  }
+}
+
+@media (width <= 700px) {
+  .reviews {
+    gap: 16px;
+
+    &__filters {
+      gap: 6px;
+    }
+
+    &__filter {
+      min-width: 40px;
+      padding: 5px 10px;
+    }
+
+    &__top {
+      gap: 8px;
+    }
+
+    &__meta {
+      align-items: flex-start;
+    }
+  }
+}

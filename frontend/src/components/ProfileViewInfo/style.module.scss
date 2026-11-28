@@ -19,7 +19,8 @@
     font-weight: var(--font-weight-title);
     color: var(--color-text-title);
     text-align: center;
-    word-break: break-word;
+    word-break: normal;
+    overflow-wrap: break-word;
   }
 
   &__field {
@@ -32,9 +33,9 @@
     border: 1px solid var(--color-line);
     border-radius: var(--border-radius-large);
 
-    background-color: var(--color-block-transparent);
-
     text-align: left;
+
+    background-color: var(--color-block-transparent);
   }
 
   &__label {
@@ -50,7 +51,8 @@
 
     font-size: var(--font-size-text);
     color: var(--color-text-title);
-    word-break: break-word;
+    word-break: normal;
+    overflow-wrap: break-word;
   }
 
   &__link {

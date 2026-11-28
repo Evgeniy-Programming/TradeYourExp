@@ -5,6 +5,7 @@ import AButtonSecondary from '../../ui/AButtonSecondary/AButtonSecondary';
 import Stars from '../../ui/Stars/Stars';
 import UserAvatarLink from '../UserAvatarLink/UserAvatarLink';
 import style from './style.module.scss';
+import { useParams } from 'react-router-dom';
 
 // TODO: заменить на данные из Redux
 const MOCK_REVIEWS = [
@@ -44,6 +45,7 @@ const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
 
 export const ProfileReviews: React.FC = () => {
+  const { username } = useParams<{ username: string }>();
   const reviews = MOCK_REVIEWS;
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
@@ -58,7 +60,7 @@ export const ProfileReviews: React.FC = () => {
           Отзывы
           {reviews.length > 0 && <span className={style.reviews__count}>{reviews.length}</span>}
         </h2>
-        <AButtonSecondary to="/profile/reviews" className={style.reviews__all}>
+        <AButtonSecondary to={`/profile/reviews/view/${username}`} className={style.reviews__all}>
           Все отзывы
         </AButtonSecondary>
       </div>
