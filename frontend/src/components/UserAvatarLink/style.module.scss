@@ -4,9 +4,29 @@
   align-items: center;
 
   &__username {
+    display: inline-flex;
+    gap: 6px;
+    align-items: baseline;
+
     font-size: var(--font-size-small);
     color: var(--color-text-link);
+
     transition: var(--transition-duration);
+  }
+
+  &__rating {
+    display: inline-flex;
+    gap: 2px;
+    align-items: baseline;
+
+    color: var(--color-text-transparent);
+    white-space: nowrap;
+  }
+
+  &__star {
+    font-size: 0.9em;
+    line-height: 1;
+    color: var(--color-alert-warning-text); // жёлтый/золотой в обеих темах
   }
 
   &:hover &__username {
